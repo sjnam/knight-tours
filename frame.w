@@ -1,0 +1,417 @@
+% 이 데모는 Knuth의 나이트 투어 전시장 맨 마지막 그림(KTf)의 액자 무늬를 좇아,
+% 폭 3칸 사각 테두리를 도는 진짜 닫힌 나이트 투어로 이 문서의 모든 페이지를 두른다.
+\input kotexgweb
+\input pic
+\def\verbatim{\begingroup
+  \def\do##1{\catcode`##1=12 } \dospecials
+  \parskip 0pt \parindent 2em \let\!=!
+  \catcode`\ =13 \catcode`\^^M=13
+  \tt \catcode`\!=0 \verbatimdefs \verbatimgobble}
+{\catcode`\^^M=13{\catcode`\ =13\gdef\verbatimdefs{\def^^M{\ \par}\let =\ }} %
+  \gdef\verbatimgobble#1^^M{}}
+
+% 모든 페이지를 액자로 두른다. \FrameBG는 세로 자리를 차지하지 않는(=\vbox to 0pt)
+% 액자 덧그림으로, 본문 상자 위에 겹쳐 찍힌다. 액자를 텍스트 영역보다 크게 그려
+% 테두리가 종이 여백에 걸치게 한다. 본문 페이지는 \plainoutput이 내보내므로 그것을
+% 다시 정의해 \FrameBG를 얹고, 마지막 색인 페이지는 \topofcontents에서 얹는다.
+\def\FrameBG{\vbox to 0pt{\vskip-.72in
+  \moveleft.63in\hbox{\pic width 7.55in height 11.05in{myframe.pdf}}\vss}%
+  \nointerlineskip}
+\def\plainoutput{\shipout\vbox{\FrameBG\makeheadline\pagebody\makefootline}%
+  \advancepageno \ifnum\outputpenalty>-20000 \else\dosupereject\fi}
+% 색인은 2단 조판이라 \plainoutput이 아니라 gwebmac의 \coloutput이 직접 shipout
+% 한다. 그 shipout에도 \FrameBG를 얹어 색인 페이지까지 액자로 두른다(정의는
+% gwebmac의 것을 그대로 옮기고 맨 앞에 \FrameBG만 더한 것이다).
+\def\coloutput{%
+  \if L\lr
+    \global\setbox\lbox=\box255 \gdef\lr{R}%
+  \else
+    \shipout\vbox{\FrameBG\runheadline
+      \vbox to\pageheight{\boxmaxdepth=\maxdimen
+        \box\sbox\vss
+        \hbox to\pagewidth{\box\lbox\hfil\box255}}}%
+    \global\advance\pageno by1
+    \global\setbox\sbox=\vbox{}\global\vsize=\pageheight \gdef\lr{L}%
+  \fi}
+%\def\topofcontents{
+%  \vbox to 0pt{\vskip-.72in
+%    \moveleft.55in\hbox{\pic width 7.55in height 10.65in{frame-1.pdf}}\vss}%
+%  \vskip.6in \centerline{\titlefont\Gtitle}\vskip.7in\vfill}
+
+\font\logo=logo10
+
+@* 페이지를 두르는 나이트 투어 액자. 크누스의 \pdfURL{{\it 나이트 투어 전시장}}%
+{https://cs.stanford.edu/\TILDE/knuth/knights.html}의 맨 마지막
+그림은 폭이 딱 3칸인 사각 테두리를 나이트가 도는 투어를, 여섯 꼭짓점
+별(육각성)이 촘촘히 맞물린 띠처럼 짜 넣은 겹친 액자다. 나는 이 무늬로 종이(A4)처럼
+세로가 긴 직사각형 액자를 지어, 이 문서의 페이지를 두르는 배경으로 쓰려 한다.
+그의 별무늬로 {\it 새로운 크기의 직사각\/} 액자를 짓되, 그것 역시 진짜
+하나의 닫힌 투어가 되게 한다.
+
+먼저 크누스의 무늬를 그의 \pdfURL{{\it 그림}}{https://cs.stanford.edu/\TILDE/knuth/KTf.jpg}%
+에서 간선 단위로 읽어 냈다. 곧은 변에 칸
+격자를 맞춘 뒤 나이트가 갈 수 있는 이음마다 흰 선이 그어져 있는지 픽셀을 훑으니,
+{\it 모든 칸이 정확히 두 이음\/}을 갖는 깨끗한 투어가 나왔다. 무늬의 주기는 여섯 칸,
+곧은 변의 한 마디는 열여덟 개의 이음(|knuthMod|)이고, 네 모서리를 도는 매듭은 서른
+개의 이음(|knuthCorner|)이었다. 이 둘이 이 액자의 두 재료다.
+
+짓는 법은 이렇다. 네 변에 마디를 여섯 칸씩 이어 깔고, 네 모서리에 매듭을 얹으면
+모든 칸이 degree $2$가 되지만, 변마다 고리 하나씩 {\it 네 개의 닫힌 고리\/}로 갈린다.
+그래서 이웃한 두 고리를 모서리 근처에서 {\it 2-opt\/}로 세 번 이어 붙여 하나로 만든다
+(이음 둘을 떼고 엇갈려 다시 잇는 맞바꿈이다). 이것이 크누스가 정사각 액자에서 쓴 바로
+그 요령이다---모서리에서 가닥을 건너뛰게 해 넷을 하나로 꿰는 것이다.
+
+@ 구성이 $N_h,N_w$의 매개변수이므로, 같은 코드로 {\it 세로\/}(기본 $103\times73$)와
+{\it 가로\/}(기본 $73\times103$) 두 방향을 다 짓는다(크기는 명령행에서 바꾼다). 나이트 이동은 $90^\circ$ 회전에
+대해 불변이라 어느 쪽이든 진짜 닫힌 투어다. 둘을 \.{frame.mp}에 \.{beginfig(1)}(세로),
+\.{beginfig(2)}(가로)로 담으면 \.{mptopdf}가 \.{frame-1.pdf},
+\.{frame-2.pdf}로 나눠 낸다. 세로짜리는 limbo에서 \.{\\plainoutput}이 이 문서의
+{\it 모든 페이지\/} 바탕에 깔고, 가로짜리는 가로 판형의 {\it 다른 문서\/}에 갖다 쓴다.
+% 여기서는 크누스의 그 무늬를 직사각으로 구부려 {\it 짓는다\/}.
+
+@c
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+	"sort"
+	"strconv"
+)
+
+@<타입 정의와 변수 선언@>
+@<보조 루틴들@>
+
+func main() {
+	@<액자 배경 \.{frame.mp}를 쓴다@>
+}
+
+@* 기본 도구. 칸은 $(r,c)$로 적고, 이음(간선)은 두 칸의 쌍으로 적는다.
+@<타입...@>=
+type cell = [2]int
+type edge = [2]cell
+
+@ 함수 |knight|는 두 칸이 나이트 거리인지, |canon|은 이음을 한 방향으로 정규화해 중복을 없앤다.
+|lessE|는 이음을 한 줄로 세워 출력을 재현 가능하게 한다.
+@<보조...@>=
+func knight(a, b cell) bool {
+	dr, dc := a[0]-b[0], a[1]-b[1]
+	if dr < 0 {
+		dr = -dr
+	}
+	if dc < 0 {
+		dc = -dc
+	}
+	return dr == 1 && dc == 2 || dr == 2 && dc == 1
+}
+
+func canon(a, b cell) edge {
+	if a[0] > b[0] || (a[0] == b[0] && a[1] > b[1]) {
+		return edge{b, a}
+	}
+	return edge{a, b}
+}
+
+func lessE(x, y edge) bool {
+	if x[0] != y[0] {
+		return x[0][0] < y[0][0] || (x[0][0] == y[0][0] && x[0][1] < y[0][1])
+	}
+	return x[1][0] < y[1][0] || (x[1][0] == y[1][0] && x[1][1] < y[1][1])
+}
+
+@ 폭 3칸 테두리의 칸을 |isBorder|가 가린다. |cornerDist|는 칸이 네 모서리 중 가장
+가까운 것에서 얼마나 떨어졌는지로, 2-opt를 모서리 쪽으로 이끄는 데 쓴다.
+@<보조...@>=
+func isBorder(c cell, Nh, Nw int) bool {
+	r, cc := c[0], c[1]
+	return r >= 0 && r < Nh && cc >= 0 && cc < Nw &&
+		(r < 3 || r > Nh-4 || cc < 3 || cc > Nw-4)
+}
+
+func cornerDist(c cell, Nh, Nw int) int {
+	a, b := c[0], c[1]
+	if Nh-1-a < a {
+		a = Nh - 1 - a
+	}
+	if Nw-1-b < b {
+		b = Nw - 1 - b
+	}
+	return a + b
+}
+
+@ 이음 집합을 {\logo METAPOST} 선분들로 그린다. 펜(굵기 |pw|)과 선 색(|line|)은
+|drawoptions|로 {\it 한 번만\/} 지정한다. {\logo METAPOST}의 |for|는 쉼표로 늘어놓은
+값 목록을 그대로 돌 수 있으니, 배열도 인덱스도 없이 경로 목록을
+|for q = 경로, 경로, ...: draw q; endfor|로 그린다---그래서 \.{frame.mp}에는 |draw|도
+한 번, 첨자도 없이 경로 |()--()| 데이터만 남는다. 끝나면 |drawoptions()|로 되돌려
+다음 그림에 새지 않게 한다. 판의 위쪽이 위로 오도록 $y$를 뒤집고, 중심을 원점에 맞춘다.
+@<보조...@>=
+func drawEdges(w *bufio.Writer, es []edge, Nh, Nw int, u float64) {
+	offx := float64(Nw-1) / 2
+	offy := float64(Nh-1) / 2
+	px := func(c cell) float64 { return (float64(c[1]) - offx) * u }
+	py := func(c cell) float64 { return -(float64(c[0]) - offy) * u }
+	fmt.Fprintln(w, "drawoptions(withpen pencircle scaled pw withcolor line);")
+	fmt.Fprintln(w, "for q =")
+	for i, e := range es {
+		sep := ","
+		if i == len(es)-1 {
+			sep = ":"
+		}
+		fmt.Fprintf(w, "(%.1f,%.1f)--(%.1f,%.1f)%s\n",
+			px(e[0]), py(e[0]), px(e[1]), py(e[1]), sep)
+	}
+	fmt.Fprintln(w, "draw q; endfor")
+	fmt.Fprintln(w, "drawoptions();")
+}
+
+@* 크누스의 마디와 모서리 매듭. 둘 다 \.{KTf.jpg}에서 읽어 낸 크누스의 실제 이음들이다
+(그림 파일은 이 디렉터리에 있다). |knuthMod|은 곧은 변의 주기 6 마디(열여덟 이음)로,
+위쪽 변의 띠 좌표(행 $0,1,2$)로 적었다. 열이 $6$을 넘는 이음은 다음 마디로 이어진다.
+@<타입...@>=
+var knuthMod = []edge{
+	{{0, 0}, {1, 2}}, {{1, 0}, {2, 2}}, {{0, 1}, {1, 3}}, {{1, 1}, {0, 3}},
+	{{2, 1}, {1, 3}}, {{2, 1}, {0, 2}}, {{0, 2}, {2, 3}}, {{1, 2}, {2, 4}},
+	{{2, 2}, {1, 4}}, {{0, 3}, {1, 5}}, {{2, 3}, {0, 4}}, {{0, 4}, {2, 5}},
+	{{1, 4}, {2, 6}}, {{2, 4}, {1, 6}}, {{0, 5}, {1, 7}}, {{0, 5}, {2, 6}},
+	{{1, 5}, {0, 7}}, {{2, 5}, {0, 6}},
+}
+
+@ |knuthCorner|는 위쪽-왼쪽 모서리를 도는 매듭(서른 이음)이다. 위쪽 변의 마디와
+왼쪽 변의 마디를 모서리에서 이어 주며, 왼쪽-위 칸을 원점으로 한 좌표로 적었다.
+@<타입...@>=
+var knuthCorner = []edge{
+	{{0, 0}, {1, 2}}, {{0, 0}, {2, 1}}, {{0, 1}, {1, 3}}, {{0, 1}, {2, 2}},
+	{{0, 2}, {1, 0}}, {{0, 2}, {1, 4}}, {{0, 3}, {2, 2}}, {{0, 3}, {2, 4}},
+	{{0, 4}, {1, 6}}, {{0, 4}, {2, 5}}, {{0, 5}, {2, 4}}, {{0, 6}, {1, 4}},
+	{{1, 0}, {3, 1}}, {{1, 1}, {2, 3}}, {{1, 1}, {3, 0}}, {{1, 2}, {2, 0}},
+	{{1, 3}, {2, 5}}, {{1, 5}, {2, 3}}, {{2, 0}, {3, 2}}, {{2, 1}, {4, 0}},
+	{{3, 0}, {4, 2}}, {{3, 1}, {5, 2}}, {{3, 2}, {5, 1}}, {{4, 0}, {6, 1}},
+	{{4, 1}, {6, 0}}, {{4, 1}, {6, 2}}, {{4, 2}, {5, 0}}, {{5, 0}, {6, 2}},
+	{{5, 1}, {7, 0}}, {{5, 2}, {7, 1}},
+}
+
+@* 액자 투어를 짓는다. 네 변에 마디를, 네 모서리에 매듭을 깔아 이음 집합 |es|를
+얻은 뒤(네 고리), 이웃한 고리를 이어 하나로 만들고, 이음을 정렬해 돌려준다.
+@<보조...@>=
+func ringTour(Nh, Nw int) []edge {
+	es := map[edge]bool{}
+	@<네 변에 마디를, 네 모서리에 매듭을 깐다@>
+	@<이웃한 고리를 모서리에서 이어 하나로 만든다@>
+	@<이음을 정렬해 돌려준다@>
+}
+
+@ 위쪽 변은 그대로, 오른쪽 $\cdot$ 아래쪽 $\cdot$ 왼쪽 변은 $90^\circ$씩 돌린 네 변환으로
+마디와 매듭을 함께 옮겨 놓는다. 마디는 오프셋 $5,11,\ldots$로 이어 깔되 모서리 다섯
+칸은 매듭에 내주고, 두 끝이 모두 테두리 칸인 이음만 받는다.
+
+@<네 변에 마디를, 네 모서리에 매듭을 깐다@>=
+xf := []func(r, c int) cell{
+	func(r, c int) cell { return cell{r, c} },
+	func(r, c int) cell { return cell{c, Nw - 1 - r} },
+	func(r, c int) cell { return cell{Nh - 1 - r, Nw - 1 - c} },
+	func(r, c int) cell { return cell{Nh - 1 - c, r} },
+}
+length := []int{Nw, Nh, Nw, Nh}
+put := func(a, b cell) {
+	if isBorder(a, Nh, Nw) && isBorder(b, Nh, Nw) {
+		es[canon(a, b)] = true
+	}
+}
+for i, f := range xf {
+	for off := 5; off <= length[i]-13; off += 6 {
+		for _, e := range knuthMod {
+			put(f(e[0][0], e[0][1]+off), f(e[1][0], e[1][1]+off))
+		}
+	}
+	for _, e := range knuthCorner {
+		put(f(e[0][0], e[0][1]), f(e[1][0], e[1][1]))
+	}
+}
+
+@ |loopID|는 모든 칸이 degree $2$일 때, 각 칸에 그 칸이 속한 고리 번호를 매기고 고리
+수를 돌려준다. 고리를 따라 걸으며 번호를 칠하면 된다.
+@<보조...@>=
+func loopID(es map[edge]bool) (map[cell]int, int) {
+	adj := map[cell][]cell{}
+	for e := range es {
+		adj[e[0]] = append(adj[e[0]], e[1])
+		adj[e[1]] = append(adj[e[1]], e[0])
+	}
+	id, n := map[cell]int{}, 0
+	for s := range adj {
+		if _, ok := id[s]; ok {
+			continue
+		}
+		prev, cur := cell{-1, -1}, s
+		for {
+			id[cur] = n
+			nx := adj[cur][0]
+			if nx == prev {
+				nx = adj[cur][1]
+			}
+			prev, cur = cur, nx
+			if cur == s {
+				break
+			}
+		}
+		n++
+	}
+	return id, n
+}
+
+@ 고리가 하나가 될 때까지, 서로 다른 고리에 있는 이음 둘을 골라 엇갈려 다시 잇는다.
+같은 두 고리를 잇는 맞바꿈은 그 둘을 하나로 합친다. 여러 후보 중 {\it 모서리에 가장
+가까운\/} 것을 골라야 별무늬 속에 자연스레 묻힌다.
+@<이웃한 고리를 모서리에서 이어 하나로 만든다@>=
+id, nl := loopID(es)
+for nl > 1 {
+	@<모서리에 가장 가까운 2-opt 맞바꿈을 찾는다@>
+	if !found {
+		log.Fatal("고리를 이을 맞바꿈을 찾지 못했다")
+	}
+	delete(es, rem[0])
+	delete(es, rem[1])
+	es[add[0]] = true
+	es[add[1]] = true
+	id, nl = loopID(es)
+}
+
+@ 이음 둘 $(a,b)$와 $(c,d)$를 떼고, $(a,c)$와 $(b,d)$(또는 $(a,d)$와 $(b,c)$)로 다시
+잇는다. 새 이음 둘이 모두 나이트 거리이고 아직 없는 이음이어야 한다. |es|를 정렬해
+훑으므로 고르는 순서가 늘 같다.
+@<모서리에 가장 가까운 2-opt 맞바꿈을 찾는다@>=
+el := make([]edge, 0, len(es))
+for e := range es {
+	el = append(el, e)
+}
+sort.Slice(el, func(i, j int) bool { return lessE(el[i], el[j]) })
+best, found := 1<<30, false
+var rem, add [2]edge
+for _, e1 := range el {
+	for _, e2 := range el {
+		if id[e1[0]] == id[e2[0]] {
+			continue
+		}
+		@<이 두 이음의 두 맞바꿈을 살핀다@>
+	}
+}
+
+@ @<이 두 이음의 두 맞바꿈을 살핀다@>=
+a, b, c, d := e1[0], e1[1], e2[0], e2[1]
+for _, rc := range [2][4]cell{{a, c, b, d}, {a, d, b, c}} {
+	p, q, x, y := rc[0], rc[1], rc[2], rc[3]
+	if !knight(p, q) || !knight(x, y) || es[canon(p, q)] || es[canon(x, y)] {
+		continue
+	}
+	if sc := cornerDist(a, Nh, Nw) + cornerDist(c, Nh, Nw); sc < best {
+		best, found = sc, true
+		rem = [2]edge{e1, e2}
+		add = [2]edge{canon(p, q), canon(x, y)}
+	}
+}
+
+@ @<이음을 정렬해 돌려준다@>=
+out := make([]edge, 0, len(es))
+for e := range es {
+	out = append(out, e)
+}
+sort.Slice(out, func(i, j int) bool { return lessE(out[i], out[j]) })
+return out
+
+@* 배경 파일을 쓴다. 명령행에서 받은 크기(기본 A4 비율 $103\times73$)의 세로와 가로 두
+액자 투어를 지어 \.{frame.mp}에 담는다. 각 방향을 {\it 선 색 $\cdot$ 배경색 $\cdot$ 선
+굵기를 입력으로 받는\/} {\logo METAPOST} 매크로 |frameV(line,bg,pw)|(세로)$\cdot$
+|frameH(line,bg,pw)|(가로)로 정의하고, 바로 뒤 |beginfig|에서 |black|(선)$\cdot$
+|white|(배경)$\cdot$|0.2pt|(굵기)로 불러 그린다(\.{MP} 토큰은 글자와 숫자를 못 섞으므로
+이름에 숫자를 쓰지 않는다). 그러면 다른 문서가 이 파일을 들여와
+|frameV(0.6red, 0.95white, 0.4pt)|처럼 선 색도 배경색도 굵기도 원하는 대로 액자를
+다시 쓸 수 있다. 각 방향마다 지은 것이 하나의 닫힌 투어인지도 확인한다.
+
+@<액자 배경...@>=
+@<명령행에서 액자 크기를 정한다@>
+out, err := os.Create("frame.mp")
+if err != nil {
+	log.Fatal(err)
+}
+w := bufio.NewWriter(out)
+fmt.Fprintln(w, `% frame.mp — 크누스의 별무늬로 지은 닫힌 투어 액자, 세로/가로 (frame.go가 씀).`)
+const u = 6.0
+shapes := []struct {
+	name   string // 표준 출력용
+	mp     string // METAPOST 매크로 이름 (숫자를 못 섞으므로 글자만)
+	Nh, Nw int
+}{
+	{"세로", "frameV", big, small},
+	{"가로", "frameH", small, big},
+}
+for i, s := range shapes {
+	es := ringTour(s.Nh, s.Nw)
+	@<지은 것이 하나의 닫힌 투어인지 확인한다@>
+	fmt.Fprintf(w, "def %s(expr line, bg, pw) =\n", s.mp)
+	@<배경을 칠하고 프리즈를 그린다@>
+	fmt.Fprintln(w, "enddef;")
+	fmt.Fprintf(w, "beginfig(%d); %s(black, white, 0.2pt); endfig;\n", i+1, s.mp)
+	fmt.Printf("%s 액자: %d×%d, 간선 %d개, 하나의 닫힌 나이트 투어 ✓\n",
+		s.name, s.Nh, s.Nw, len(es))
+}
+fmt.Fprintln(w, "end.")
+w.Flush()
+out.Close()
+
+@ 액자의 두 변 길이는 명령행에서 받는다---인자가 없으면 기본값 $103\times73$(A4 비율)을
+쓰고, |가로 세로| 두 정수를 주면 그 크기로 짓는다. 두 방향(세로$\cdot$가로)을 늘 함께
+내므로 두 인자의 순서는 결과를 바꾸지 않는다(큰 쪽이 세로, 작은 쪽이 가로가 된다). 각
+변은 $13$ 이상이면서 $6$으로 나눈 나머지가 $1$이어야 네 고리가 하나로 이어진다.
+@<명령행에서 액자 크기를 정한다@>=
+big, small := 103, 73
+switch len(os.Args) {
+case 1:
+case 3:
+	var e1, e2 error
+	big, e1 = strconv.Atoi(os.Args[1])
+	small, e2 = strconv.Atoi(os.Args[2])
+	if e1 != nil || e2 != nil {
+		log.Fatalf("사용법: %s [가로 세로]", os.Args[0])
+	}
+default:
+	log.Fatalf("사용법: %s [가로 세로]", os.Args[0])
+}
+if big < small {
+	big, small = small, big
+}
+for _, n := range []int{big, small} {
+	if n < 13 || n%6 != 1 {
+		log.Fatalf("각 변은 13 이상, 6으로 나눈 나머지가 1이어야 한다 (받은 값: %d)", n)
+	}
+}
+
+@ 프리즈를 그리기 전에, 액자가 감싸는 직사각형을 배경색 |bg|로 칠한다. 칸 중심들의
+테두리 상자에 꼭 맞춰 칠하므로 그림 크기(=페이지에 앉는 자리)는 그대로다. 그 위에
+프리즈를 선 색 |line|으로 얹는다.
+@<배경을 칠하고 프리즈를 그린다@>=
+xr := float64(s.Nw-1) / 2 * u
+yr := float64(s.Nh-1) / 2 * u
+fmt.Fprintf(w, "fill (%.1f,%.1f)--(%.1f,%.1f)--(%.1f,%.1f)--(%.1f,%.1f)--cycle withcolor bg;\n",
+	-xr, -yr, xr, -yr, xr, yr, -xr, yr)
+drawEdges(w, es, s.Nh, s.Nw, u)
+
+@ 이음 집합을 다시 |loopID|에 넣어 고리가 하나뿐인지, 칸 수와 이음 수가 맞는지 본다.
+@<지은 것이 하나의 닫힌 투어인지 확인한다@>=
+esMap := map[edge]bool{}
+for _, e := range es {
+	esMap[e] = true
+}
+if _, nl := loopID(esMap); nl != 1 || len(es) != 6*(s.Nh+s.Nw)-36 {
+	log.Fatalf("%s 액자가 닫힌 투어가 아니다 (고리 %d개, 이음 %d개)", s.name, nl, len(es))
+}
+
+@ 그려 놓고 보면 크누스의 \.{KTf}와 똑같은---별이 촘촘히 맞물린---폭 3칸 직사각
+액자가 세로$\cdot$가로 두 방향으로 나온다. 둘 다 한 붓에 그린 진짜 닫힌 나이트
+투어다. 세로짜리로 이 문서의 {\it 모든 페이지\/}가 둘려 있다.
+\medskip
+\centerline{\pic height 7cm{frame-1.pdf}\hskip 1cm\pic height 5cm{frame-2.pdf}}
+
+@* 색인.
