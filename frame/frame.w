@@ -153,7 +153,8 @@ func drawEdges(w *bufio.Writer, es []edge, Nh, Nw int, u float64) {
 	fmt.Fprintln(w, "drawoptions();")
 }
 
-@* 크누스의 마디와 모서리 매듭. 둘 다 \.{KTf.jpg}에서 읽어 낸 크누스의 실제 이음들이다
+@* 크누스의 마디와 모서리 매듭. 둘 다 \pdfURL{\.{KTf.jpg}}%
+{https://cs.stanford.edu/\TILDE/knuth/KTf.jpg}에서 읽어 낸 크누스의 실제 이음들이다
 (그림 파일은 이 디렉터리에 있다). |knuthMod|은 곧은 변의 주기 6 마디(열여덟 이음)로,
 위쪽 변의 띠 좌표(행 $0,1,2$)로 적었다. 열이 $6$을 넘는 이음은 다음 마디로 이어진다.
 @<타입...@>=
@@ -377,18 +378,18 @@ func sortEdges(es map[edge]bool) []edge {
 
 @* 매크로 파일을 쓴다. 명령행에서 받은 크기(기본 A4 비율 $103\times73$)의 세로와 가로 두
 액자 투어를 지어 \.{framedef.mp}에 담는다. 각 방향을 {\it 선 색 $\cdot$ 배경색 $\cdot$ 선
-굵기를 입력으로 받는\/} {\logo METAPOST} 매크로 |frameV(line,bg,pw)|(세로)$\cdot$
-|frameH(line,bg,pw)|(가로)로 정의한다(\.{MP} 토큰은 글자와 숫자를 못 섞으므로 이름에
+굵기를 입력으로 받는\/} {\logo METAPOST} 매크로 \.{frameV()}(세로)$\cdot$
+\.{frameH()}(가로)로 정의한다(\.{mpost} 토큰은 글자와 숫자를 못 섞으므로 이름에
 숫자를 쓰지 않는다). 각 방향마다 지은 것이 하나의 닫힌 투어인지도 확인한다.
 
-@ 프로그램이 내놓는 것은 매크로 정의뿐이다. 그것을 불러 그리는 |beginfig|는 손으로 쓴
+@ 프로그램이 내놓는 것은 매크로 정의뿐이다. 그것을 불러 그리는 \.{beginfig}는 손으로 쓴
 \.{frame.mp}에 따로 둔다. 왜 갈라놓는가? 들여올 수 있게 하려면 그래야 한다. 정의와
-|beginfig|를 한 파일에 함께 두면 그 파일 맨 끝에 |end.|가 와야 하는데, |end.|는
+\.{beginfig}를 한 파일에 함께 두면 그 파일 맨 끝에 \.{end.}가 와야 하는데, \.{end.}는
 {\logo METAPOST}의 실행을 {\it 그 자리에서\/} 끝낸다. 그래서 다른 문서가 그 파일을
-|input|하면 그림 둘이 나온 뒤 실행이 멈춰 버려, 정작 자기 |beginfig|는 돌지도 못한다.
-정의만 담은 \.{framedef.mp}에는 |end.|가 없으니 이것을 들여오면 그럴 일이 없다---다른
-문서가 |frameV(0.6red, 0.95white, 0.4pt)|처럼 선 색도 배경색도 굵기도 원하는 대로 액자를
-다시 쓸 수 있다. |expr| 매개변수는 색 타입을 가리지 않으므로 RGB 세 원소든 CMYK 네
+\.{input}하면 그림 둘이 나온 뒤 실행이 멈춰 버려, 정작 자기 \.{beginfig}는 돌지도 못한다.
+정의만 담은 \.{framedef.mp}에는 \.{end.}가 없으니 이것을 들여오면 그럴 일이 없다---다른
+문서가 \.{frameV(0.6red, 0.95white, 0.4pt)}처럼 선 색도 배경색도 굵기도 원하는 대로 액자를
+다시 쓸 수 있다. \.{expr} 매개변수는 색 타입을 가리지 않으므로 RGB 세 원소든 CMYK 네
 원소든 그대로 넘어간다.
 
 @<액자 배경...@>=
@@ -415,7 +416,7 @@ fmt.Fprintln(w, `% framedef.mp — 크누스의 별무늬로 지은 닫힌 투�
 @ @<두 방향의 크기를 적어 둔다@>=
 shapes := []struct {
 	name   string // 표준 출력용
-	mp     string // METAPOST 매크로 이름 (숫자를 못 섞으므로 글자만)
+	mp     string // {\logo METAPOST} 매크로 이름 (숫자를 못 섞으므로 글자만)
 	Nh, Nw int
 }{
 	{"세로", "frameV", big, small},
