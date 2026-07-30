@@ -1,7 +1,7 @@
 GTANGLE ?= gtangle
 GWEAVE  ?= gweave
 
-.PHONY: doc myframe clean
+.PHONY: doc decoframe clean
 
 doc: frame.pdf
 
@@ -26,7 +26,7 @@ frame.pdf: frame.tex frame-1.pdf decoframe.pdf
 	luatex frame.tex
 
 # 크기나 색을 바꿔 다시 지었다면 페이지 배경도 갈아 준다.
-myframe: frame-1.pdf
+decoframe: frame-1.pdf
 	cp frame-1.pdf decoframe.pdf
 
 clean:

@@ -129,5 +129,5 @@ frame은 여전히 "하나의 닫힌 투어 ✓"를 통과하기 때문입니다
 | --- | --- |
 | [ktf.w](ktf.w) | GWEB 원본. Go 소스와 해설 문서를 겸함 |
 | [Makefile](Makefile) | 빌드 |
-| `myframe.pdf` | 문서의 페이지 배경으로 쓰는 세로 액자. `frame` 프로젝트가 지은 것 |
+| `decoframe.pdf` | 문서의 페이지 배경으로 쓰는 세로 액자. `frame` 프로젝트가 지은 것 |
 | `ktf.go`, `ktf.mp`, `ktf-1.pdf`, `ktf.tex`, `ktf.pdf` | 생성물 (`make clean` 대상) |
