@@ -46,8 +46,8 @@ go run frame.go 121 85     # 원하는 크기로
 칸이고 네 모서리 매듭이 자리를 차지하기 때문에, 이 조건이 맞지 않으면 네 고리가 하나로
 이어지지 않습니다. 조건에 어긋나면 프로그램이 그 자리에서 멈춥니다.
 
-실행하면 `framedef.mp`와 `frame.mp`가 만들어지고, 지은 액자가 정말 하나의 닫힌 투어인지
-검증한 결과를 알려줍니다.
+실행하면 `framedef.mp`가 만들어지고, 지은 액자가 정말 하나의 닫힌 투어인지 검증한 결과를
+알려줍니다.
 
 ```text
 세로 액자: 103×73, 간선 1020개, 하나의 닫힌 나이트 투어 ✓
@@ -56,12 +56,13 @@ go run frame.go 121 85     # 원하는 크기로
 
 ## 다른 문서에서 액자 쓰기
 
-`frame.go`는 MetaPost 파일을 둘 냅니다. **`framedef.mp`**에는 매크로 정의만 들어 있고,
-**`frame.mp`**은 그것을 들여와 기본 흑백으로 그리는 다섯 줄짜리 드라이버입니다.
+`frame.go`가 내놓는 것은 **`framedef.mp`** 하나이고, 여기에는 매크로 정의만 들어 있습니다.
+그것을 들여와 기본 흑백으로 그리는 다섯 줄짜리 드라이버 `frame.mp`은 생성물이 아니라
+저장소에 함께 있는 소스 파일입니다.
 
 ```metapost
-def frameV(expr line, bg, pw)   % 세로 — framedef.mp
-def frameH(expr line, bg, pw)   % 가로 — framedef.mp
+def frameV(expr line, bg, pw)   % 세로
+def frameH(expr line, bg, pw)   % 가로
 ```
 
 선 색(`line`)·배경색(`bg`)·선 굵기(`pw`)를 입력으로 받으므로, `framedef.mp`를 들여오면
@@ -121,8 +122,9 @@ gwebmac의 `\coloutput`도 함께 손봐야 색인 페이지까지 둘립니다.
 | [frame.w](frame.w) | GWEB 원본. Go 소스와 해설 문서를 겸함 |
 | [Makefile](Makefile) | 빌드 |
 | `myframe.pdf` | 문서의 페이지 배경으로 쓰는 세로 액자 |
+| [frame.mp](frame.mp) | 매크로를 기본 흑백으로 불러 그리는 드라이버. 손으로 쓴 소스 |
 | `framedef.mp` | 생성물. 액자 매크로 정의. 다른 문서가 들여오는 파일 |
-| `frame.go`, `frame.mp`, `frame-*.pdf`, `frame.tex`, `frame.pdf` | 생성물 (`make clean` 대상) |
+| `frame.go`, `frame-*.pdf`, `frame.tex`, `frame.pdf` | 생성물 (`make clean` 대상) |
 
 `myframe.pdf`는 기본 크기·기본 색으로 뽑은 `frame-1.pdf`를 따로 갈무리해 둔 것입니다.
 `make clean`이 지우지 않으므로 생성물을 다 치운 상태에서도 문서가 조판됩니다. 다만

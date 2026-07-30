@@ -9,12 +9,12 @@ doc: frame.pdf
 frame.go: frame.w
 	$(GTANGLE) frame.w
 
-# 프로그램이 액자를 지어 쓴다. 매크로 정의 framedef.mp도 함께 나온다.
-frame.mp: frame.go
+# 프로그램이 액자 매크로를 지어 쓴다.
+framedef.mp: frame.go
 	go run frame.go
 
-# 액자 그림. frame-2.pdf(가로)도 함께 나온다.
-frame-1.pdf: frame.mp
+# 액자 그림. frame.mp은 손으로 쓴 드라이버다. frame-2.pdf(가로)도 함께 나온다.
+frame-1.pdf: frame.mp framedef.mp
 	mptopdf frame.mp
 
 # frame.w에서 문서를 뽑는다.
@@ -30,5 +30,5 @@ myframe: frame-1.pdf
 	cp frame-1.pdf myframe.pdf
 
 clean:
-	rm -f frame-[0-9].pdf frame.[0-9] frame.go frame.log frame.mp \
+	rm -f frame-[0-9].pdf frame.[0-9] frame.go frame.log \
 	      framedef.mp frame.pdf frame.tex frame.toc
