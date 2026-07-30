@@ -15,7 +15,7 @@
 % 테두리가 종이 여백에 걸치게 한다. 본문 페이지는 \plainoutput이 내보내므로 그것을
 % 다시 정의해 \FrameBG를 얹고, 마지막 색인 페이지는 \topofcontents에서 얹는다.
 \def\FrameBG{\vbox to 0pt{\vskip-.72in
-  \moveleft.63in\hbox{\pic width 7.55in height 11.05in{myframe.pdf}}\vss}%
+  \moveleft.63in\hbox{\pic width 7.55in height 11.05in{decoframe.pdf}}\vss}%
   \nointerlineskip}
 \def\plainoutput{\shipout\vbox{\FrameBG\makeheadline\pagebody\makefootline}%
   \advancepageno \ifnum\outputpenalty>-20000 \else\dosupereject\fi}
@@ -35,11 +35,12 @@
   \fi}
 %\def\topofcontents{
 %  \vbox to 0pt{\vskip-.72in
-%    \moveleft.55in\hbox{\pic width 7.55in height 10.65in{frames-1.pdf}}\vss}%
+%    \moveleft.55in\hbox{\pic width 7.55in height 10.65in{decoframe.pdf}}\vss}%
 %  \vskip.6in \centerline{\titlefont\Gtitle}\vskip.7in\vfill}
 
 \font\logo=logo10
-\def\title{Knight's Frames}
+
+\def\title{크누스의 겹친 세 액자}
 
 @* 들어가며. 크누스의 \pdfURL{{\it 나이트 투어 전시장}}%
 {https://cs.stanford.edu/\TILDE/knuth/knights.html}의 맨 마지막
@@ -247,7 +248,7 @@ for _, t := range tours {
 		N, N, n, k)
 }
 
-@* 구성법으로 되지어 대조한다. 이웃한 \.{frame} 프로그램은 크누스의 무늬로 {\it 새로운
+@* 구성법으로 다시 만들어 대조한다. 이웃한 \.{frame} 프로그램은 크누스의 무늬로 {\it 새로운
 크기\/}의 액자를 짓는다. 그 구성법은 이렇다---네 변에 마디를 여섯 칸씩 이어 깔고, 네
 모서리에 매듭을 얹는다. 그 매듭이 넷 다 같지 않다는 것이 요령의 핵심이다.
 
@@ -399,27 +400,27 @@ if fingerprint(kn31) != fingerprint(kn55) {
 @<되지은 액자를 원본과 견준다@>
 fmt.Printf("구성법 대조: 31·55의 모서리 매듭이 같고, 되지은 액자가 원본과 일치 ✓\n")
 fmt.Printf("모서리 매듭 지문: %08x (frame이 찍는 것과 같아야 한다)\n", fingerprint(kn55))
-@<칠칠은 왜 이 구성법으로 안 되는지 재어 본다@>
+@<7×7은 왜 이 구성법으로 안 되는지 재어 본다@>
 
 @ 그런데 왜 $7\times7$만 이동 열로 적을 수밖에 없는가? {\it 재료가 모자라서가 아니다\/}.
 매듭 넷을 $7\times7$ 판에 그대로 얹어 보면 판 안에 이음이 일흔 개나 남는데, 정작 필요한
 것은 마흔여덟 개다. 게다가 크누스의 마흔여덟 개는 그 일흔 개 안에 {\it 하나도 빠짐없이\/}
 들어 있다. 모자란 게 아니라 스물두 개가 남아돈다.
 
-@ 까닭은 매듭끼리 포개져서다. 매듭 하나는 모서리에서 세로로 여덟 줄, 가로로 일곱 칸을
+까닭은 매듭끼리 포개져서다. 매듭 하나는 모서리에서 세로로 여덟 줄, 가로로 일곱 칸을
 차지한다. 그러니 한 변에는 한 매듭의 가로팔(일곱 칸)과 이웃 매듭의 세로팔(여덟 칸)이
 나란히 놓여, 각각 $0\ldots6$열과 $N-8\ldots N-1$열을 차지한다. $N=31$이면 둘 사이가
 벌어져 그 틈을 마디가 메우고, $N=13$이면 두 칸($5,6$열)이 겹쳐 서로 맞물린다---여기까지가
 성한 겹침이다. 그런데 $N=7$이면 뒤엣것이 $-1$열에서 시작해야 한다. 판 밖이다.
 
-@ 두 매듭이 포개지면 칸마다 이음이 둘을 넘어 버리고, 남아도는 스물두 개 중 어느 것을
+두 매듭이 포개지면 칸마다 이음이 둘을 넘어 버리고, 남아도는 스물두 개 중 어느 것을
 덜어 내야 하는지는 구성법이 말해 주지 않는다. 그러니 $7\times7$은 이 구성법의
 {\it 산물\/}이 아니라 {\it 그것이 자라 나온 바탕\/}이다. 크누스가 ``네 마디를 끼워
 넣어'' 다음 액자를 얻는다고 한 바로 그 출발점이니, 여기서는 그의 이동 열로 적어 두는
 수밖에 없다. \.{frame}이 $n\ge13$을 요구하는 것도 똑같은 까닭이다.
 
 @ 위의 일흔과 마흔여덟을 말로만 두지 않고 재어 둔다. 셈이 어긋나면 그 자리에서 멈춘다.
-@<칠칠은 왜 이 구성법으로 안 되는지 재어 본다@>=
+@<7×7은 왜 이 구성법으로 안 되는지 재어 본다@>=
 piled := map[edge]bool{}
 for q, f := range xforms(7) {
 	for _, e := range kn55[q] {

@@ -21,8 +21,8 @@ ktf-1.pdf: ktf.mp
 ktf.tex: ktf.w
 	$(GWEAVE) ktf.w
 
-# 문서는 모든 페이지에 myframe.pdf를, 마지막 절에 ktf-1.pdf를 쓴다.
-ktf.pdf: ktf.tex ktf-1.pdf myframe.pdf
+# 문서는 모든 페이지에 decoframe.pdf를, 마지막 절에 ktf-1.pdf를 쓴다.
+ktf.pdf: ktf.tex ktf-1.pdf decoframe.pdf
 	luatex ktf.tex
 
 clean:

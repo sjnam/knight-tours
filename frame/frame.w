@@ -15,7 +15,7 @@
 % 테두리가 종이 여백에 걸치게 한다. 본문 페이지는 \plainoutput이 내보내므로 그것을
 % 다시 정의해 \FrameBG를 얹고, 마지막 색인 페이지는 \topofcontents에서 얹는다.
 \def\FrameBG{\vbox to 0pt{\vskip-.72in
-  \moveleft.63in\hbox{\pic width 7.55in height 11.05in{myframe.pdf}}\vss}%
+  \moveleft.63in\hbox{\pic width 7.55in height 11.05in{decoframe.pdf}}\vss}%
   \nointerlineskip}
 \def\plainoutput{\shipout\vbox{\FrameBG\makeheadline\pagebody\makefootline}%
   \advancepageno \ifnum\outputpenalty>-20000 \else\dosupereject\fi}
@@ -35,7 +35,7 @@
   \fi}
 %\def\topofcontents{
 %  \vbox to 0pt{\vskip-.72in
-%    \moveleft.55in\hbox{\pic width 7.55in height 10.65in{frame-1.pdf}}\vss}%
+%    \moveleft.55in\hbox{\pic width 7.55in height 10.65in{decoframe.pdf}}\vss}%
 %  \vskip.6in \centerline{\titlefont\Gtitle}\vskip.7in\vfill}
 
 \font\logo=logo10
