@@ -347,14 +347,15 @@ func oneLoop(es map[edge]bool, Nh, Nw int) bool {
 	return nl == 1
 }
 
-@ 매듭 넷을 한 줄의 수로 줄인 것이 {\it 지문\/}이다(FNV-1a). 이웃한 \.{ktf} 프로그램은
-크누스의 투어에서 마디를 걷어 내 이 매듭을 {\it 스스로 뽑아내고\/} 같은 방식으로 지문을
-찍는다. 그러니 두 수를 견주면 여기 적어 둔 재료가 그의 그림 그대로인지 한눈에 안다.
-어느 한쪽을 잘못 건드리면 두 수가 갈라진다.
+@ 재료를 한 줄의 수로 줄인 것이 {\it 지문\/}이다(FNV-1a). 마디와 매듭 넷을 모두 넣어
+찍으므로 이 프로그램이 지닌 재료 전부를 덮는다. 이웃한 \.{ktf} 프로그램도 같은 방식으로
+지문을 찍는데, 그쪽의 마디는 크누스가 적어 둔 모티프로 검증한 것이고 매듭은 그의 투어에서
+{\it 스스로 뽑아낸\/} 것이다. 그러니 두 수를 견주면 여기 적어 둔 재료가 그의 그림 그대로
+인지 한눈에 안다.
 @<보조...@>=
-func fingerprint(kn [4][]edge) uint32 {
+func fingerprint(mod []edge, kn [4][]edge) uint32 {
 	h := uint32(2166136261)
-	for _, es := range kn {
+	for _, es := range append([][]edge{mod}, kn[:]...) {
 		sorted := append([]edge(nil), es...)
 		sort.Slice(sorted, func(i, j int) bool { return lessE(sorted[i], sorted[j]) })
 		for _, e := range sorted {
@@ -436,12 +437,12 @@ if asg == knuthAsg {
 fmt.Printf("%s 액자: %d×%d, 간선 %d개, 모서리 배치 %d%d%d%d%s, 하나의 닫힌 나이트 투어 ✓\n",
 	s.name, s.Nh, s.Nw, len(es), asg[0], asg[1], asg[2], asg[3], note)
 
-@ 끝으로 재료의 지문을 찍어, \.{ktf}가 그의 그림에서 뽑아낸 것과 견줄 수 있게 한다.
+@ 끝으로 재료의 지문을 찍어, \.{ktf}가 지닌 것과 견줄 수 있게 한다.
 @<출력 파일을 닫는다@>=
 w.Flush()
 out.Close()
-fmt.Printf("모서리 매듭 지문: %08x (ktf가 찍는 것과 같아야 한다)\n",
-	fingerprint(knuthCorners))
+fmt.Printf("재료 지문: %08x (ktf가 찍는 것과 같아야 한다)\n",
+	fingerprint(knuthMod, knuthCorners))
 
 @ 액자의 두 변 길이는 명령행에서 받는다---인자가 없으면 기본값 $103\times73$(A4 비율)을
 쓰고, |가로 세로| 두 정수를 주면 그 크기로 짓는다. 두 방향(세로$\cdot$가로)을 늘 함께

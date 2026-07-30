@@ -485,14 +485,17 @@ func rebuild(N int, kn [4][]edge) map[edge]bool {
 	return es
 }
 
-@ 매듭 넷을 한 줄의 수로 줄인 것이 {\it 지문\/}이다(FNV-1a). \.{frame} 쪽도 제가 지닌
-|knuthCorners|의 지문을 같은 방식으로 찍으니, 둘을 견주면 두 프로그램이 같은 재료를
-쓰고 있는지 한눈에 안다.
+@ 재료를 한 줄의 수로 줄인 것이 {\it 지문\/}이다(FNV-1a). 마디와 매듭 넷을 모두 넣어
+찍으므로 재료 전부를 덮는다. \.{frame} 쪽도 제가 지닌 |knuthMod|과 |knuthCorners|의
+지문을 같은 방식으로 찍으니, 둘을 견주면 두 프로그램이 같은 재료를 쓰고 있는지 한눈에
+안다.
 @<보조...@>=
-func fingerprint(kn [4][]edge) uint32 {
+func fingerprint(mod []edge, kn [4][]edge) uint32 {
 	h := uint32(2166136261)
-	for _, es := range kn {
-		for _, e := range es {
+	for _, es := range append([][]edge{mod}, kn[:]...) {
+		sorted := append([]edge(nil), es...)
+		sort.Slice(sorted, func(i, j int) bool { return lessE(sorted[i], sorted[j]) })
+		for _, e := range sorted {
 			for _, v := range []int{e[0][0], e[0][1], e[1][0], e[1][1]} {
 				h = (h ^ uint32(v)) * 16777619
 			}
@@ -506,12 +509,13 @@ func fingerprint(kn [4][]edge) uint32 {
 따로 밝힌다.
 @<구성법으로 되지어 대조한다@>=
 kn31, kn55 := cornerKnots(tours[1], 31), cornerKnots(tours[2], 55)
-if fingerprint(kn31) != fingerprint(kn55) {
+if fingerprint(knuthMod, kn31) != fingerprint(knuthMod, kn55) {
 	log.Fatal("31과 55에서 뽑은 모서리 매듭이 서로 다르다")
 }
 @<되지은 액자를 원본과 견준다@>
 fmt.Printf("구성법 대조: 31·55의 모서리 매듭이 같고, 되지은 액자가 원본과 일치 ✓\n")
-fmt.Printf("모서리 매듭 지문: %08x (frame이 찍는 것과 같아야 한다)\n", fingerprint(kn55))
+fmt.Printf("재료 지문: %08x (frame이 찍는 것과 같아야 한다)\n",
+	fingerprint(knuthMod, kn55))
 @<7×7은 왜 이 구성법으로 안 되는지 재어 본다@>
 
 @ 그런데 왜 $7\times7$만 이동 열로 적을 수밖에 없는가? {\it 재료가 모자라서가 아니다\/}.
@@ -526,10 +530,19 @@ fmt.Printf("모서리 매듭 지문: %08x (frame이 찍는 것과 같아야 한�
 성한 겹침이다. 그런데 $N=7$이면 뒤엣것이 $-1$열에서 시작해야 한다. 판 밖이다.
 
 두 매듭이 포개지면 칸마다 이음이 둘을 넘어 버리고, 남아도는 스물두 개 중 어느 것을
-덜어 내야 하는지는 구성법이 말해 주지 않는다. 그러니 $7\times7$은 이 구성법의
-{\it 산물\/}이 아니라 {\it 그것이 자라 나온 바탕\/}이다. 크누스가 ``네 마디를 끼워
-넣어'' 다음 액자를 얻는다고 한 바로 그 출발점이니, 여기서는 그의 이동 열로 적어 두는
-수밖에 없다. \.{frame}이 $n\ge13$을 요구하는 것도 똑같은 까닭이다.
+덜어 내야 하는지는 구성법이 말해 주지 않는다.
+
+@ ``말해 주지 않는다''는 것을 좀 더 밀어붙여 보자. 쌓인 일흔 개 안에서 {\it 모든 칸이
+차수 $2$인\/} 부분집합을 남김없이 세어 보면 열아홉 가지가 나오고, 그중 고리가 하나뿐인
+것---곧 진짜 닫힌 투어---은 {\it 일곱 가지\/}다. 크누스의 $7\times7$은 그 일곱 중
+하나일 뿐이다. 나머지 여섯도 똑같이 멀쩡한 닫힌 투어여서, 구성법만으로는 어느 것이
+그의 것인지 가릴 길이 없다.
+
+@ 그러니 $7\times7$은 이 구성법의 {\it 산물\/}이 아니라 {\it 그것이 자라 나온 바탕\/}
+이다. 크누스가 ``네 마디를 끼워 넣어'' 다음 액자를 얻는다고 한 바로 그 출발점이니,
+여기서는 그의 이동 열로 적어 두는 수밖에 없다(``일곱 중 몇째''라고 적으면 짧기야 하겠지만,
+그 번호는 세는 차례에 딸린 값이라 근거가 되지 못한다). \.{frame}이 $n\ge13$을 요구하는
+것도 똑같은 까닭이다.
 
 @ 위의 일흔과 마흔여덟을 말로만 두지 않고 재어 둔다. 셈이 어긋나면 그 자리에서 멈춘다.
 @<7×7은 왜 이 구성법으로 안 되는지 재어 본다@>=
@@ -553,6 +566,178 @@ if len(piled) <= len(k7) {
 }
 fmt.Printf("7×7은 구성법 밖: 매듭 넷을 얹으면 이음 %d개가 쌓인다 (필요한 것은 %d개, "+
 	"크누스의 것은 모두 그 안에 있다)\n", len(piled), len(k7))
+@<쌓인 것 안에 닫힌 투어가 몇이나 숨어 있는지 센다@>
+
+@ 크누스의 것이 그 일곱에 들어 있는지도 함께 본다. 하나뿐이라면 이동 열이 없어도
+$7\times7$이 정해지겠지만, 일곱이니 그렇지 않다.
+@<쌓인 것 안에 닫힌 투어가 몇이나 숨어 있는지 센다@>=
+all, single := twoFactors(sortEdges(piled))
+if single < 2 {
+	log.Fatal("7×7 후보가 하나뿐이라면 이동 열 없이도 정해진다")
+}
+fmt.Printf("7×7 후보: 차수 2인 부분집합 %d가지, 그중 닫힌 투어 %d가지"+
+	" — 크누스의 것은 그중 하나일 뿐이다\n", all, single)
+
+@ |twoFactors|는 이음 목록 안에서 모든 칸이 차수 $2$가 되는 부분집합을 남김없이 세고,
+그중 고리가 하나인 것도 따로 센다. 칸을 차례로 훑으며 그 칸에 붙은 아직 안 정한 이음
+가운데 몇을 고를지 되짚어 본다.
+@<보조...@>=
+func twoFactors(es []edge) (all, single int) {
+	cs := cellsOf(es)
+	inc := map[cell][]int{}
+	for i, e := range es {
+		inc[e[0]] = append(inc[e[0]], i)
+		inc[e[1]] = append(inc[e[1]], i)
+	}
+	st, deg := make([]int, len(es)), map[cell]int{}
+	var rec func(int)
+	@<칸 하나를 정하고 다음으로 넘어간다@>
+	rec(0)
+	return
+}
+
+@ @<칸 하나를 정하고 다음으로 넘어간다@>=
+rec = func(ci int) {
+	if ci == len(cs) {
+		all++
+		if loopCount(es, st) == 1 {
+			single++
+		}
+		return
+	}
+	var free []int
+	for _, i := range inc[cs[ci]] {
+		if st[i] == 0 {
+			free = append(free, i)
+		}
+	}
+	need := 2 - deg[cs[ci]]
+	if need < 0 || need > len(free) {
+		return
+	}
+	@<자유 이음 가운데 need개를 고르는 모든 길을 따라간다@>
+}
+
+@ 부분집합은 비트로 훑는다. 고른 이음의 반대쪽 끝이 차수 $2$를 넘으면 그 길은 접는다.
+@<자유 이음 가운데 need개를 고르는 모든 길을 따라간다@>=
+for mask := 0; mask < 1<<len(free); mask++ {
+	n := 0
+	for k := range free {
+		n += mask >> k & 1
+	}
+	if n != need {
+		continue
+	}
+	bad := false
+	for k, i := range free {
+		if mask>>k&1 == 1 {
+			st[i] = 1
+			deg[es[i][0]]++
+			deg[es[i][1]]++
+			if deg[es[i][0]] > 2 || deg[es[i][1]] > 2 {
+				bad = true
+			}
+		} else {
+			st[i] = -1
+		}
+	}
+	if !bad {
+		rec(ci + 1)
+	}
+	@<고른 것을 도로 물린다@>
+}
+
+@ @<고른 것을 도로 물린다@>=
+for k, i := range free {
+	if mask>>k&1 == 1 {
+		deg[es[i][0]]--
+		deg[es[i][1]]--
+	}
+	st[i] = 0
+}
+
+@ |cellsOf|는 이음에 나온 칸을 차례대로 늘어놓고, |loopCount|는 고른 이음들이 이루는
+고리 수를 센다.
+@<보조...@>=
+func cellsOf(es []edge) []cell {
+	seen := map[cell]bool{}
+	var out []cell
+	for _, e := range es {
+		for _, p := range e {
+			if !seen[p] {
+				seen[p] = true
+				out = append(out, p)
+			}
+		}
+	}
+	sort.Slice(out, func(i, j int) bool {
+		return out[i][0] < out[j][0] ||
+			(out[i][0] == out[j][0] && out[i][1] < out[j][1])
+	})
+	return out
+}
+
+@ @<보조...@>=
+func loopCount(es []edge, st []int) int {
+	sel := map[edge]bool{}
+	for i, s := range st {
+		if s == 1 {
+			sel[es[i]] = true
+		}
+	}
+	_, n := loopID(sel)
+	return n
+}
+
+@ |sortEdges|는 맵을 한 줄로 세운다. 훑는 차례가 늘 같아야 세는 값도 늘 같다.
+@<보조...@>=
+func sortEdges(es map[edge]bool) []edge {
+	out := make([]edge, 0, len(es))
+	for e := range es {
+		out = append(out, e)
+	}
+	sort.Slice(out, func(i, j int) bool { return lessE(out[i], out[j]) })
+	return out
+}
+
+@ |loopID|는 고른 이음들이 이루는 고리에 번호를 매기고 그 수를 돌려준다. 차수가 $2$가
+아닌 칸이 있으면 걸음이 막히므로 $-1$로 알린다.
+@<보조...@>=
+func loopID(es map[edge]bool) (map[cell]int, int) {
+	adj := map[cell][]cell{}
+	for e := range es {
+		adj[e[0]] = append(adj[e[0]], e[1])
+		adj[e[1]] = append(adj[e[1]], e[0])
+	}
+	for _, v := range adj {
+		if len(v) != 2 {
+			return nil, -1
+		}
+	}
+	id, n := map[cell]int{}, 0
+	@<고리를 따라 걸으며 번호를 칠한다@>
+	return id, n
+}
+
+@ @<고리를 따라 걸으며 번호를 칠한다@>=
+for s := range adj {
+	if _, ok := id[s]; ok {
+		continue
+	}
+	prev, cur := cell{-1, -1}, s
+	for {
+		id[cur] = n
+		nx := adj[cur][0]
+		if nx == prev {
+			nx = adj[cur][1]
+		}
+		prev, cur = cur, nx
+		if cur == s {
+			break
+		}
+	}
+	n++
+}
 
 @ @<되지은 액자를 원본과 견준다@>=
 for _, x := range []struct {
@@ -616,8 +801,9 @@ for _, e := range tours[i].edges() {
 55×55 액자: 칸 624개, 하나의 닫힌 나이트 투어 ✓, 변마다 마디 7개
 모티프 대조: 011-223-110-212-131-222가 knuthMod와 같은 무늬 ✓ (창 안의 이음 102개)
 구성법 대조: 31·55의 모서리 매듭이 같고, 되지은 액자가 원본과 일치 ✓
-모서리 매듭 지문: f15368c5 (frame이 찍는 것과 같아야 한다)
+재료 지문: 74dc9931 (frame이 찍는 것과 같아야 한다)
 7×7은 구성법 밖: 매듭 넷을 얹으면 이음 70개가 쌓인다 (필요한 것은 48개, 크누스의 것은 모두 그 안에 있다)
+7×7 후보: 차수 2인 부분집합 19가지, 그중 닫힌 투어 7가지 — 크누스의 것은 그중 하나일 뿐이다
 겹친 액자 ktf.mp를 썼다 (7·31·55, 진짜 닫힌 투어 셋).
 !endgroup
 \endgroup
