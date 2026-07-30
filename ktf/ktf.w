@@ -46,10 +46,10 @@
 {https://cs.stanford.edu/\TILDE/knuth/knights.html}의 맨 마지막
 그림은 겹친 액자다. 크누스는 이렇게 적었다: 
 \smallskip
-{\narrower\narrower\noindent\sl
+{\narrower\narrower\narrower\noindent\it
 The wall to the left of the elevator on level~8 completes the exhibit
 by illustrating a brand-new kind of knight's tour, not previously studied:
-A set of {\it nested frames}, each only three cells wide. Here we see a
+A set of {\sl nested frames}, each only three cells wide. Here we see a
 $7\times7$ frame inside a $31\times31$ frame inside a $55\times55$ frame. Each
 larger frame is obtained from the next-smaller one by inserting four of the
 modules that were used in the frieze on level~4. For several days I feared that
@@ -65,6 +65,7 @@ such tours would be impossible; but suddenly everything clicked into place.
 돌아오는 하나의 닫힌 고리임을 검증한다. 그리고 세 투어가 크누스의 말대로
 {\it 마디를 끼워 넣어\/} 자라는지, 변마다 놓인 마디 수로 확인한다. 끝으로 세 투어를
 한 중심에 겹쳐 \.{ktf.mp}에 그렸다. 마지막에 그 아름다움을 감상할 수 있을 것이다.
+프로그램의 뼈대는 다음과 같다.
 
 @c
 package main
@@ -187,17 +188,17 @@ func (t tour) verify() (int, bool) {
 	return len(cs), cell{last[0] + 2*m[0], last[1] + 2*m[1]} == t.start
 }
 
-@ 그림 \.{KTf.jpg}에서 읽어 낸 주기가 6인 실제 별무늬 한 마디다.
-위쪽 변의 띠 좌표(행 $0,1,2$)로 적었고, 한 마디는
-여섯 칸 주기로 열여덟 개의 이음을 갖는다. 이 마디로 세 투어의 재귀를 확인한다.
+@ 주기가 6인 실제 별무늬 한 마디를 살펴보자. 이 마디는 그림 \.{KTf.jpg}에서 직접 읽어 낸 것이다.
+위쪽 변의 띠 좌표(행 $0,1,2$)로 적었고, 한 마디는 여섯 칸 주기로 열여덟 개의 이음을 갖는다.
+이 마디로 세 투어의 재귀를 확인한다.
 
-@ 이 마디가 어디서 온 것인지는 크누스가 밝혀 두었다. 겹친 액자를 두고 그는 ``the modules
-that were used in the frieze on level~4''를 끼워 넣어 자란다고 했는데, 바로 그 level~4
-프리즈의 모티프를 전시장 안내글의 {\it 다른 층\/} 대목---\.{Level 3: Long and skinny
-tours}---에서 이렇게 적어 두었다:
+이 마디가 어디서 온 것인지는 크누스가 밝혀 두었다. 겹친 액자를 두고 그는 ``the modules
+that were used in the frieze on level~4''를 끼워 넣어 자란다고 했는데, 바로 그 4층
+프리즈의 모티프를 전시장 안내글의 {\it 다른 층\/} 대목---{\sl Level 3: Long and skinny
+tours\/}---에서 이렇게 적어 두었다:
 \smallskip
 {\narrower\noindent\sl One can verify that, on level~4, $2n$ copies of the motif
-`011-223-110-212-131-222' will give a $3\times(12n+14)$ cycle.\smallskip}
+`\.{011-223-110-212-131-222}' will give a $3\times(12n+14)$ cycle.\smallskip}
 \noindent
 묶음이 여섯이니 $3\times6$ 블록, 곧 칸 열여덟이다. 닫힌 투어는 칸마다 이음이 둘이라 한
 주기의 이음 수가 곧 칸 수이니, 우리가 그림에서 읽어 낸 이음 {\it 열여덟\/}과 맞아떨어진다.
@@ -206,8 +207,8 @@ $2n$개를 이어 $12n+14$가 되는 것도 여섯 칸짜리 모티프와 앞뒤
 @ 표기법은 그의 책 {\it Selected Papers on Fun and Games\/} 42장 {\sl Long and Skinny
 Knight's Tours\/}에 있다. 안내글에는 정의가 없어 한동안 풀지 못했는데, 그 장을 얻어
 읽으니 규칙이 또렷했다. 그래서 이제 그림의 픽셀이 아니라 {\it 그가 손수 적은 문자열\/}로
-|knuthMod|를 재어 볼 수 있게 되었다. 덧붙이자면 level~8에도 프리즈가 따로 있고(모티프
-`133-122-011-023-131-110-231-223-001-101', $3\times(10n+20)$ 고리) 그것은 엘리베이터
+|knuthMod|를 재어 볼 수 있게 되었다. 덧붙이자면 8층에도 프리즈가 따로 있고(모티프
+`\.{133-122-011-023-131-110-231-223-001-101}', $3\times(10n+20)$ 고리) 그것은 엘리베이터
 {\it 문 위\/}에 있으니, {\it 왼쪽 벽\/}의 겹친 액자와 헷갈리지 말 일이다.
 
 @<타입...@>=
@@ -275,7 +276,7 @@ for _, t := range tours {
 어떤 이음이 들어오는지를 세 자리 수 {\it abc\/}로 적는다. 자리마다 값이 더해진다
 (p.\thinspace514):
 \smallskip
-{\narrower\noindent
+{\narrower
 {\it a\/}: $+1$은 $(1,j\!-\!2)$--$(0,j)$, $+2$는 $(2,j\!-\!1)$--$(0,j)$\par
 {\it b\/}: $+1$은 $(0,j\!-\!2)$--$(1,j)$, $+2$는 $(2,j\!-\!2)$--$(1,j)$\par
 {\it c\/}: $+1$은 $(0,j\!-\!1)$--$(2,j)$, $+2$는 $(1,j\!-\!2)$--$(2,j)$\par}
@@ -360,7 +361,7 @@ if !matched {
 fmt.Printf("모티프 대조: %s가 knuthMod와 같은 무늬 ✓ (창 안의 이음 %d개)\n",
 	knuthMotif, len(mine))
 
-@* 구성법으로 다시 만들어 대조한다. 이웃한 \.{frame} 프로그램은 크누스의 무늬로 {\it 새로운
+@* 구성법으로 다시 만들어 대조한다. 이웃한 \.{frame.w} 프로그램은 크누스의 무늬로 {\it 새로운
 크기\/}의 액자를 짓는다. 그 구성법은 이렇다---네 변에 마디를 여섯 칸씩 이어 깔고, 네
 모서리에 매듭을 얹는다. 그 매듭이 넷 다 같지 않다는 것이 요령의 핵심이다.
 
@@ -451,7 +452,7 @@ for q := range out {
 	sort.Slice(out[q], func(i, j int) bool { return lessE(out[q][i], out[q][j]) })
 }
 
-@ |lessE|는 이음을 한 줄로 세운다. |same|은 두 이음 집합이 같은지 본다.
+@ 함수 |lessE|는 이음을 한 줄로 세운다. |same|은 두 이음 집합이 같은지 본다.
 @<보조...@>=
 func lessE(x, y edge) bool {
 	if x[0] != y[0] {
@@ -486,7 +487,7 @@ func rebuild(N int, kn [4][]edge) map[edge]bool {
 }
 
 @ 재료를 한 줄의 수로 줄인 것이 {\it 지문\/}이다(FNV-1a). 마디와 매듭 넷을 모두 넣어
-찍으므로 재료 전부를 덮는다. \.{frame} 쪽도 제가 지닌 |knuthMod|과 |knuthCorners|의
+찍으므로 재료 전부를 덮는다. \.{frame.w} 쪽도 제가 지닌 |knuthMod|과 |knuthCorners|의
 지문을 같은 방식으로 찍으니, 둘을 견주면 두 프로그램이 같은 재료를 쓰고 있는지 한눈에
 안다.
 @<보조...@>=
@@ -538,10 +539,10 @@ fmt.Printf("재료 지문: %08x (frame이 찍는 것과 같아야 한다)\n",
 하나일 뿐이다. 나머지 여섯도 똑같이 멀쩡한 닫힌 투어여서, 구성법만으로는 어느 것이
 그의 것인지 가릴 길이 없다.
 
-@ 그러니 $7\times7$은 이 구성법의 {\it 산물\/}이 아니라 {\it 그것이 자라 나온 바탕\/}
+그러니 $7\times7$은 이 구성법의 {\it 산물\/}이 아니라 {\it 그것이 자라 나온 바탕\/}
 이다. 크누스가 ``네 마디를 끼워 넣어'' 다음 액자를 얻는다고 한 바로 그 출발점이니,
 여기서는 그의 이동 열로 적어 두는 수밖에 없다(``일곱 중 몇째''라고 적으면 짧기야 하겠지만,
-그 번호는 세는 차례에 딸린 값이라 근거가 되지 못한다). \.{frame}이 $n\ge13$을 요구하는
+그 번호는 세는 차례에 딸린 값이라 근거가 되지 못한다). \.{frame.w}이 $n\ge13$을 요구하는
 것도 똑같은 까닭이다.
 
 @ 위의 일흔과 마흔여덟을 말로만 두지 않고 재어 둔다. 셈이 어긋나면 그 자리에서 멈춘다.
@@ -578,7 +579,7 @@ if single < 2 {
 fmt.Printf("7×7 후보: 차수 2인 부분집합 %d가지, 그중 닫힌 투어 %d가지"+
 	" — 크누스의 것은 그중 하나일 뿐이다\n", all, single)
 
-@ |twoFactors|는 이음 목록 안에서 모든 칸이 차수 $2$가 되는 부분집합을 남김없이 세고,
+@ 함수 |twoFactors|는 이음 목록 안에서 모든 칸이 차수 $2$가 되는 부분집합을 남김없이 세고,
 그중 고리가 하나인 것도 따로 센다. 칸을 차례로 훑으며 그 칸에 붙은 아직 안 정한 이음
 가운데 몇을 고를지 되짚어 본다.
 @<보조...@>=
@@ -656,7 +657,7 @@ for k, i := range free {
 	st[i] = 0
 }
 
-@ |cellsOf|는 이음에 나온 칸을 차례대로 늘어놓고, |loopCount|는 고른 이음들이 이루는
+@ 함수 |cellsOf|는 이음에 나온 칸을 차례대로 늘어놓고, |loopCount|는 고른 이음들이 이루는
 고리 수를 센다.
 @<보조...@>=
 func cellsOf(es []edge) []cell {
@@ -689,7 +690,7 @@ func loopCount(es []edge, st []int) int {
 	return n
 }
 
-@ |sortEdges|는 맵을 한 줄로 세운다. 훑는 차례가 늘 같아야 세는 값도 늘 같다.
+@ 함수 |sortEdges|는 맵을 한 줄로 세운다. 훑는 차례가 늘 같아야 세는 값도 늘 같다.
 @<보조...@>=
 func sortEdges(es map[edge]bool) []edge {
 	out := make([]edge, 0, len(es))
@@ -700,7 +701,7 @@ func sortEdges(es map[edge]bool) []edge {
 	return out
 }
 
-@ |loopID|는 고른 이음들이 이루는 고리에 번호를 매기고 그 수를 돌려준다. 차수가 $2$가
+@ 함수 |loopID|는 고른 이음들이 이루는 고리에 번호를 매기고 그 수를 돌려준다. 차수가 $2$가
 아닌 칸이 있으면 걸음이 막히므로 $-1$로 알린다.
 @<보조...@>=
 func loopID(es map[edge]bool) (map[cell]int, int) {
@@ -777,7 +778,7 @@ var colors = []string{"0.5green", "0.65blue", "0.8red"}
 
 @ 두 배 좌표를 그대로 점으로 삼고, 판의 위가 위로 오도록 $y$를 뒤집는다. 단위는
 $1.9\,$pt라 가장 큰 $55$ 액자(폭 $108$)가 $9\,$cm쯤 된다. 펜과 색은 투어마다
-|drawoptions|로 {\it 한 번만\/} 지정하니, |draw| 줄에는 경로만 남는다.
+\.{drawoptions}로 {\it 한 번만\/} 지정하니, \.{draw} 줄에는 경로만 남는다.
 @<투어 하나를 그린다@>=
 const u = 1.9
 fmt.Fprintf(w, "drawoptions(withpen pencircle scaled .7pt withcolor %s);\n", colors[i])
@@ -814,7 +815,7 @@ for _, e := range tours[i].edges() {
 늘었다. 가장 작은 $7$ 액자는 마디가 통째로 들어설 자리가 없어, 네 모서리가 바로 맞물린
 바탕꼴이다.
 
-@ 변의 길이만 보아도 같은 말이 나온다. $7\to31$도 $31\to55$도 변이 꼭
+변의 길이만 보아도 같은 말이 나온다. $7\to31$도 $31\to55$도 변이 꼭
 $24$칸씩 늘었는데, 이는 여섯 칸짜리 마디 {\it 넷\/}이다---그가 ``inserting {\it four\/}
 of the modules''라 한 그대로다. 그러니 마디 수가 $0\to3\to7$로 나온 것에서 뒤의
 $+4$가 바로 그 넷이고, 앞의 $+3$은 $7$ 액자에 온전한 마디가 하나도 들어서지 못해
