@@ -259,18 +259,26 @@ fmt.Fprintln(w, "beginfig(1);")
 for i := len(tours) - 1; i >= 0; i-- {
 	@<투어 하나를 그린다@>
 }
+fmt.Fprintln(w, "drawoptions();")
 fmt.Fprintln(w, "endfig;")
 fmt.Fprintln(w, "end.")
 w.Flush()
 out.Close()
 fmt.Println("겹친 액자 ktf.mp를 썼다 (7·31·55, 진짜 닫힌 투어 셋).")
 
+@ 겹의 색은 |tours|와 같은 순서로 적는다---안쪽 $7$이 초록, $31$이 푸름, 바깥 $55$가
+붉음이다. 바깥부터 그리므로 종이에는 붉은 것이 먼저 깔리고 그 안에 푸름과 초록이 얹힌다.
+@<타입...@>=
+var colors = []string{"0.5green", "0.65blue", "0.8red"}
+
 @ 두 배 좌표를 그대로 점으로 삼고, 판의 위가 위로 오도록 $y$를 뒤집는다. 단위는
-$1.9\,$pt라 가장 큰 $55$ 액자(폭 $108$)가 $9\,$cm쯤 된다.
+$1.9\,$pt라 가장 큰 $55$ 액자(폭 $108$)가 $9\,$cm쯤 된다. 펜과 색은 투어마다
+|drawoptions|로 {\it 한 번만\/} 지정하니, |draw| 줄에는 경로만 남는다.
 @<투어 하나를 그린다@>=
 const u = 1.9
+fmt.Fprintf(w, "drawoptions(withpen pencircle scaled .7pt withcolor %s);\n", colors[i])
 for _, e := range tours[i].edges() {
-	fmt.Fprintf(w, "draw (%.1f,%.1f)--(%.1f,%.1f) withpen pencircle scaled .7pt;\n",
+	fmt.Fprintf(w, "draw (%.1f,%.1f)--(%.1f,%.1f);\n",
 		float64(e[0][1])*u, -float64(e[0][0])*u,
 		float64(e[1][1])*u, -float64(e[1][0])*u)
 }
