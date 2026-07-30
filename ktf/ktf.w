@@ -75,6 +75,7 @@ import (
 	"log"
 	"os"
 	"sort"
+	"strings"
 )
 
 @<타입 정의와 변수들@>
@@ -82,6 +83,7 @@ import (
 
 func main() {
 	@<세 투어를 검증하고 재귀를 보인다@>
+	@<크누스가 적어 둔 모티프와 대조한다@>
 	@<구성법으로 되지어 대조한다@>
 	@<겹친 액자 \.{ktf.mp}를 쓴다@>
 }
@@ -201,10 +203,10 @@ tours}---에서 이렇게 적어 두었다:
 주기의 이음 수가 곧 칸 수이니, 우리가 그림에서 읽어 낸 이음 {\it 열여덟\/}과 맞아떨어진다.
 $2n$개를 이어 $12n+14$가 되는 것도 여섯 칸짜리 모티프와 앞뒤가 맞는다.
 
-@ 다만 그 표기법 자체는 그의 책 {\it Selected Papers on Fun and Games\/} 42장의 이론에서
-온 것이라 안내글에 정의가 없다. 그래서 여기서 이음으로 풀어 대조하지는 못했다---풀 수만
-있다면 그림의 픽셀이 아니라 그가 손수 적은 문자열로 |knuthMod|를 재어 볼 수 있을 텐데,
-아쉬운 대목이다. 덧붙이자면 level~8에도 프리즈가 따로 있고(모티프
+@ 표기법은 그의 책 {\it Selected Papers on Fun and Games\/} 42장 {\sl Long and Skinny
+Knight's Tours\/}에 있다. 안내글에는 정의가 없어 한동안 풀지 못했는데, 그 장을 얻어
+읽으니 규칙이 또렷했다. 그래서 이제 그림의 픽셀이 아니라 {\it 그가 손수 적은 문자열\/}로
+|knuthMod|를 재어 볼 수 있게 되었다. 덧붙이자면 level~8에도 프리즈가 따로 있고(모티프
 `133-122-011-023-131-110-231-223-001-101', $3\times(10n+20)$ 고리) 그것은 엘리베이터
 {\it 문 위\/}에 있으니, {\it 왼쪽 벽\/}의 겹친 액자와 헷갈리지 말 일이다.
 
@@ -267,6 +269,96 @@ for _, t := range tours {
 	fmt.Printf("%2d×%-2d 액자: 칸 %3d개, 하나의 닫힌 나이트 투어 ✓, 변마다 마디 %d개\n",
 		N, N, n, k)
 }
+
+@* 크누스가 적어 둔 모티프를 푼다. 42장은 $3\times n$ 투어를 {\it 열 단위로 이어 붙이는
+상태 기계\/}로 본다. 열을 하나 더 붙일 때, 새 열의 세 칸 $(0,j)\cdot(1,j)\cdot(2,j)$로
+어떤 이음이 들어오는지를 세 자리 수 {\it abc\/}로 적는다. 자리마다 값이 더해진다
+(p.\thinspace514):
+\smallskip
+{\narrower\noindent
+{\it a\/}: $+1$은 $(1,j\!-\!2)$--$(0,j)$, $+2$는 $(2,j\!-\!1)$--$(0,j)$\par
+{\it b\/}: $+1$은 $(0,j\!-\!2)$--$(1,j)$, $+2$는 $(2,j\!-\!2)$--$(1,j)$\par
+{\it c\/}: $+1$은 $(0,j\!-\!1)$--$(2,j)$, $+2$는 $(1,j\!-\!2)$--$(2,j)$\par}
+\smallskip
+\noindent
+나이트가 새 열로 들어오는 길은 이 여섯뿐이니 빠짐이 없다. ($+4$는 열린 투어의 양 끝을
+다루는 가상 꼭짓점 $\infty$로 가는 이음인데, 닫힌 투어에는 나오지 않는다.)
+
+@ 규칙을 표로 적는다. |codeRules[pos][bit]|은 새 열의 |pos|행으로 들어오는 이음의
+반대쪽 끝이 어느 행, 몇 열 뒤인지다.
+@<타입...@>=
+var codeRules = [3][2]cell{
+	{{1, -2}, {2, -1}},
+	{{0, -2}, {2, -2}},
+	{{0, -1}, {1, -2}},
+}
+
+var knuthMotif = "011-223-110-212-131-222" // level 4 프리즈 (42장 p.514의 표기)
+
+@ 모티프를 |reps|번 되풀이해 이음으로 편다. 마디 하나가 여섯 열이니 전이도 여섯이다.
+@<보조...@>=
+func motifEdges(motif string, reps int) map[edge]bool {
+	es, j := map[edge]bool{}, 0
+	for r := 0; r < reps; r++ {
+		for _, g := range strings.Split(motif, "-") {
+			@<전이 하나가 더하는 이음을 담는다@>
+			j++
+		}
+	}
+	return es
+}
+
+@ @<전이 하나가 더하는 이음을 담는다@>=
+for pos := 0; pos < 3; pos++ {
+	d := int(g[pos] - '0')
+	for bit := 0; bit < 2; bit++ {
+		if d&(1<<bit) != 0 {
+			p := codeRules[pos][bit]
+			es[canon(cell{p[0], j + p[1]}, cell{pos, j})] = true
+		}
+	}
+}
+
+@ 견줄 상대는 |knuthMod|를 여섯 열씩 밀어 깐 무늬다. 열 위상이 어디서 시작하느냐는
+서로 다를 수 있으니, 가운데 창만 잘라 견주고 이동은 찾아본다.
+@<보조...@>=
+func tileMod(reps int) map[edge]bool {
+	es := map[edge]bool{}
+	for t := 0; t < reps; t++ {
+		for _, e := range knuthMod {
+			es[canon(cell{e[0][0], e[0][1] + 6*t}, cell{e[1][0], e[1][1] + 6*t})] = true
+		}
+	}
+	return es
+}
+
+@ @<보조...@>=
+func window(es map[edge]bool, lo, hi, shift int) map[edge]bool {
+	out := map[edge]bool{}
+	for e := range es {
+		a := cell{e[0][0], e[0][1] + shift}
+		b := cell{e[1][0], e[1][1] + shift}
+		if a[1] >= lo && a[1] < hi && b[1] >= lo && b[1] < hi {
+			out[canon(a, b)] = true
+		}
+	}
+	return out
+}
+
+@ 이제 대조한다. 두 무늬가 열 이동 하나로 포개지면, 우리가 그림에서 읽어 낸 마디가
+크누스가 손수 적은 그것과 같다는 뜻이다.
+@<크누스가 적어 둔 모티프와 대조한다@>=
+mine := window(tileMod(14), 20, 56, 0)
+theirs := motifEdges(knuthMotif, 14)
+matched := false
+for s := -40; s <= 40 && !matched; s++ {
+	matched = same(window(theirs, 20, 56, s), mine)
+}
+if !matched {
+	log.Fatal("크누스가 적어 둔 모티프가 knuthMod와 다른 무늬다")
+}
+fmt.Printf("모티프 대조: %s가 knuthMod와 같은 무늬 ✓ (창 안의 이음 %d개)\n",
+	knuthMotif, len(mine))
 
 @* 구성법으로 다시 만들어 대조한다. 이웃한 \.{frame} 프로그램은 크누스의 무늬로 {\it 새로운
 크기\/}의 액자를 짓는다. 그 구성법은 이렇다---네 변에 마디를 여섯 칸씩 이어 깔고, 네
@@ -522,6 +614,7 @@ for _, e := range tours[i].edges() {
  7×7  액자: 칸  48개, 하나의 닫힌 나이트 투어 ✓, 변마다 마디 0개
 31×31 액자: 칸 336개, 하나의 닫힌 나이트 투어 ✓, 변마다 마디 3개
 55×55 액자: 칸 624개, 하나의 닫힌 나이트 투어 ✓, 변마다 마디 7개
+모티프 대조: 011-223-110-212-131-222가 knuthMod와 같은 무늬 ✓ (창 안의 이음 102개)
 구성법 대조: 31·55의 모서리 매듭이 같고, 되지은 액자가 원본과 일치 ✓
 모서리 매듭 지문: f15368c5 (frame이 찍는 것과 같아야 한다)
 7×7은 구성법 밖: 매듭 넷을 얹으면 이음 70개가 쌓인다 (필요한 것은 48개, 크누스의 것은 모두 그 안에 있다)
