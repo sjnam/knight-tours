@@ -62,11 +62,12 @@
 그 요령이다---모서리에서 가닥을 건너뛰게 해 넷을 하나로 꿰는 것이다.
 
 @ 구성이 $N_h,N_w$의 매개변수이므로, 같은 코드로 {\it 세로\/}(기본 $103\times73$)와
-{\it 가로\/}(기본 $73\times103$) 두 방향을 다 짓는다(크기는 명령행에서 바꾼다). 나이트 이동은 $90^\circ$ 회전에
-대해 불변이라 어느 쪽이든 진짜 닫힌 투어다. 둘을 \.{frame.mp}에 \.{beginfig(1)}(세로),
-\.{beginfig(2)}(가로)로 담으면 \.{mptopdf}가 \.{frame-1.pdf},
-\.{frame-2.pdf}로 나눠 낸다. 세로짜리는 limbo에서 \.{\\plainoutput}이 이 문서의
-{\it 모든 페이지\/} 바탕에 깔고, 가로짜리는 가로 판형의 {\it 다른 문서\/}에 갖다 쓴다.
+{\it 가로\/}(기본 $73\times103$) 두 방향을 다 짓는다(크기는 명령행에서 바꾼다).
+나이트 이동은 $90^\circ$ 회전에 대해 불변이라 어느 쪽이든 진짜 닫힌 투어다.
+둘을 \.{frame.mp}에 \.{beginfig(1)}(세로), \.{beginfig(2)}(가로)로 담으면
+\.{mptopdf}가 \.{frame-1.pdf}, \.{frame-2.pdf}로 나눠 낸다. 세로짜리는 limbo에서
+\.{\\plainoutput}이 이 문서의 {\it 모든 페이지\/} 바탕에 깔고, 가로짜리는 가로 판형의
+{\it 다른 문서\/}에 갖다 쓴다.
 % 여기서는 크누스의 그 무늬를 직사각으로 구부려 {\it 짓는다\/}.
 
 @c
@@ -322,23 +323,54 @@ sort.Slice(out, func(i, j int) bool { return lessE(out[i], out[j]) })
 return out
 
 @* 배경 파일을 쓴다. 명령행에서 받은 크기(기본 A4 비율 $103\times73$)의 세로와 가로 두
-액자 투어를 지어 \.{frame.mp}에 담는다. 각 방향을 {\it 선 색 $\cdot$ 배경색 $\cdot$ 선
-굵기를 입력으로 받는\/} {\logo METAPOST} 매크로 |frameV(line,bg,pw)|(세로)$\cdot$
-|frameH(line,bg,pw)|(가로)로 정의하고, 바로 뒤 |beginfig|에서 |black|(선)$\cdot$
-|white|(배경)$\cdot$|0.2pt|(굵기)로 불러 그린다(\.{MP} 토큰은 글자와 숫자를 못 섞으므로
-이름에 숫자를 쓰지 않는다). 그러면 다른 문서가 이 파일을 들여와
-|frameV(0.6red, 0.95white, 0.4pt)|처럼 선 색도 배경색도 굵기도 원하는 대로 액자를
-다시 쓸 수 있다. 각 방향마다 지은 것이 하나의 닫힌 투어인지도 확인한다.
+액자 투어를 지어 파일 {\it 둘\/}에 나눠 담는다. 각 방향을 {\it 선 색 $\cdot$ 배경색
+$\cdot$ 선 굵기를 입력으로 받는\/} {\logo METAPOST} 매크로 |frameV(line,bg,pw)|(세로)
+$\cdot$|frameH(line,bg,pw)|(가로)로 정의해 \.{framedef.mp}에 두고, 그 매크로를
+|black|(선)$\cdot$|white|(배경)$\cdot$|0.2pt|(굵기)로 불러 그리는 |beginfig| 둘만
+\.{frame.mp}에 둔다(\.{MP} 토큰은 글자와 숫자를 못 섞으므로 이름에 숫자를 쓰지 않는다).
+각 방향마다 지은 것이 하나의 닫힌 투어인지도 확인한다.
+
+@ 왜 굳이 둘로 쪼개는가? 들여올 수 있게 하려면 그래야 한다. 매크로 정의와 |beginfig|를
+한 파일에 함께 두면 그 파일 맨 끝에 |end.|가 와야 하는데, |end.|는 {\logo METAPOST}의
+실행을 {\it 그 자리에서\/} 끝낸다. 그래서 다른 문서가 그 파일을 |input|하면 기본 흑백
+그림 둘이 나온 뒤 실행이 멈춰 버려, 정작 자기 |beginfig|는 돌지도 못한다. 정의만 담은
+\.{framedef.mp}에는 |end.|가 없으니 이것을 들여오면 그럴 일이 없다---다른 문서가
+|frameV(0.6red, 0.95white, 0.4pt)|처럼 선 색도 배경색도 굵기도 원하는 대로 액자를 다시
+쓸 수 있다. |expr| 매개변수는 색 타입을 가리지 않으므로 RGB 세 원소든 CMYK 네 원소든
+그대로 넘어간다.
 
 @<액자 배경...@>=
 @<명령행에서 액자 크기를 정한다@>
-out, err := os.Create("frame.mp")
-if err != nil {
-	log.Fatal(err)
-}
-w := bufio.NewWriter(out)
-fmt.Fprintln(w, `% frame.mp — 크누스의 별무늬로 지은 닫힌 투어 액자, 세로/가로 (frame.go가 씀).`)
+@<출력 파일 둘을 연다@>
 const u = 6.0
+@<두 방향의 크기를 적어 둔다@>
+for i, s := range shapes {
+	es := ringTour(s.Nh, s.Nw)
+	@<지은 것이 하나의 닫힌 투어인지 확인한다@>
+	@<매크로를 정의하고 기본색으로 불러 그린다@>
+}
+fmt.Fprintln(w, "end.")
+@<출력 파일 둘을 닫는다@>
+
+@ |mpfile|은 파일 하나를 열어, 누가 썼는지 밝히는 머리글 주석을 얹은 버퍼를 돌려준다.
+@<보조...@>=
+func mpfile(name, note string) (*os.File, *bufio.Writer) {
+	f, err := os.Create(name)
+	if err != nil {
+		log.Fatal(err)
+	}
+	w := bufio.NewWriter(f)
+	fmt.Fprintf(w, "%% %s — %s (frame.go가 씀).\n", name, note)
+	return f, w
+}
+
+@ 정의는 |d|에, 그림은 |w|에 쓴다. \.{frame.mp}는 맨 앞에서 정의를 들여온다.
+@<출력 파일 둘을 연다@>=
+df, d := mpfile("framedef.mp", "크누스의 별무늬로 지은 닫힌 투어 액자 매크로, 세로/가로")
+ff, w := mpfile("frame.mp", "framedef.mp의 액자를 기본 흑백으로 그린다")
+fmt.Fprintln(w, "input framedef;")
+
+@ @<두 방향의 크기를 적어 둔다@>=
 shapes := []struct {
 	name   string // 표준 출력용
 	mp     string // METAPOST 매크로 이름 (숫자를 못 섞으므로 글자만)
@@ -347,19 +379,20 @@ shapes := []struct {
 	{"세로", "frameV", big, small},
 	{"가로", "frameH", small, big},
 }
-for i, s := range shapes {
-	es := ringTour(s.Nh, s.Nw)
-	@<지은 것이 하나의 닫힌 투어인지 확인한다@>
-	fmt.Fprintf(w, "def %s(expr line, bg, pw) =\n", s.mp)
-	@<배경을 칠하고 프리즈를 그린다@>
-	fmt.Fprintln(w, "enddef;")
-	fmt.Fprintf(w, "beginfig(%d); %s(black, white, 0.2pt); endfig;\n", i+1, s.mp)
-	fmt.Printf("%s 액자: %d×%d, 간선 %d개, 하나의 닫힌 나이트 투어 ✓\n",
-		s.name, s.Nh, s.Nw, len(es))
-}
-fmt.Fprintln(w, "end.")
+
+@ @<매크로를 정의하고 기본색으로 불러 그린다@>=
+fmt.Fprintf(d, "def %s(expr line, bg, pw) =\n", s.mp)
+@<배경을 칠하고 프리즈를 그린다@>
+fmt.Fprintln(d, "enddef;")
+fmt.Fprintf(w, "beginfig(%d); %s(black, white, 0.2pt); endfig;\n", i+1, s.mp)
+fmt.Printf("%s 액자: %d×%d, 간선 %d개, 하나의 닫힌 나이트 투어 ✓\n",
+	s.name, s.Nh, s.Nw, len(es))
+
+@ @<출력 파일 둘을 닫는다@>=
+d.Flush()
+df.Close()
 w.Flush()
-out.Close()
+ff.Close()
 
 @ 액자의 두 변 길이는 명령행에서 받는다---인자가 없으면 기본값 $103\times73$(A4 비율)을
 쓰고, |가로 세로| 두 정수를 주면 그 크기로 짓는다. 두 방향(세로$\cdot$가로)을 늘 함께
@@ -390,13 +423,13 @@ for _, n := range []int{big, small} {
 
 @ 프리즈를 그리기 전에, 액자가 감싸는 직사각형을 배경색 |bg|로 칠한다. 칸 중심들의
 테두리 상자에 꼭 맞춰 칠하므로 그림 크기(=페이지에 앉는 자리)는 그대로다. 그 위에
-프리즈를 선 색 |line|으로 얹는다.
+프리즈를 선 색 |line|으로 얹는다. 이 모두가 매크로 몸통이므로 |d|에 쓴다.
 @<배경을 칠하고 프리즈를 그린다@>=
 xr := float64(s.Nw-1) / 2 * u
 yr := float64(s.Nh-1) / 2 * u
-fmt.Fprintf(w, "fill (%.1f,%.1f)--(%.1f,%.1f)--(%.1f,%.1f)--(%.1f,%.1f)--cycle withcolor bg;\n",
+fmt.Fprintf(d, "fill (%.1f,%.1f)--(%.1f,%.1f)--(%.1f,%.1f)--(%.1f,%.1f)--cycle withcolor bg;\n",
 	-xr, -yr, xr, -yr, xr, yr, -xr, yr)
-drawEdges(w, es, s.Nh, s.Nw, u)
+drawEdges(d, es, s.Nh, s.Nw, u)
 
 @ 이음 집합을 다시 |loopID|에 넣어 고리가 하나뿐인지, 칸 수와 이음 수가 맞는지 본다.
 @<지은 것이 하나의 닫힌 투어인지 확인한다@>=

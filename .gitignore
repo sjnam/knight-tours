@@ -1,0 +1,19 @@
+# gtangle 생성물
+frame.go
+
+# frame.go 생성물
+frame.mp
+framedef.mp
+
+# mptopdf 생성물
+frame.[0-9]
+frame-[0-9].pdf
+
+# gweave · luatex 생성물
+frame.tex
+frame.toc
+frame.log
+frame.pdf
+
+# macOS
+.DS_Store
