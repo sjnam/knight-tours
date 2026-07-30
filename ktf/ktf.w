@@ -73,6 +73,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 )
 
 @<타입 정의와 변수들@>
@@ -80,6 +81,7 @@ import (
 
 func main() {
 	@<세 투어를 검증하고 재귀를 보인다@>
+	@<구성법으로 되지어 대조한다@>
 	@<겹친 액자 \.{ktf.mp}를 쓴다@>
 }
 
@@ -245,6 +247,210 @@ for _, t := range tours {
 		N, N, n, k)
 }
 
+@* 구성법으로 되지어 대조한다. 이웃한 \.{frame} 프로그램은 크누스의 무늬로 {\it 새로운
+크기\/}의 액자를 짓는다. 그 구성법은 이렇다---네 변에 마디를 여섯 칸씩 이어 깔고, 네
+모서리에 매듭을 얹는다. 그 매듭이 넷 다 같지 않다는 것이 요령의 핵심이다.
+
+여기서는 그 구성법이 정말 크누스의 것을 되살리는지 {\it 이 프로그램 안에서\/}
+확인한다. 위에서 읽어 낸 크누스의 투어를 근거로 삼아, 마디를 걷어 낸 나머지에서 모서리
+매듭을 {\it 직접 뽑아내고\/}, 그것으로 액자를 되지어 원본과 견준다. 그러니 어느 한쪽이
+틀어지면 빌드가 멈춘다.
+
+@ 판 좌표에서 쓰는 잔심부름들이다. |isBorder|는 폭 3칸 테두리의 칸을 가리고, |put|은
+두 끝이 다 테두리일 때만 이음을 받는다. |xforms|는 위쪽 변을 나머지 세 변으로 옮기는
+$90^\circ$ 회전 넷이다.
+@<보조...@>=
+func isBorder(c cell, N int) bool {
+	r, cc := c[0], c[1]
+	return r >= 0 && r < N && cc >= 0 && cc < N &&
+		(r < 3 || r > N-4 || cc < 3 || cc > N-4)
+}
+
+func put(es map[edge]bool, N int, a, b cell) {
+	if isBorder(a, N) && isBorder(b, N) {
+		es[canon(a, b)] = true
+	}
+}
+
+@ @<보조...@>=
+func xforms(N int) []func(r, c int) cell {
+	return []func(r, c int) cell{
+		func(r, c int) cell { return cell{r, c} },
+		func(r, c int) cell { return cell{c, N - 1 - r} },
+		func(r, c int) cell { return cell{N - 1 - r, N - 1 - c} },
+		func(r, c int) cell { return cell{N - 1 - c, r} },
+	}
+}
+
+@ 네 변에 마디를 깐다. 오프셋 $5,11,\ldots$로 이어 깔되 모서리는 매듭에 내준다.
+@<보조...@>=
+func sideMods(N int) map[edge]bool {
+	es := map[edge]bool{}
+	for _, f := range xforms(N) {
+		for off := 5; off <= N-13; off += 6 {
+			for _, e := range knuthMod {
+				put(es, N, f(e[0][0], e[0][1]+off), f(e[1][0], e[1][1]+off))
+			}
+		}
+	}
+	return es
+}
+
+@ 이제 매듭을 뽑는다. 크누스의 이음에서 마디를 걷어 내면 남는 것이 모서리 매듭이다.
+남은 이음을 가까운 모서리별로 가르고, 그 모서리를 원점으로 하는 좌표로 되돌린다
+(|xforms|의 역변환이다). 늘 같은 차례로 나오도록 정렬해 둔다.
+@<보조...@>=
+func cornerKnots(t tour, N int) [4][]edge {
+	rest := edgeSet(t, N)
+	for e := range sideMods(N) {
+		delete(rest, e)
+	}
+	h := N - 1
+	inv := []func(r, c int) cell{
+		func(r, c int) cell { return cell{r, c} },
+		func(r, c int) cell { return cell{h - c, r} },
+		func(r, c int) cell { return cell{h - r, h - c} },
+		func(r, c int) cell { return cell{c, h - r} },
+	}
+	var out [4][]edge
+	@<남은 이음을 모서리별로 갈라 담는다@>
+	return out
+}
+
+@ 이음의 두 끝이 다 위쪽 절반이면 위, 다 왼쪽 절반이면 왼쪽---그렇게 네 모서리를 가른다.
+@<남은 이음을 모서리별로 갈라 담는다@>=
+for e := range rest {
+	top := e[0][0] <= N/2 && e[1][0] <= N/2
+	left := e[0][1] <= N/2 && e[1][1] <= N/2
+	q := 2
+	switch {
+	case top && left:
+		q = 0
+	case top:
+		q = 1
+	case left:
+		q = 3
+	}
+	f := inv[q]
+	out[q] = append(out[q], canon(f(e[0][0], e[0][1]), f(e[1][0], e[1][1])))
+}
+for q := range out {
+	sort.Slice(out[q], func(i, j int) bool { return lessE(out[q][i], out[q][j]) })
+}
+
+@ |lessE|는 이음을 한 줄로 세운다. |same|은 두 이음 집합이 같은지 본다.
+@<보조...@>=
+func lessE(x, y edge) bool {
+	if x[0] != y[0] {
+		return x[0][0] < y[0][0] || (x[0][0] == y[0][0] && x[0][1] < y[0][1])
+	}
+	return x[1][0] < y[1][0] || (x[1][0] == y[1][0] && x[1][1] < y[1][1])
+}
+
+func same(a, b map[edge]bool) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for e := range a {
+		if !b[e] {
+			return false
+		}
+	}
+	return true
+}
+
+@ 뽑아낸 매듭으로 액자를 되짓는다. 마디를 깔고 네 모서리에 매듭을 제자리로 옮겨 얹으면
+그만이다---2-opt 같은 뒷손질은 없다.
+@<보조...@>=
+func rebuild(N int, kn [4][]edge) map[edge]bool {
+	es := sideMods(N)
+	for q, f := range xforms(N) {
+		for _, e := range kn[q] {
+			put(es, N, f(e[0][0], e[0][1]), f(e[1][0], e[1][1]))
+		}
+	}
+	return es
+}
+
+@ 매듭 넷을 한 줄의 수로 줄인 것이 {\it 지문\/}이다(FNV-1a). \.{frame} 쪽도 제가 지닌
+|knuthCorners|의 지문을 같은 방식으로 찍으니, 둘을 견주면 두 프로그램이 같은 재료를
+쓰고 있는지 한눈에 안다.
+@<보조...@>=
+func fingerprint(kn [4][]edge) uint32 {
+	h := uint32(2166136261)
+	for _, es := range kn {
+		for _, e := range es {
+			for _, v := range []int{e[0][0], e[0][1], e[1][0], e[1][1]} {
+				h = (h ^ uint32(v)) * 16777619
+			}
+		}
+	}
+	return h
+}
+
+@ $31$과 $55$에서 뽑은 매듭이 같은지 보고(크기와 무관한 재료라는 뜻이다), 그것으로
+되지은 액자가 크누스의 것과 이음 하나까지 같은지 본다. $7\times7$이 빠진 까닭은 곧이어
+따로 밝힌다.
+@<구성법으로 되지어 대조한다@>=
+kn31, kn55 := cornerKnots(tours[1], 31), cornerKnots(tours[2], 55)
+if fingerprint(kn31) != fingerprint(kn55) {
+	log.Fatal("31과 55에서 뽑은 모서리 매듭이 서로 다르다")
+}
+@<되지은 액자를 원본과 견준다@>
+fmt.Printf("구성법 대조: 31·55의 모서리 매듭이 같고, 되지은 액자가 원본과 일치 ✓\n")
+fmt.Printf("모서리 매듭 지문: %08x (frame이 찍는 것과 같아야 한다)\n", fingerprint(kn55))
+@<칠칠은 왜 이 구성법으로 안 되는지 재어 본다@>
+
+@ 그런데 왜 $7\times7$만 이동 열로 적을 수밖에 없는가? {\it 재료가 모자라서가 아니다\/}.
+매듭 넷을 $7\times7$ 판에 그대로 얹어 보면 판 안에 이음이 일흔 개나 남는데, 정작 필요한
+것은 마흔여덟 개다. 게다가 크누스의 마흔여덟 개는 그 일흔 개 안에 {\it 하나도 빠짐없이\/}
+들어 있다. 모자란 게 아니라 스물두 개가 남아돈다.
+
+@ 까닭은 매듭끼리 포개져서다. 매듭 하나는 모서리에서 세로로 여덟 줄, 가로로 일곱 칸을
+차지한다. 그러니 한 변에는 한 매듭의 가로팔(일곱 칸)과 이웃 매듭의 세로팔(여덟 칸)이
+나란히 놓여, 각각 $0\ldots6$열과 $N-8\ldots N-1$열을 차지한다. $N=31$이면 둘 사이가
+벌어져 그 틈을 마디가 메우고, $N=13$이면 두 칸($5,6$열)이 겹쳐 서로 맞물린다---여기까지가
+성한 겹침이다. 그런데 $N=7$이면 뒤엣것이 $-1$열에서 시작해야 한다. 판 밖이다.
+
+@ 두 매듭이 포개지면 칸마다 이음이 둘을 넘어 버리고, 남아도는 스물두 개 중 어느 것을
+덜어 내야 하는지는 구성법이 말해 주지 않는다. 그러니 $7\times7$은 이 구성법의
+{\it 산물\/}이 아니라 {\it 그것이 자라 나온 바탕\/}이다. 크누스가 ``네 마디를 끼워
+넣어'' 다음 액자를 얻는다고 한 바로 그 출발점이니, 여기서는 그의 이동 열로 적어 두는
+수밖에 없다. \.{frame}이 $n\ge13$을 요구하는 것도 똑같은 까닭이다.
+
+@ 위의 일흔과 마흔여덟을 말로만 두지 않고 재어 둔다. 셈이 어긋나면 그 자리에서 멈춘다.
+@<칠칠은 왜 이 구성법으로 안 되는지 재어 본다@>=
+piled := map[edge]bool{}
+for q, f := range xforms(7) {
+	for _, e := range kn55[q] {
+		put(piled, 7, f(e[0][0], e[0][1]), f(e[1][0], e[1][1]))
+	}
+}
+@<겹쳐 쌓인 것이 크누스의 7×7을 품는지 본다@>
+
+@ @<겹쳐 쌓인 것이 크누스의 7×7을 품는지 본다@>=
+k7 := edgeSet(tours[0], 7)
+for e := range k7 {
+	if !piled[e] {
+		log.Fatal("7×7의 이음이 매듭 넷 밖에 있다")
+	}
+}
+if len(piled) <= len(k7) {
+	log.Fatal("7×7에서 매듭이 포개지지 않았다")
+}
+fmt.Printf("7×7은 구성법 밖: 매듭 넷을 얹으면 이음 %d개가 쌓인다 (필요한 것은 %d개, "+
+	"크누스의 것은 모두 그 안에 있다)\n", len(piled), len(k7))
+
+@ @<되지은 액자를 원본과 견준다@>=
+for _, x := range []struct {
+	N int
+	t tour
+}{{31, tours[1]}, {55, tours[2]}} {
+	if !same(rebuild(x.N, kn55), edgeSet(x.t, x.N)) {
+		log.Fatalf("%d×%d를 구성법으로 되지었더니 크누스의 것과 다르다", x.N, x.N)
+	}
+}
+
 @* 겹친 액자를 그린다. 세 투어는 모두 한 중심(원점)에 놓인 두 배 좌표라, 그대로
 겹쳐 그리면 $7$이 $31$ 안에, $31$이 $55$ 안에 든다. 바깥부터 붉게$\cdot$푸르게
 $\cdot$초록으로 칠해 겹을 구분한다. 그림은 {\logo METAPOST}로 그린다.
@@ -295,6 +501,9 @@ for _, e := range tours[i].edges() {
  7×7  액자: 칸  48개, 하나의 닫힌 나이트 투어 ✓, 변마다 마디 0개
 31×31 액자: 칸 336개, 하나의 닫힌 나이트 투어 ✓, 변마다 마디 3개
 55×55 액자: 칸 624개, 하나의 닫힌 나이트 투어 ✓, 변마다 마디 7개
+구성법 대조: 31·55의 모서리 매듭이 같고, 되지은 액자가 원본과 일치 ✓
+모서리 매듭 지문: f15368c5 (frame이 찍는 것과 같아야 한다)
+7×7은 구성법 밖: 매듭 넷을 얹으면 이음 70개가 쌓인다 (필요한 것은 48개, 크누스의 것은 모두 그 안에 있다)
 겹친 액자 ktf.mp를 썼다 (7·31·55, 진짜 닫힌 투어 셋).
 !endgroup
 \endgroup
