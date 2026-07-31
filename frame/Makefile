@@ -1,7 +1,7 @@
 GTANGLE ?= gtangle
 GWEAVE  ?= gweave
 
-.PHONY: doc decoframe clean
+.PHONY: doc clean
 
 doc: frame.pdf
 
@@ -21,13 +21,9 @@ frame-1.pdf: frame.mp framedef.mp
 frame.tex: frame.w
 	$(GWEAVE) frame.w
 
-# 문서는 모든 페이지에 decoframe.pdf를, 마지막 절에 frame-[12].pdf를 쓴다.
-frame.pdf: frame.tex frame-1.pdf decoframe.pdf
+# 문서는 모든 페이지에 frame-1.pdf를, 마지막 절에 frame-[12].pdf를 쓴다.
+frame.pdf: frame.tex frame-1.pdf
 	luatex frame.tex
-
-# 크기나 색을 바꿔 다시 지었다면 페이지 배경도 갈아 준다.
-decoframe: frame-1.pdf
-	cp frame-1.pdf decoframe.pdf
 
 clean:
 	rm -f frame-[0-9].pdf frame.[0-9] frame.go frame.log \

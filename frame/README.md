@@ -137,12 +137,6 @@ gwebmac의 `\coloutput`도 함께 손봐야 색인 페이지까지 둘립니다.
 | --- | --- |
 | [frame.w](frame.w) | GWEB 원본. Go 소스와 해설 문서를 겸함 |
 | [Makefile](Makefile) | 빌드 |
-| `decoframe.pdf` | 문서의 페이지 배경으로 쓰는 세로 액자 |
 | [frame.mp](frame.mp) | 매크로를 기본 흑백으로 불러 그리는 드라이버. 손으로 쓴 소스 |
 | `framedef.mp` | 생성물. 액자 매크로 정의. 다른 문서가 들여오는 파일 |
 | `frame.go`, `frame-*.pdf`, `frame.tex`, `frame.pdf` | 생성물 (`make clean` 대상) |
-
-`decoframe.pdf`는 기본 크기·기본 색으로 뽑은 `frame-1.pdf`를 따로 갈무리해 둔 것입니다.
-`make clean`이 지우지 않으므로 생성물을 다 치운 상태에서도 문서가 조판됩니다. 다만
-`\FrameBG`가 가리키는 대상이 `frame-1.pdf`가 아니라 이 파일이므로, 크기나 색을 바꿔 다시
-지었다면 새 `frame-1.pdf`를 `decoframe.pdf`로 덮어써야 페이지 테두리에 반영됩니다.
