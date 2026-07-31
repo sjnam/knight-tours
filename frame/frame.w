@@ -267,7 +267,7 @@ for k := 0; k < 256; k++ {
 	}
 }
 
-@ |layout|이 배치 하나를 실제로 깐다.
+@ 함수 |layout|이 배치 하나를 실제로 깐다.
 @<보조...@>=
 func layout(Nh, Nw int, asg [4]int) map[edge]bool {
 	es := map[edge]bool{}
@@ -499,7 +499,7 @@ if _, nl := loopID(esMap); nl != 1 || len(es) != 6*(s.Nh+s.Nw)-36 {
 @ 그려 놓고 보면 크누스의 \.{KTf}와 똑같은---별이 촘촘히 맞물린---폭 3칸 직사각
 액자가 세로$\cdot$가로 두 방향으로 나온다. 둘 다 한 붓에 그린 진짜 닫힌 나이트
 투어다. 세로짜리로 이 문서의 {\it 모든 페이지\/}가 둘려 있다.
-\medskip
+\bigskip
 \centerline{\pic height 7cm{frame-1.pdf}\hskip 1cm\pic height 5cm{frame-2.pdf}}
 
 @* 색인.
