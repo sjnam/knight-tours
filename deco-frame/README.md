@@ -29,18 +29,19 @@ make doc     # gtangle → go run → mptopdf → gweave → luatex
 make clean   # 생성물 제거
 ```
 
-문서 [frame.pdf](frame.pdf)(16쪽)와 액자 그림 `frame-1.pdf`(세로),
-`frame-2.pdf`(가로)가 나옵니다.
+문서 [frame.pdf](frame.pdf)(17쪽)와 액자 그림 `frame-1.pdf`이 나옵니다.
 
 ## 사용법
 
 ```sh
-go run frame.go            # 기본값 103×73 (A4 비율)
+go run frame.go            # 기본값 103×73 (A4 비율, 세로)
 go run frame.go 121 85     # 원하는 크기로
+go run frame.go 73 103     # 인자를 바꾸면 가로 액자
 ```
 
-두 방향(세로·가로)을 늘 함께 내므로 두 인자의 순서는 결과를 바꾸지 않습니다. 큰 쪽이
-세로, 작은 쪽이 가로가 됩니다.
+인자는 받은 순서대로 세로·가로입니다. 각 변이 아래 조건만 지키면 어떤 직사각형이든
+지으므로, 가로 액자는 두 수를 바꿔 주면 그만입니다. 프로그램이 두 벌을 함께 낼
+까닭이 없어 **액자를 하나만 짓습니다.**
 
 **각 변은 13 이상이면서 6으로 나눈 나머지가 1이어야 합니다.** 별무늬의 주기가 여섯
 칸이고 네 모서리 매듭이 자리를 차지하기 때문에, 이 조건이 맞지 않으면 마디가 변에 딱
@@ -50,8 +51,7 @@ go run frame.go 121 85     # 원하는 크기로
 알려줍니다.
 
 ```text
-세로 액자: 103×73, 간선 1020개, 모서리 배치 0123(크누스의 것), 하나의 닫힌 나이트 투어 ✓
-가로 액자: 73×103, 간선 1020개, 모서리 배치 0123(크누스의 것), 하나의 닫힌 나이트 투어 ✓
+액자: 103×73, 간선 1020개, 모서리 배치 0123(크누스의 것), 하나의 닫힌 나이트 투어 ✓
 재료 지문: 74dc9931 (frames가 찍는 것과 같아야 한다)
 ```
 
@@ -61,19 +61,20 @@ go run frame.go 121 85     # 원하는 크기로
 ## 다른 문서에서 액자 쓰기
 
 `frame.go`가 내놓는 것은 **`framedef.mp`** 하나이고, 여기에는 매크로 정의만 들어 있습니다.
-그것을 들여와 기본 흑백으로 그리는 다섯 줄짜리 드라이버 `frame.mp`은 생성물이 아니라
+그것을 들여와 기본 흑백으로 그리는 네 줄짜리 드라이버 `frame.mp`은 생성물이 아니라
 저장소에 함께 있는 소스 파일입니다.
 
 ```metapost
-def frameV(expr line, bg, pw)   % 세로
-def frameH(expr line, bg, pw)   % 가로
+def frame(expr line, bg, pw)
 ```
 
 선 색(`line`)·배경색(`bg`)·선 굵기(`pw`)를 입력으로 받으므로, `framedef.mp`를 들여오면
-액자를 원하는 모양으로 다시 쓸 수 있습니다.
+액자를 원하는 모양으로 다시 쓸 수 있습니다. 크기는 매크로의 입력이 아니라 `frame.go`를
+돌릴 때 정해집니다. 가로짜리가 필요하면 인자를 바꿔 다시 돌려 `framedef.mp`를 새로
+만드십시오.
 
 들여올 대상은 `frame.mp`이 아니라 **`framedef.mp`**입니다. `frame.mp`은 맨 끝이 `end.`인데
-이는 MetaPost의 실행을 그 자리에서 끝내므로, 그것을 `input`하면 기본 흑백 그림 둘이 나온 뒤
+이는 MetaPost의 실행을 그 자리에서 끝내므로, 그것을 `input`하면 기본 흑백 그림이 나온 뒤
 호출자의 `beginfig`가 돌지 못합니다. `framedef.mp`에는 `end.`가 없어 그럴 일이 없습니다.
 
 ### 색 지정
@@ -85,13 +86,13 @@ MetaPost 이름 색, RGB 3원소, CMYK 4원소를 모두 그대로 넘길 수 �
 input framedef;
 
 % 이름 색
-beginfig(1); frameH(0.6red, 0.95white, 0.3pt); endfig;
+beginfig(1); frame(0.6red, 0.95white, 0.3pt); endfig;
 
 % RGB — 원소가 셋이면 rgbcolor
-beginfig(2); frameV((0.2,0.35,0.75), (0.97,0.97,1.0), 0.4pt); endfig;
+beginfig(2); frame((0.2,0.35,0.75), (0.97,0.97,1.0), 0.4pt); endfig;
 
 % CMYK — 원소가 넷이면 cmykcolor
-beginfig(3); frameV((0,0.85,0.85,0.10), (0,0,0.05,0), 0.4pt); endfig;
+beginfig(3); frame((0,0.85,0.85,0.10), (0,0,0.05,0), 0.4pt); endfig;
 
 end.
 ```

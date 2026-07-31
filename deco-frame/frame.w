@@ -76,13 +76,13 @@ degree $2$가 되기는 해도 변마다 고리 하나씩 {\it 네 개의 닫힌
 그래서 이 프로그램은 2-opt를 쓰지 않는다. 네 매듭을 어느 자리에 놓을지만 고르면
 하나의 닫힌 투어가 저절로 나온다.
 
-@ 구성이 $N_h,N_w$의 매개변수이므로, 같은 코드로 {\it 세로\/}(기본 $103\times73$)와
-{\it 가로\/}(기본 $73\times103$) 두 방향을 다 짓는다(크기는 명령행에서 바꾼다).
-나이트 이동은 $90^\circ$ 회전에 대해 불변이라 어느 쪽이든 진짜 닫힌 투어다.
-둘을 \.{frame.mp}에 \.{beginfig(1)}(세로), \.{beginfig(2)}(가로)로 담으면
-\.{mptopdf}가 \.{frame-1.pdf}, \.{frame-2.pdf}로 나눠 낸다. 세로짜리는 limbo에서
-\.{\\plainoutput}이 이 문서의 {\it 모든 페이지\/} 바탕에 깔고, 가로짜리는 가로 판형의
-{\it 다른 문서\/}에 갖다 쓴다.
+@ 구성이 $N_h,N_w$의 매개변수이므로, 각 변이 $13$ 이상이면서 $6$으로 나눈 나머지가
+$1$이기만 하면 어떤 직사각형이든 짓는다. 그러니 세로짜리와 가로짜리를 두 벌 지을
+까닭이 없다---$103\times73$을 달라면 세로 액자가, $73\times103$을 달라면 가로 액자가
+나온다. 나이트 이동은 $90^\circ$ 회전에 대해 불변이라 어느 쪽이든 진짜 닫힌 투어다.
+그래서 이 프로그램은 명령행이 시킨 크기로 액자를 {\it 하나만\/} 짓는다. 기본값은
+$103\times73$(A4 비율)이고, 그것을 limbo의 \.{\\plainoutput}이 이 문서의
+{\it 모든 페이지\/} 바탕에 깐다.
 % 여기서는 크누스의 그 무늬를 직사각으로 구부려 {\it 짓는다\/}.
 
 @c
@@ -147,18 +147,18 @@ func drawEdges(w *bufio.Writer, es []edge, Nh, Nw int, u float64) {
 	offy := float64(Nh-1) / 2
 	px := func(c cell) float64 { return (float64(c[1]) - offx) * u }
 	py := func(c cell) float64 { return -(float64(c[0]) - offy) * u }
-	fmt.Fprintln(w, "drawoptions(withpen pencircle scaled pw withcolor line);")
-	fmt.Fprintln(w, "for q =")
+	fmt.Fprintln(w, "  drawoptions(withpen pencircle scaled pw withcolor line);")
+	fmt.Fprintln(w, "  for q =")
 	for i, e := range es {
 		sep := ","
 		if i == len(es)-1 {
 			sep = ":"
 		}
-		fmt.Fprintf(w, "(%.1f,%.1f)--(%.1f,%.1f)%s\n",
+		fmt.Fprintf(w, "    (%.1f,%.1f)--(%.1f,%.1f)%s\n",
 			px(e[0]), py(e[0]), px(e[1]), py(e[1]), sep)
 	}
-	fmt.Fprintln(w, "draw q; endfor")
-	fmt.Fprintln(w, "drawoptions();")
+	fmt.Fprintln(w, "  draw q; endfor")
+	fmt.Fprintln(w, "  drawoptions();")
 }
 
 @* 크누스의 마디와 모서리 매듭. 둘 다 \pdfURL{\.{KTf.jpg}}%
@@ -384,19 +384,18 @@ func sortEdges(es map[edge]bool) []edge {
 	return out
 }
 
-@* 매크로 파일을 쓴다. 명령행에서 받은 크기(기본 A4 비율 $103\times73$)의 세로와 가로 두
-액자 투어를 지어 \.{framedef.mp}에 담는다. 각 방향을 {\it 선 색 $\cdot$ 배경색 $\cdot$ 선
-굵기를 입력으로 받는\/} {\logo METAPOST} 매크로 \.{frameV()}(세로)$\cdot$
-\.{frameH()}(가로)로 정의한다(\.{mp} 토큰은 글자와 숫자를 못 섞으므로 이름에
-숫자를 쓰지 않는다). 각 방향마다 지은 것이 하나의 닫힌 투어인지도 확인한다.
+@* 매크로 파일을 쓴다. 명령행에서 받은 크기(기본 A4 비율 $103\times73$)로 액자 투어를
+지어 \.{framedef.mp}에 담는다. 그것을 {\it 선 색 $\cdot$ 배경색 $\cdot$ 선 굵기를
+입력으로 받는\/} {\logo METAPOST} 매크로 \.{frame()} 하나로 정의한다. 지은 것이
+하나의 닫힌 투어인지도 확인한다.
 
 @ 프로그램이 내놓는 것은 매크로 정의뿐이다. 그것을 불러 그리는 \.{beginfig}는 손으로 쓴
 \.{frame.mp}에 따로 둔다. 왜 갈라놓는가? 들여올 수 있게 하려면 그래야 한다. 정의와
 \.{beginfig}를 한 파일에 함께 두면 그 파일 맨 끝에 \.{end.}가 와야 하는데, \.{end.}는
 {\logo METAPOST}의 실행을 {\it 그 자리에서\/} 끝낸다. 그래서 다른 문서가 그 파일을
-\.{input}하면 그림 둘이 나온 뒤 실행이 멈춰 버려, 정작 자기 \.{beginfig}는 돌지도 못한다.
+\.{input}하면 그림이 나온 뒤 실행이 멈춰 버려, 정작 자기 \.{beginfig}는 돌지도 못한다.
 정의만 담은 \.{framedef.mp}에는 \.{end.}가 없으니 이것을 들여오면 그럴 일이 없다---다른
-문서가 \.{frameV(0.6red, 0.95white, 0.4pt)}처럼 선 색도 배경색도 굵기도 원하는 대로 액자를
+문서가 \.{frame(0.6red, 0.95white, 0.4pt)}처럼 선 색도 배경색도 굵기도 원하는 대로 액자를
 다시 쓸 수 있다. \.{expr} 매개변수는 색 타입을 가리지 않으므로 \.{RGB} 세 원소든 \.{CMYK} 네
 원소든 그대로 넘어간다.
 
@@ -404,12 +403,9 @@ func sortEdges(es map[edge]bool) []edge {
 @<명령행에서 액자 크기를 정한다@>
 @<출력 파일을 연다@>
 const u = 6.0
-@<두 방향의 크기를 적어 둔다@>
-for _, s := range shapes {
-	es, asg := ringTour(s.Nh, s.Nw)
-	@<지은 것이 하나의 닫힌 투어인지 확인한다@>
-	@<매크로 하나를 정의한다@>
-}
+es, asg := ringTour(Nh, Nw)
+@<지은 것이 하나의 닫힌 투어인지 확인한다@>
+@<매크로를 정의한다@>
 @<출력 파일을 닫는다@>
 
 @ 낼 파일이 하나뿐이니 그저 열고, 누가 썼는지 밝히는 머리글 주석을 얹는다.
@@ -421,26 +417,16 @@ if err != nil {
 w := bufio.NewWriter(out)
 fmt.Fprintln(w, `% framedef.mp — 크누스의 별무늬로 지은 닫힌 투어 액자 매크로 (frame.go가 씀).`)
 
-@ @<두 방향의 크기를 적어 둔다@>=
-shapes := []struct {
-	name   string // 표준 출력용
-	mp     string // {\logo METAPOST} 매크로 이름 (숫자를 못 섞으므로 글자만)
-	Nh, Nw int
-}{
-	{"세로", "frameV", big, small},
-	{"가로", "frameH", small, big},
-}
-
-@ @<매크로 하나를 정의한다@>=
-fmt.Fprintf(w, "def %s(expr line, bg, pw) =\n", s.mp)
+@ @<매크로를 정의한다@>=
+fmt.Fprintln(w, "def frame(expr line, bg, pw) =")
 @<배경을 칠하고 프리즈를 그린다@>
 fmt.Fprintln(w, "enddef;")
 note := ""
 if asg == knuthAsg {
 	note = "(크누스의 것)"
 }
-fmt.Printf("%s 액자: %d×%d, 간선 %d개, 모서리 배치 %d%d%d%d%s, 하나의 닫힌 나이트 투어 ✓\n",
-	s.name, s.Nh, s.Nw, len(es), asg[0], asg[1], asg[2], asg[3], note)
+fmt.Printf("액자: %d×%d, 간선 %d개, 모서리 배치 %d%d%d%d%s, 하나의 닫힌 나이트 투어 ✓\n",
+	Nh, Nw, len(es), asg[0], asg[1], asg[2], asg[3], note)
 
 @ 끝으로 재료의 지문을 찍어, \.{frames}가 지닌 것과 견줄 수 있게 한다.
 @<출력 파일을 닫는다@>=
@@ -450,27 +436,24 @@ fmt.Printf("재료 지문: %08x (frames가 찍는 것과 같아야 한다)\n",
 	fingerprint(knuthMod, knuthCorners))
 
 @ 액자의 두 변 길이는 명령행에서 받는다---인자가 없으면 기본값 $103\times73$(A4 비율)을
-쓰고, |가로 세로| 두 정수를 주면 그 크기로 짓는다. 두 방향(세로$\cdot$가로)을 늘 함께
-내므로 두 인자의 순서는 결과를 바꾸지 않는다(큰 쪽이 세로, 작은 쪽이 가로가 된다). 각
-변은 $13$ 이상이면서 $6$으로 나눈 나머지가 $1$이어야 네 고리가 하나로 이어진다.
+쓰고, $N_h\,N_w$ 두 정수를 주면 그 크기로 짓는다. 이제는 인자를 넘겨받은 순서 그대로
+쓰므로 순서가 결과를 바꾼다. 그래서 가로 액자가 필요하면 그저 두 수를 바꿔 주면 된다.
+각 변은 $13$ 이상이면서 $6$으로 나눈 나머지가 $1$이어야 네 고리가 하나로 이어진다.
 @<명령행에서 액자 크기를 정한다@>=
-big, small := 103, 73
+Nh, Nw := 103, 73
 switch len(os.Args) {
 case 1:
 case 3:
 	var e1, e2 error
-	big, e1 = strconv.Atoi(os.Args[1])
-	small, e2 = strconv.Atoi(os.Args[2])
+	Nh, e1 = strconv.Atoi(os.Args[1])
+	Nw, e2 = strconv.Atoi(os.Args[2])
 	if e1 != nil || e2 != nil {
-		log.Fatalf("사용법: %s [가로 세로]", os.Args[0])
+		log.Fatalf("사용법: %s [세로 가로]", os.Args[0])
 	}
 default:
-	log.Fatalf("사용법: %s [가로 세로]", os.Args[0])
+	log.Fatalf("사용법: %s [세로 가로]", os.Args[0])
 }
-if big < small {
-	big, small = small, big
-}
-for _, n := range []int{big, small} {
+for _, n := range []int{Nh, Nw} {
 	if n < 13 || n%6 != 1 {
 		log.Fatalf("각 변은 13 이상, 6으로 나눈 나머지가 1이어야 한다 (받은 값: %d)", n)
 	}
@@ -480,11 +463,11 @@ for _, n := range []int{big, small} {
 테두리 상자에 꼭 맞춰 칠하므로 그림 크기(=페이지에 앉는 자리)는 그대로다. 그 위에
 프리즈를 선 색 |line|으로 얹는다.
 @<배경을 칠하고 프리즈를 그린다@>=
-xr := float64(s.Nw-1) / 2 * u
-yr := float64(s.Nh-1) / 2 * u
-fmt.Fprintf(w, "fill (%.1f,%.1f)--(%.1f,%.1f)--(%.1f,%.1f)--(%.1f,%.1f)--cycle withcolor bg;\n",
+xr := float64(Nw-1) / 2 * u
+yr := float64(Nh-1) / 2 * u
+fmt.Fprintf(w, "  fill (%.1f,%.1f)--(%.1f,%.1f)--(%.1f,%.1f)--(%.1f,%.1f)--cycle withcolor bg;\n",
 	-xr, -yr, xr, -yr, xr, yr, -xr, yr)
-drawEdges(w, es, s.Nh, s.Nw, u)
+drawEdges(w, es, Nh, Nw, u)
 
 @ 이음 집합을 다시 |loopID|에 넣어 고리가 하나뿐인지, 칸 수와 이음 수가 맞는지 본다.
 @<지은 것이 하나의 닫힌 투어인지 확인한다@>=
@@ -492,14 +475,14 @@ esMap := map[edge]bool{}
 for _, e := range es {
 	esMap[e] = true
 }
-if _, nl := loopID(esMap); nl != 1 || len(es) != 6*(s.Nh+s.Nw)-36 {
-	log.Fatalf("%s 액자가 닫힌 투어가 아니다 (고리 %d개, 이음 %d개)", s.name, nl, len(es))
+if _, nl := loopID(esMap); nl != 1 || len(es) != 6*(Nh+Nw)-36 {
+	log.Fatalf("액자가 닫힌 투어가 아니다 (고리 %d개, 이음 %d개)", nl, len(es))
 }
 
 @ 그려 놓고 보면 크누스의 \.{KTf}와 똑같은---별이 촘촘히 맞물린---폭 3칸 직사각
-액자가 세로$\cdot$가로 두 방향으로 나온다. 둘 다 한 붓에 그린 진짜 닫힌 나이트
-투어다. 세로짜리로 이 문서의 {\it 모든 페이지\/}가 둘려 있다.
+액자가 나온다. 한 붓에 그린 진짜 닫힌 나이트 투어다. 바로 이것으로 이 문서의
+{\it 모든 페이지\/}가 둘려 있다.
 \bigskip
-\centerline{\pic height 7cm{frame-1.pdf}\hskip 1cm\pic height 5cm{frame-2.pdf}}
+\centerline{\pic height 7cm{frame-1.pdf}}
 
 @* 색인.
