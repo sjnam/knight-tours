@@ -59,13 +59,13 @@ such tours would be impossible; but suddenly everything clicked into place.
 크누스의 말을 토대로 그의 겹친 액자 {\it 그 자체\/}를 되살려보자. 세 액자는 저마다 폭 3칸 사각
 테두리를 한 붓에 도는 {\it 진짜 닫힌 나이트 투어\/}이고, 나중에 우리의 프로그램이 그것을 확인한다.
 
-나는 먼저 크누스의 세 투어를 그의 \pdfURL{{\it 그림}}{https://cs.stanford.edu/\TILDE/knuth/KTf.jpg}%
+나는 먼저 크누스의 세 투어를 그의 \pdfURL{{\it 그림}}{https://cs.stanford.edu/\TILDE/knuth/frames.jpg}%
 에서 간선 단위로 읽어 냈다.\footnote*{\ninepoint AI의 도움 없이 이것이 가능했을까?}
 읽어 낸 투어를 나이트 이동 문자열로 적어 배열 |tours|에 담고, 되짚어 이어
 칸으로 펼친 뒤, {\it 모든 칸이 꼭 한 번씩\/} 나오고 마지막 이동이 출발 칸으로
 돌아오는 하나의 닫힌 고리임을 검증한다. 그리고 세 투어가 크누스의 말대로
 {\it 마디를 끼워 넣어\/} 자라는지, 변마다 놓인 마디 수로 확인한다. 끝으로 세 투어를
-한 중심에 겹쳐 \.{ktf.mp}에 그렸다. 크누스의 그것과 정확히 일치했을 때의 쾌감이란!
+한 중심에 겹쳐 \.{frames.mp}에 그렸다. 크누스의 그것과 정확히 일치했을 때의 쾌감이란!
 마지막에 그 아름다움을 감상할 수 있을 것이다. 프로그램의 뼈대는 다음과 같다.
 
 @c
@@ -87,7 +87,7 @@ func main() {
 	@<세 투어를 검증하고 재귀를 보인다@>
 	@<크누스가 적어 둔 모티프와 대조한다@>
 	@<구성법으로 되지어 대조한다@>
-	@<겹친 액자 \.{ktf.mp}를 쓴다@>
+	@<겹친 액자 \.{frames.mp}를 쓴다@>
 }
 
 @* 크누스의 세 나이트 투어. 칸은 $(r,c)$로 적되, 세 액자를 한 중심에 겹치기 좋도록 {\it 두 배\/}
@@ -755,12 +755,12 @@ for _, x := range []struct {
 겹쳐 그리면 $7$이 $31$ 안에, $31$이 $55$ 안에 든다. 바깥부터 붉게$\cdot$푸르게
 $\cdot$초록으로 칠해 겹을 구분한다. 그림은 {\logo METAPOST}로 그린다.
 @<겹친 액자...@>=
-out, err := os.Create("ktf.mp")
+out, err := os.Create("frames.mp")
 if err != nil {
 	log.Fatal(err)
 }
 w := bufio.NewWriter(out)
-fmt.Fprintln(w, `% ktf.mp — 크누스의 겹친 나이트 투어 액자 (ktf.go가 씀).`)
+fmt.Fprintln(w, `% frames.mp — 크누스의 겹친 나이트 투어 액자 (frames.go가 씀).`)
 fmt.Fprintln(w, "beginfig(1);")
 for i := len(tours) - 1; i >= 0; i-- {
 	@<투어 하나를 그린다@>
@@ -770,7 +770,7 @@ fmt.Fprintln(w, "endfig;")
 fmt.Fprintln(w, "end.")
 w.Flush()
 out.Close()
-fmt.Println("겹친 액자 ktf.mp를 썼다 (7·31·55, 진짜 닫힌 투어 셋).")
+fmt.Println("겹친 액자 frames.mp를 썼다 (7·31·55, 진짜 닫힌 투어 셋).")
 
 @ 겹의 색은 |tours|와 같은 순서로 적는다---안쪽 $7$이 초록, $31$이 푸름, 바깥 $55$가
 붉음이다. 바깥부터 그리므로 종이에는 붉은 것이 먼저 깔리고 그 안에 푸름과 초록이 얹힌다.
@@ -792,7 +792,7 @@ for _, e := range tours[i].edges() {
 @ 그려 놓고 보면 크누스의 \.{KTf.jpg}와 똑같이, 폭 3칸 액자 셋이 이 빠진 곳 없이 서로를
 감싼다---저마다 한 붓에 그린 닫힌 나이트 투어다.
 \medskip
-\centerline{\pic height 9cm{ktf-1.pdf}}
+\centerline{\pic height 9cm{frames-1.pdf}}
 
 @ 프로그램이 표준 출력에 찍는 것은 이렇다.
 \medskip
@@ -806,7 +806,7 @@ for _, e := range tours[i].edges() {
 재료 지문: 74dc9931 (frame이 찍는 것과 같아야 한다)
 7×7은 구성법 밖: 매듭 넷을 얹으면 이음 70개가 쌓인다 (필요한 것은 48개, 크누스의 것은 모두 그 안에 있다)
 7×7 후보: 차수 2인 부분집합 19가지, 그중 닫힌 투어 7가지 — 크누스의 것은 그중 하나일 뿐이다
-겹친 액자 ktf.mp를 썼다 (7·31·55, 진짜 닫힌 투어 셋).
+겹친 액자 frames.mp를 썼다 (7·31·55, 진짜 닫힌 투어 셋).
 !endgroup
 \endgroup
 \medskip

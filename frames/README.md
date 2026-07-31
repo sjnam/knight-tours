@@ -1,7 +1,7 @@
-# ktf — 크누스의 겹친 액자
+# frames — 크누스의 겹친 액자
 
 크누스(Donald E. Knuth)의 [나이트 투어 전시장](https://cs.stanford.edu/~knuth/knights.html)
-맨 마지막 그림([KTf](https://cs.stanford.edu/~knuth/KTf.jpg))에 있는 **겹친 액자**를
+맨 마지막 그림([KTf](https://cs.stanford.edu/~knuth/frames.jpg))에 있는 **겹친 액자**를
 그림에서 간선 단위로 읽어 되살린 것입니다. 크누스는 이렇게 적었습니다.
 
 > The wall to the left of the elevator on level 8 completes the exhibit by
@@ -17,14 +17,14 @@
 겹을 구분하려고 바깥 55×55는 붉게, 31×31은 푸르게, 안쪽 7×7은 초록으로 칠합니다.
 
 이웃한 [frame](../frame/) 프로젝트와는 하는 일이 다릅니다. `frame`은 크누스의
-별무늬로 **임의 크기의** 직사각 액자를 새로 짓는 생성기이고, 여기 `ktf`는 크누스의
+별무늬로 **임의 크기의** 직사각 액자를 새로 짓는 생성기이고, 여기 `frames`는 크누스의
 **원본 세 투어 그 자체**를 되살려 검증하고 전시합니다.
 
 ## 필요한 것
 
 | 도구 | 용도 |
 | --- | --- |
-| Go 1.26 이상 | `ktf.go` 실행 |
+| Go 1.26 이상 | `frames.go` 실행 |
 | GWEB (`gtangle`, `gweave`) | `.w`에서 Go 소스와 TeX 문서를 뽑아냄 |
 | TeX Live (`mptopdf`, `luatex`) | MetaPost 그림과 문서 조판 |
 | `kotexgweb`, `pic.tex` | 한글 GWEB 매크로와 그림 삽입 매크로 |
@@ -40,12 +40,12 @@ make         # gtangle → go run → mptopdf → gweave → luatex
 make clean   # 생성물 제거
 ```
 
-문서 `ktf.pdf`(27쪽)와 겹친 액자 그림 `ktf-1.pdf`가 나옵니다.
+문서 `frames.pdf`(27쪽)와 겹친 액자 그림 `frames-1.pdf`가 나옵니다.
 
 프로그램만 돌려 검증 결과를 보려면 이렇게 합니다.
 
 ```sh
-go run ktf.go
+go run frames.go
 ```
 
 ```text
@@ -57,7 +57,7 @@ go run ktf.go
 재료 지문: 74dc9931 (frame이 찍는 것과 같아야 한다)
 7×7은 구성법 밖: 매듭 넷을 얹으면 이음 70개가 쌓인다 (필요한 것은 48개, 크누스의 것은 모두 그 안에 있다)
 7×7 후보: 차수 2인 부분집합 19가지, 그중 닫힌 투어 7가지 — 크누스의 것은 그중 하나일 뿐이다
-겹친 액자 ktf.mp를 썼다 (7·31·55, 진짜 닫힌 투어 셋).
+겹친 액자 frames.mp를 썼다 (7·31·55, 진짜 닫힌 투어 셋).
 ```
 
 ## 투어를 적는 법
@@ -121,7 +121,7 @@ go run ktf.go
 그 무늬가 `knuthMod`로 짠 무늬와 **열 위상만 다를 뿐 완전히 같습니다**(회전도 뒤집기도
 필요 없음). 프로그램이 매 실행마다 이것을 확인하고, 어긋나면 그 자리에서 멈춥니다.
 
-그러니 `knuthMod`에는 이제 **근거가 둘**입니다 — `KTf.jpg`의 픽셀에서 읽어 낸 것과,
+그러니 `knuthMod`에는 이제 **근거가 둘**입니다 — `frames.jpg`의 픽셀에서 읽어 낸 것과,
 크누스가 손수 적은 문자열에서 푼 것. 둘이 일치합니다.
 
 참고로 **level 8에도 프리즈가 따로 있습니다**(모티프 `133-122-011-023-131-110-231-223-001-101`,
@@ -173,7 +173,7 @@ frame은 여전히 "하나의 닫힌 투어 ✓"를 통과하기 때문입니다
 
 | 파일 | 설명 |
 | --- | --- |
-| [ktf.w](ktf.w) | GWEB 원본. Go 소스와 해설 문서를 겸함 |
+| [frames.w](frames.w) | GWEB 원본. Go 소스와 해설 문서를 겸함 |
 | [Makefile](Makefile) | 빌드 |
 | `decoframe.pdf` | 문서의 페이지 배경으로 쓰는 세로 액자. `frame` 프로젝트가 지은 것 |
-| `ktf.go`, `ktf.mp`, `ktf-1.pdf`, `ktf.tex`, `ktf.pdf` | 생성물 (`make clean` 대상) |
+| `frames.go`, `frames.mp`, `frames-1.pdf`, `frames.tex`, `frames.pdf` | 생성물 (`make clean` 대상) |

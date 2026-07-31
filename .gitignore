@@ -14,15 +14,15 @@ frame.toc
 frame.log
 frame.pdf
 
-# ktf/ 생성물
-ktf.go
-ktf.mp
-ktf.[0-9]
-ktf-[0-9].pdf
-ktf.tex
-ktf.toc
-ktf.log
-ktf.pdf
+# frames/ 생성물
+frames.go
+frames.mp
+frames.[0-9]
+frames-[0-9].pdf
+frames.tex
+frames.toc
+frames.log
+frames.pdf
 
 # macOS
 .DS_Store
