@@ -1,4 +1,4 @@
-# frames — 크누스의 겹친 액자
+# 크누스의 겹친 기사 행마 액자
 
 크누스(Donald E. Knuth)의 [나이트 투어 전시장](https://cs.stanford.edu/~knuth/knights.html)
 맨 마지막 그림([KTf](https://cs.stanford.edu/~knuth/KTf.jpg))에 있는 **겹친 액자**를
@@ -130,7 +130,7 @@ go run frames.go
 
 ## 구성법 대조 — 두 프로그램의 감시 장치
 
-이웃한 [frame](../frame/)은 크누스의 무늬로 **새로운 크기**의 액자를 짓습니다. 여기 읽어
+이웃한 [deco-frame](../deco-frame/)은 크누스의 무늬로 **새로운 크기**의 액자를 짓습니다. 여기 읽어
 낸 투어는 그 구성법이 옳은지 재어 볼 **근거 자료**입니다. 실제로 frame이 처음에 모서리를
 틀리게 짓고 있던 것을 이 대조로 찾아냈습니다.
 
