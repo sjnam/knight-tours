@@ -482,7 +482,5 @@ if _, nl := loopID(esMap); nl != 1 || len(es) != 6*(Nh+Nw)-36 {
 @ 그려 놓고 보면 크누스의 \.{KTf}와 똑같은---별이 촘촘히 맞물린---폭 3칸 직사각
 액자가 나온다. 한 붓에 그린 진짜 닫힌 나이트 투어다. 바로 이것으로 이 문서의
 {\it 모든 페이지\/}가 둘려 있다.
-\bigskip
-\centerline{\pic height 7cm{frame-1.pdf}}
 
 @* 색인.
