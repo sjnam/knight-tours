@@ -130,11 +130,11 @@ func isBorder(c cell, Nh, Nw int) bool {
 }
 
 @ 이음 집합을 {\logo METAPOST} 선분들로 그린다. 펜(굵기 |pw|)과 선 색(|line|)은
-|drawoptions|로 {\it 한 번만\/} 지정한다. {\logo METAPOST}의 |for|는 쉼표로 늘어놓은
-값 목록을 그대로 돌 수 있으니, 배열도 인덱스도 없이 경로 목록을
-|for q = 경로, 경로, ...: draw q; endfor|로 그린다---그래서 \.{frame.mp}에는 |draw|도
-한 번, 첨자도 없이 경로 |()--()| 데이터만 남는다. 끝나면 |drawoptions()|로 되돌려
-다음 그림에 새지 않게 한다. 판의 위쪽이 위로 오도록 $y$를 뒤집고, 중심을 원점에 맞춘다.
+\.{drawoptions}로 {\it 한 번만\/} 지정한다. {\logo METAPOST}의 \.{for}는 쉼표로
+늘어놓은 값 목록을 그대로 돌 수 있으니, 배열도 인덱스도 없이 경로 목록을
+\.{for q = 경로, 경로, ...: draw q; endfor}로 그린다---그래서 \.{frame.mp}에는
+\.{draw}도 한 번, 첨자도 없이 경로 \.{()--()} 데이터만 남는다. 끝나면 \.{drawoptions()}로
+되돌려 다음 그림에 새지 않게 한다. 판의 위쪽이 위로 오도록 $y$를 뒤집고, 중심을 원점에 맞춘다.
 @<보조...@>=
 func drawEdges(w *bufio.Writer, es []edge, Nh, Nw int, u float64) {
 	offx := float64(Nw-1) / 2
@@ -156,8 +156,8 @@ func drawEdges(w *bufio.Writer, es []edge, Nh, Nw int, u float64) {
 }
 
 @* 크누스의 마디와 모서리 매듭. 둘 다 \pdfURL{\.{KTf.jpg}}%
-{https://cs.stanford.edu/\TILDE/knuth/KTf.jpg}에서 읽어 낸 크누스의 실제 이음들이다
-(그림 파일은 이 디렉터리에 있다). |knuthMod|은 곧은 변의 주기 6 마디(열여덟 이음)로,
+{https://cs.stanford.edu/\TILDE/knuth/KTf.jpg}에서 읽어 낸 크누스의 실제 이음들이다.
+|knuthMod|은 곧은 변의 주기 6 마디(열여덟 이음)로,
 위쪽 변의 띠 좌표(행 $0,1,2$)로 적었다. 열이 $6$을 넘는 이음은 다음 마디로 이어진다.
 @<타입...@>=
 var knuthMod = []edge{
@@ -168,7 +168,7 @@ var knuthMod = []edge{
 	{{1, 5}, {0, 7}}, {{2, 5}, {0, 6}},
 }
 
-@ |knuthCorners|는 모서리를 도는 매듭 넷(저마다 서른 이음)이다. 두 변의 마디를 모서리
+@ 변수 |knuthCorners|는 모서리를 도는 매듭 넷(저마다 서른 이음)이다. 두 변의 마디를 모서리
 에서 이어 주며, 모서리 칸을 원점으로 한 좌표로 적었다. 크누스의 $55\times55$ 투어에서
 마디를 걷어 낸 나머지를 네 모서리별로 갈라 얻은 것인데, $31\times31$에서 얻은 것과
 글자 하나 다르지 않았다---크기와 무관한 그의 재료다.
@@ -298,7 +298,7 @@ for i, f := range xf {
 	}
 }
 
-@ |loopID|는 각 칸에 그 칸이 속한 고리 번호를 매기고 고리 수를 돌려준다. 고리를 따라
+@ 함수 |loopID|는 각 칸에 그 칸이 속한 고리 번호를 매기고 고리 수를 돌려준다. 고리를 따라
 걸으며 번호를 칠하면 되는데, 그러려면 모든 칸이 degree $2$여야 한다. 아니면 걸음이
 막히므로 고리 수를 $-1$로 알린다.
 @<보조...@>=
@@ -335,7 +335,7 @@ func loopID(es map[edge]bool) (map[cell]int, int) {
 	return id, n
 }
 
-@ |oneLoop|은 깔아 놓은 이음 집합이 우리가 바라는 것인지 본다: 테두리의 칸 수만큼
+@ 함수 |oneLoop|은 깔아 놓은 이음 집합이 우리가 바라는 것인지 본다: 테두리의 칸 수만큼
 이음이 있고($6(N_h+N_w)-36$), 모든 칸이 degree $2$이며, 고리가 하나뿐인지. 앞의 둘은
 |loopID|가 함께 가려 준다.
 @<보조...@>=
@@ -367,7 +367,7 @@ func fingerprint(mod []edge, kn [4][]edge) uint32 {
 	return h
 }
 
-@ |sortEdges|는 이음을 한 줄로 세워 돌려준다. 맵을 훑는 차례는 Go에서 뒤죽박죽이므로,
+@ 함수 |sortEdges|는 이음을 한 줄로 세워 돌려준다. 맵을 훑는 차례는 Go에서 뒤죽박죽이므로,
 정렬해야 같은 입력에 늘 같은 \.{framedef.mp}가 나온다.
 @<보조...@>=
 func sortEdges(es map[edge]bool) []edge {
@@ -382,7 +382,7 @@ func sortEdges(es map[edge]bool) []edge {
 @* 매크로 파일을 쓴다. 명령행에서 받은 크기(기본 A4 비율 $103\times73$)의 세로와 가로 두
 액자 투어를 지어 \.{framedef.mp}에 담는다. 각 방향을 {\it 선 색 $\cdot$ 배경색 $\cdot$ 선
 굵기를 입력으로 받는\/} {\logo METAPOST} 매크로 \.{frameV()}(세로)$\cdot$
-\.{frameH()}(가로)로 정의한다(\.{mpost} 토큰은 글자와 숫자를 못 섞으므로 이름에
+\.{frameH()}(가로)로 정의한다(\.{mp} 토큰은 글자와 숫자를 못 섞으므로 이름에
 숫자를 쓰지 않는다). 각 방향마다 지은 것이 하나의 닫힌 투어인지도 확인한다.
 
 @ 프로그램이 내놓는 것은 매크로 정의뿐이다. 그것을 불러 그리는 \.{beginfig}는 손으로 쓴
@@ -392,7 +392,7 @@ func sortEdges(es map[edge]bool) []edge {
 \.{input}하면 그림 둘이 나온 뒤 실행이 멈춰 버려, 정작 자기 \.{beginfig}는 돌지도 못한다.
 정의만 담은 \.{framedef.mp}에는 \.{end.}가 없으니 이것을 들여오면 그럴 일이 없다---다른
 문서가 \.{frameV(0.6red, 0.95white, 0.4pt)}처럼 선 색도 배경색도 굵기도 원하는 대로 액자를
-다시 쓸 수 있다. \.{expr} 매개변수는 색 타입을 가리지 않으므로 RGB 세 원소든 CMYK 네
+다시 쓸 수 있다. \.{expr} 매개변수는 색 타입을 가리지 않으므로 \.{RGB} 세 원소든 \.{CMYK} 네
 원소든 그대로 넘어간다.
 
 @<액자 배경...@>=
