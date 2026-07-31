@@ -1,4 +1,4 @@
-# knight-frame
+# deco-frame
 
 크누스(Donald E. Knuth)의 [나이트 투어 전시장](https://cs.stanford.edu/~knuth/knights.html)
 맨 마지막 그림([KTf](https://cs.stanford.edu/~knuth/KTf.jpg))에 나오는 액자 무늬를

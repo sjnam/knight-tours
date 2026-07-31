@@ -1,7 +1,7 @@
 # frames — 크누스의 겹친 액자
 
 크누스(Donald E. Knuth)의 [나이트 투어 전시장](https://cs.stanford.edu/~knuth/knights.html)
-맨 마지막 그림([KTf](https://cs.stanford.edu/~knuth/frames.jpg))에 있는 **겹친 액자**를
+맨 마지막 그림([KTf](https://cs.stanford.edu/~knuth/KTf.jpg))에 있는 **겹친 액자**를
 그림에서 간선 단위로 읽어 되살린 것입니다. 크누스는 이렇게 적었습니다.
 
 > The wall to the left of the elevator on level 8 completes the exhibit by
@@ -16,7 +16,7 @@
 프로그램은 그것을 되살려 **정말 그러한지 검증하고**, 세 투어를 한 중심에 겹쳐 그립니다.
 겹을 구분하려고 바깥 55×55는 붉게, 31×31은 푸르게, 안쪽 7×7은 초록으로 칠합니다.
 
-이웃한 [frame](../frame/) 프로젝트와는 하는 일이 다릅니다. `frame`은 크누스의
+이웃한 [deco-frame](../deco-frame/) 프로젝트와는 하는 일이 다릅니다. `frame`은 크누스의
 별무늬로 **임의 크기의** 직사각 액자를 새로 짓는 생성기이고, 여기 `frames`는 크누스의
 **원본 세 투어 그 자체**를 되살려 검증하고 전시합니다.
 
