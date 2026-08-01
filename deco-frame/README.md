@@ -29,7 +29,8 @@ make doc     # gtangle → go run → mptopdf → gweave → luatex
 make clean   # 생성물 제거
 ```
 
-문서 [frame.pdf](frame.pdf)(17쪽)와 액자 그림 `frame-1.pdf`이 나옵니다.
+문서 [frame.pdf](frame.pdf)(20쪽)와 그림 여섯(`frame-1.pdf` … `frame-6.pdf`)이 나옵니다.
+`frame-1.pdf`이 액자이고, 나머지는 본문에 싣는 설명 그림입니다.
 
 ## 사용법
 
@@ -52,7 +53,8 @@ go run frame.go 73 103     # 인자를 바꾸면 가로 액자
 가장 작은 크기입니다.
 
 실행하면 `framedef.mp`가 만들어지고, 지은 액자가 정말 하나의 닫힌 투어인지 검증한 결과를
-알려줍니다.
+알려줍니다. 프로그램이 내놓는 것은 이 파일 하나뿐입니다 — 크기에 따라 달라지는 것이
+액자밖에 없기 때문입니다.
 
 ```text
 액자: 103×73, 간선 1020개, 모서리 배치 0123(크누스의 것), 하나의 닫힌 나이트 투어 ✓
@@ -65,7 +67,7 @@ go run frame.go 73 103     # 인자를 바꾸면 가로 액자
 ## 다른 문서에서 액자 쓰기
 
 `frame.go`가 내놓는 것은 **`framedef.mp`** 하나이고, 여기에는 매크로 정의만 들어 있습니다.
-그것을 들여와 기본 흑백으로 그리는 네 줄짜리 드라이버 `frame.mp`은 생성물이 아니라
+그것을 들여와 기본 흑백으로 그리는 드라이버 `frame.mp`은 생성물이 아니라
 저장소에 함께 있는 소스 파일입니다.
 
 ```metapost
@@ -152,7 +154,6 @@ gwebmac의 `\coloutput`도 함께 손봐야 색인 페이지까지 둘립니다.
 | --- | --- |
 | [frame.w](frame.w) | GWEB 원본. Go 소스와 해설 문서를 겸함 |
 | [Makefile](Makefile) | 빌드 |
-| [frame.mp](frame.mp) | 매크로를 기본 흑백으로 불러 그리는 드라이버. 손으로 쓴 소스 |
-| [twoopt.mp](twoopt.mp) | 2-opt를 설명하는 그림(MetaPost). 손으로 쓴 소스 |
+| [frame.mp](frame.mp) | 문서가 싣는 그림 여섯을 모두 그리는 MetaPost 소스. 손으로 쓴 것 |
 | `framedef.mp` | 생성물. 액자 매크로 정의. 다른 문서가 들여오는 파일 |
-| `frame.go`, `frame-*.pdf`, `frame.tex`, `frame.pdf` | 생성물 (`make clean` 대상) |
+| `frame.go`, `frame-[1-6].pdf`, `frame.tex`, `frame.pdf` | 생성물 (`make clean` 대상) |

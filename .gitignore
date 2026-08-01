@@ -7,11 +7,7 @@ framedef.mp
 # mptopdf 생성물
 frame.[0-9]
 frame-[0-9].pdf
-twoopt.[0-9]
-twoopt-[0-9].pdf
-twoopt.log
-twoopt.mpx
-twoopt.pdf
+frame.mpx
 
 # gweave · luatex 생성물
 frame.tex
