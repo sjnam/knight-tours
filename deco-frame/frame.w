@@ -171,9 +171,9 @@ func drawEdges(w *bufio.Writer, es []edge, Nh, Nw int, u float64) {
 프로그램이 지을 까닭이 없어 손으로 적어 두었다. 격자와 점은
 이 재료가 폭 3칸 테두리의 어디에 앉는지를 보이려는 것이고, 이음이 닿지 않은 칸에도
 점이 있는데 그 칸의 이음은 이웃 마디에서 온다.
-\smallskip
+\bigskip
 \centerline{\pic width 12cm{frame-3.pdf}}
-\smallskip
+\bigskip
 @<타입...@>=
 var knuthMod = []edge{
 	{{0, 0}, {1, 2}}, {{1, 0}, {2, 2}}, {{0, 1}, {1, 3}}, {{1, 1}, {0, 3}},
@@ -211,9 +211,9 @@ $3$번은 이음 둘이 다르다. 그러니까 실제로는 {\it 세 종류\/}�
 어느 매듭이든 기본꼴로 돌아온다. 곁들인 그림도 같은 규칙이라, \.{frame.mp}는 세 매듭이
 함께 지니는 스물다섯을 한 번만 적고 갈리는 자리만 따로 둔다. 두 팔이 ㄱ자로 꺾여 두 변의
 마디를 이어 주는 모양이 보인다.
-\smallskip
-\centerline{\pic height 2.4cm{frame-4.pdf}}
-\smallskip
+\bigskip
+\centerline{\pic height 4cm{frame-4.pdf}}
+\bigskip
 @<0번 모서리 매듭@>=
 {
 	{{0, 0}, {1, 2}}, {{0, 0}, {2, 1}}, {{0, 1}, {1, 3}}, {{0, 1}, {2, 2}},
@@ -228,9 +228,9 @@ $3$번은 이음 둘이 다르다. 그러니까 실제로는 {\it 세 종류\/}�
 
 @ 1, 2번 모서리 매듭은 0번 기본꼴에서 이음 다섯이 다르다. 빨간 다섯이 그것이고, 나머지 스물다섯은
 기본꼴 그대로다.
-\smallskip
-\centerline{\pic height 2.4cm{frame-5.pdf}}
-\smallskip
+\bigskip
+\centerline{\pic height 4cm{frame-5.pdf}}
+\bigskip
 @<1,2번 모서리 매듭@>=
 {
 	{{0, 0}, {1, 2}}, {{0, 0}, {2, 1}}, {{0, 1}, {1, 3}}, @t\redon@>{{0, 1}, {2, 0}}@t\redoff@>,
@@ -246,9 +246,9 @@ $3$번은 이음 둘이 다르다. 그러니까 실제로는 {\it 세 종류\/}�
 @ 3번 모서리 매듭은 기본꼴에서 이음 {\it 둘\/}만 다르다. 그 둘도 $1$번이 바꾼 다섯 가운데
 둘이니, 세 매듭이 손대는 자리는 모두 같은 구석이다. 앞 그림의 빨간 자리와 견주어 보면
 빨강이 두 곳으로 줄었을 뿐 같은 언저리임이 보인다.
-\smallskip
-\centerline{\pic height 2.4cm{frame-6.pdf}}
-\smallskip
+\bigskip
+\centerline{\pic height 4cm{frame-6.pdf}}
+\bigskip
 @<3번 모서리 매듭@>=
 {
 	{{0, 0}, {1, 2}}, {{0, 0}, {2, 1}}, {{0, 1}, {1, 3}}, {{0, 1}, {2, 2}},
