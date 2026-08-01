@@ -17,14 +17,19 @@ framedef.mp: frame.go
 frame-1.pdf: frame.mp framedef.mp
 	mptopdf frame.mp
 
+# 2-opt를 설명하는 그림. twoopt.mp도 손으로 쓴 소스다.
+twoopt-1.pdf: twoopt.mp
+	mptopdf twoopt.mp
+
 # frame.w에서 문서를 뽑는다.
 frame.tex: frame.w
 	$(GWEAVE) frame.w
 
-# 문서는 모든 페이지에 frame-1.pdf를, 마지막 절에도 그것을 쓴다.
-frame.pdf: frame.tex frame-1.pdf
+# 문서는 모든 페이지에 frame-1.pdf를, 본문에 twoopt-1.pdf와 frame-1.pdf를 쓴다.
+frame.pdf: frame.tex frame-1.pdf twoopt-1.pdf
 	luatex frame.tex
 
 clean:
 	rm -f frame-[0-9].pdf frame.[0-9] frame.go frame.log \
-	      framedef.mp frame.pdf frame.tex frame.toc
+	      framedef.mp frame.pdf frame.tex frame.toc \
+	      twoopt-[0-9].pdf twoopt.[0-9] twoopt.log twoopt.mpx twoopt.pdf
