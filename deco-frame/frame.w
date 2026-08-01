@@ -100,70 +100,24 @@ import (
 @<보조 루틴들@>
 
 func main() {
-	@<액자 배경 \.{framedef.mp}를 쓴다@>
+	@<명령행에서 액자 크기를 정한다@>
+	@<출력 파일을 연다@>
+	const u = 6.0
+	es, asg := ringTour(Nh, Nw)
+	@<지은 것이 하나의 닫힌 투어인지 확인한다@>
+	@<매크로를 정의한다@>
+	@<출력 파일을 닫는다@>
 }
 
-@* 기본 도구. 앞으로 일어날 한바탕 전투에 대비해서 필요한 자료 구조와 함수들을 만들어 두자.
-먼저, 칸은 $(r,c)$로 적고, 이음(간선)은 두 칸의 쌍으로 적는다.
+@* 크누스의 마디와 모서리 매듭. 기본 자료형부터 정의 하자. 칸은 $(r,c)$로 적고,
+이음(간선)은 두 칸의 쌍으로 적는다.
 @<타입...@>=
 type cell = [2]int
 type edge = [2]cell
 
-@ 함수 |canon|은 이음을 한 방향으로 정규화해 중복을 없애고, |lessE|는 이음을 한 줄로
-세워 출력을 재현 가능하게 한다.
-@<보조...@>=
-func canon(a, b cell) edge {
-	if a[0] > b[0] || (a[0] == b[0] && a[1] > b[1]) {
-		return edge{b, a}
-	}
-	return edge{a, b}
-}
-
-func lessE(x, y edge) bool {
-	if x[0] != y[0] {
-		return x[0][0] < y[0][0] || (x[0][0] == y[0][0] && x[0][1] < y[0][1])
-	}
-	return x[1][0] < y[1][0] || (x[1][0] == y[1][0] && x[1][1] < y[1][1])
-}
-
-@ 폭 3칸 테두리의 칸을 |isBorder|가 가린다. 판 밖이거나 테두리가 아닌 칸으로 가는
-이음은 받지 않는다.
-@<보조...@>=
-func isBorder(c cell, Nh, Nw int) bool {
-	r, cc := c[0], c[1]
-	return r >= 0 && r < Nh && cc >= 0 && cc < Nw &&
-		(r < 3 || r > Nh-4 || cc < 3 || cc > Nw-4)
-}
-
-@ 이음 집합을 {\logo METAPOST} 선분들로 그린다. 펜(굵기 \.{pw})과 선 색(\.{line})은
-\.{drawoptions}로 {\it 한 번만\/} 지정한다. {\logo METAPOST}의 \.{for}는 쉼표로
-늘어놓은 값 목록을 그대로 돌 수 있으니, 배열도 인덱스도 없이 경로 목록을
-\.{for q = 경로, 경로, ...: draw q; endfor}로 그린다---그래서 \.{framedef.mp}에는
-\.{draw}도 한 번, 첨자도 없이 경로 `\.{()--()}' 데이터만 남는다. 끝나면 \.{drawoptions()}로
-되돌려 다음 그림에 새지 않게 한다. 판의 위쪽이 위로 오도록 $y$를 뒤집고, 중심을 원점에 맞춘다.
-@<보조...@>=
-func drawEdges(w *bufio.Writer, es []edge, Nh, Nw int, u float64) {
-	offx := float64(Nw-1) / 2
-	offy := float64(Nh-1) / 2
-	px := func(c cell) float64 { return (float64(c[1]) - offx) * u }
-	py := func(c cell) float64 { return -(float64(c[0]) - offy) * u }
-	fmt.Fprintln(w, "  drawoptions(withpen pencircle scaled pw withcolor line);")
-	fmt.Fprintln(w, "  for q =")
-	for i, e := range es {
-		sep := ","
-		if i == len(es)-1 {
-			sep = ":"
-		}
-		fmt.Fprintf(w, "    (%.1f,%.1f)--(%.1f,%.1f)%s\n",
-			px(e[0]), py(e[0]), px(e[1]), py(e[1]), sep)
-	}
-	fmt.Fprintln(w, "  draw q; endfor")
-	fmt.Fprintln(w, "  drawoptions();")
-}
-
-@* 크누스의 마디와 모서리 매듭. 둘 다 \pdfURL{\.{KTf.jpg}}%
-{https://cs.stanford.edu/\TILDE/knuth/KTf.jpg}에서 읽어 낸 크누스의 실제 이음들이다.
-|knuthMod|는 곧은 변의 주기 6 마디(열여덟 이음)로,
+@ 이제 정의하게 될 두 이음들은 모두 \pdfURL{\.{KTf.jpg}}%
+{https://cs.stanford.edu/\TILDE/knuth/KTf.jpg} 에서 읽어 낸 크누스의 실제
+이음들이다. 첫째 이음 |knuthMod|는 곧은 변의 주기 6 마디(열여덟 이음)로,
 위쪽 변의 띠 좌표(행 $0,1,2$)로 적었다. 열이 $6$을 넘는 이음은 다음 마디로 이어진다.
 그림은 이 표를 여섯 칸씩 옮겨 세 벌 이어 깐 것인데, 가운데 빨간 한 벌이 표에 적힌
 바로 그 열여덟 이음이다. 별이 촘촘히 맞물린 무늬가 마디 하나에서 나온다. 그림은
@@ -190,10 +144,10 @@ $2E$다. 곧 {\it 이음 수와 칸 수가 같다\/}. 마디는 곧은 변을 �
 $6\times3$의 결과다. 같은 셈으로 폭 3칸 테두리 전체의 이음 수도 칸 수와 같은
 $6(N_h+N_w)-4\times9$이다.
 
-@ 변수 |knuthCorners|는 모서리를 도는 매듭 넷(저마다 서른 이음)이다. 두 변의 마디를 모서리
-에서 이어 주며, 모서리 칸을 원점으로 한 좌표로 적었다. 크누스의 $55\times55$ 투어에서
-마디를 걷어 낸 나머지를 네 모서리별로 갈라 얻은 것인데, $31\times31$에서 얻은 것과
-글자 하나 다르지 않았다---크기와 무관한 그의 재료다.
+@ 두번째 이음들은 |knuthCorners|는 모서리를 도는 매듭 넷(저마다 서른 이음)이다.
+두 변의 마디를 모서리 에서 이어 주며, 모서리 칸을 원점으로 한 좌표로 적었다. 크누스의
+$55\times55$ 투어에서 마디를 걷어 낸 나머지를 네 모서리별로 갈라 얻은 것인데,
+$31\times31$에서 얻은 것과 글자 하나 다르지 않았다---크기와 무관한 그의 재료다.
 @<타입...@>=
 var knuthCorners = [4][]edge{
 	@<0번 모서리 매듭@>
@@ -334,6 +288,24 @@ func layout(Nh, Nw int, asg [4]int) map[edge]bool {
 	return es
 }
 
+@ 폭 3칸 테두리의 칸을 |isBorder|가 가린다. 판 밖이거나 테두리가 아닌 칸으로 가는
+이음은 받지 않는다.
+@<보조...@>=
+func isBorder(c cell, Nh, Nw int) bool {
+	r, cc := c[0], c[1]
+	return r >= 0 && r < Nh && cc >= 0 && cc < Nw &&
+		(r < 3 || r > Nh-4 || cc < 3 || cc > Nw-4)
+}
+
+@ 함수 |canon|은 이음을 한 방향으로 정규화해 중복을 없앤다.
+@<보조...@>=
+func canon(a, b cell) edge {
+	if a[0] > b[0] || (a[0] == b[0] && a[1] > b[1]) {
+		return edge{b, a}
+	}
+	return edge{a, b}
+}
+
 @ 위쪽 변은 그대로, 오른쪽 $\cdot$ 아래쪽 $\cdot$ 왼쪽 변은 $90^\circ$씩 돌린 네 변환으로
 마디와 매듭을 함께 옮겨 놓는다. 마디는 오프셋 $5,11,\ldots$로 이어 깔되 모서리 다섯
 칸은 매듭에 내주고, 두 끝이 모두 테두리 칸인 이음만 받는다.
@@ -427,7 +399,6 @@ $404$, $106$---긴 변 둘과 짧은 변 둘이 저마다 자기 고리다. 나�
 수법으로(Croes, 1958), 이름 그대로 이음 {\it 둘\/}을 바꿔치우는 동작이다. 이음 $a\adj b$와
 $c\adj d$를 골라 지우고, 끝점을 엇갈리게 $a\adj c$와 $b\adj d$로 다시 잇는다.
 \smallskip
-%\centerline{\pic width 11.5cm{frame-2.pdf}}
 \centerline{\pic{frame-2.pdf}}
 \smallskip
 \noindent 같은 고리에서 두 이음을 고르면 고리는 끊어지지 않고 가운데 구간이 뒤집힐
@@ -465,9 +436,17 @@ func fingerprint(mod []edge, kn [4][]edge) uint32 {
 	return h
 }
 
-@ 함수 |sortEdges|는 이음을 한 줄로 세워 돌려준다. 맵을 훑는 차례는 Go에서 뒤죽박죽이므로,
-정렬해야 같은 입력에 늘 같은 \.{framedef.mp}가 나온다.
+@ 함수 |lessE|는 이음을 한 줄로 세워 출력을 재현 가능하게 한다. 함수 |sortEdges|는
+이음을 한 줄로 세워 돌려준다. 맵을 훑는 차례는 Go에서 뒤죽박죽이므로, 정렬해야 같은 입력에
+늘 같은 \.{framedef.mp}가 나온다.
 @<보조...@>=
+func lessE(x, y edge) bool {
+	if x[0] != y[0] {
+		return x[0][0] < y[0][0] || (x[0][0] == y[0][0] && x[0][1] < y[0][1])
+	}
+	return x[1][0] < y[1][0] || (x[1][0] == y[1][0] && x[1][1] < y[1][1])
+}
+
 func sortEdges(es map[edge]bool) []edge {
 	out := make([]edge, 0, len(es))
 	for e := range es {
@@ -482,7 +461,7 @@ func sortEdges(es map[edge]bool) []edge {
 입력으로 받는\/} {\logo METAPOST} 매크로 \.{frame()} 하나로 정의한다. 지은 것이
 하나의 닫힌 투어인지도 확인한다.
 
-@ 프로그램이 내놓는 것은 매크로 정의뿐이다. 그것을 불러 그리는 \.{beginfig}는 손으로 쓴
+프로그램이 내놓는 것은 매크로 정의뿐이다. 그것을 불러 그리는 \.{beginfig}는 손으로 쓴
 \.{frame.mp}에 따로 둔다---이 문서가 싣는 그림 여섯은 죄다 그 한 파일에서 나온다.
 왜 갈라놓는가? 들여올 수 있게 하려면 그래야 한다. 정의와
 \.{beginfig}를 한 파일에 함께 두면 그 파일 맨 끝에 \.{end.}가 와야 하는데, \.{end.}는
@@ -492,15 +471,6 @@ func sortEdges(es map[edge]bool) []edge {
 문서가 \.{frame(0.6red, 0.95white, 0.4pt)}처럼 선 색도 배경색도 굵기도 원하는 대로 액자를
 다시 쓸 수 있다. \.{expr} 매개변수는 색 타입을 가리지 않으므로 \.{RGB} 세 원소든 \.{CMYK} 네
 원소든 그대로 넘어간다.
-
-@<액자 배경...@>=
-@<명령행에서 액자 크기를 정한다@>
-@<출력 파일을 연다@>
-const u = 6.0
-es, asg := ringTour(Nh, Nw)
-@<지은 것이 하나의 닫힌 투어인지 확인한다@>
-@<매크로를 정의한다@>
-@<출력 파일을 닫는다@>
 
 @ 낼 파일이 하나뿐이니 그저 열고, 누가 썼는지 밝히는 머리글 주석을 얹는다.
 @<출력 파일을 연다@>=
@@ -561,7 +531,31 @@ xr := float64(Nw-1) / 2 * u
 yr := float64(Nh-1) / 2 * u
 fmt.Fprintf(w, "  fill (%.1f,%.1f)--(%.1f,%.1f)--(%.1f,%.1f)--(%.1f,%.1f)--cycle withcolor bg;\n",
 	-xr, -yr, xr, -yr, xr, yr, -xr, yr)
-drawEdges(w, es, Nh, Nw, u)
+@<이음 집합을 {\logo METAPOST} 선분들로 그린다@>
+
+@ 이음 집합을 {\logo METAPOST} 선분들로 그린다. 펜(굵기 \.{pw})과 선 색(\.{line})은
+\.{drawoptions}로 {\it 한 번만\/} 지정한다. {\logo METAPOST}의 \.{for}는 쉼표로
+늘어놓은 값 목록을 그대로 돌 수 있으니, 배열도 인덱스도 없이 경로 목록을
+\.{for q = 경로, 경로, ...: draw q; endfor}로 그린다---그래서 \.{framedef.mp}에는
+\.{draw}도 한 번, 첨자도 없이 경로 `\.{()--()}' 데이터만 남는다. 끝나면 \.{drawoptions()}로
+되돌려 다음 그림에 새지 않게 한다. 판의 위쪽이 위로 오도록 $y$를 뒤집고, 중심을 원점에 맞춘다.
+@<이음 집합을...@>=
+offx := float64(Nw-1) / 2
+offy := float64(Nh-1) / 2
+px := func(c cell) float64 { return (float64(c[1]) - offx) * u }
+py := func(c cell) float64 { return -(float64(c[0]) - offy) * u }
+fmt.Fprintln(w, "  drawoptions(withpen pencircle scaled pw withcolor line);")
+fmt.Fprintln(w, "  for q =")
+for i, e := range es {
+	sep := ","
+	if i == len(es)-1 {
+		sep = ":"
+	}
+	fmt.Fprintf(w, "    (%.1f,%.1f)--(%.1f,%.1f)%s\n",
+		px(e[0]), py(e[0]), px(e[1]), py(e[1]), sep)
+}
+fmt.Fprintln(w, "  draw q; endfor")
+fmt.Fprintln(w, "  drawoptions();")
 
 @ 이음 집합을 다시 |loopID|에 넣어 고리가 하나뿐인지, 칸 수와 이음 수가 맞는지 본다.
 @<지은 것이 하나의 닫힌 투어인지 확인한다@>=
