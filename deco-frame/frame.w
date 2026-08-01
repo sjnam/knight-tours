@@ -35,7 +35,7 @@
   \fi}
 %\def\topofcontents{
 %  \vbox to 0pt{\vskip-.72in
-%    \moveleft.55in\hbox{\pic width 7.55in height 10.65in{frame-1.pdf}}\vss}%
+%    \moveleft.63in\hbox{\pic width 7.55in height 11.05in{frame-1.pdf}}\vss}%
 %  \vskip.6in \centerline{\titlefont\Gtitle}\vskip.7in\vfill}
 
 % 코드 안의 한 조각만 빨갛게 물들이는 짝. gweave만 보고 gtangle은 지나치는
@@ -265,18 +265,24 @@ $p$와 $q$가 깨끗이 지워진다는 것이 요점이다. 서른은 액자 �
 그리고 매듭 표 하나로 모든 크기를 짓는 까닭이 여기 있다.
 
 @ 미덥지 않으면 마디 몫과 매듭 몫을 따로 세어 보면 된다.
-
-\medskip
-\centerline{\vbox{\halign{\hfil#\hfil&&\quad\hfil#\hfil\cr
-크기& 마디& 마디 이음& 매듭 이음& 합& $6(N_h+N_w)-36$\cr
-\noalign{\smallskip\hrule\smallskip}
-$103\times73$& 50& 900& 120& 1020& 1020\cr
-$55\times55$& 28& 504& 120& 624& 624\cr
-$31\times31$& 12& 216& 120& 336& 336\cr
-$19\times13$& 2& 36& 120& 156& 156\cr
-$13\times13$& 0& 0& 120& 120& 120\cr}}}
-\medskip
-
+$$
+\vbox{\offinterlineskip
+\hrule
+\halign{&\vrule#&
+	\strut\quad\hfil#\hfil\quad\cr
+height2pt&\omit&&\omit&&\omit&&\omit&&\omit&&\omit&\cr
+&크기&&마디&&마디 이음&&매듭 이음&&합&&$6(N_h+N_w)-36$&\cr
+height2pt&\omit&&\omit&&\omit&&\omit&&\omit&&\omit&\cr
+\noalign{\hrule}
+height2pt&\omit&&\omit&&\omit&&\omit&&\omit&&\omit&\cr
+&$103\times73$&&50&&900&&120&&1020&&1020&\cr
+&$55\times55$&&28&&504&&120&&624&&624&\cr
+&$31\times31$&&12&&216&&120&&336&&336&\cr
+&$19\times13$&&2&&36&&120&&156&&156&\cr
+&$13\times13$&&0&&0&&120&&120&&120&\cr
+height2pt&\omit&&\omit&&\omit&&\omit&&\omit&&\omit&\cr}
+\hrule}
+$$
 마디와 매듭이 겹치는 이음은 하나도 없고, |isBorder|에 걸려 버려지는 이음도
 하나도 없다. 두 재료가 딱 맞물려 테두리를 빈틈없이 덮는다는 뜻이다.
 
