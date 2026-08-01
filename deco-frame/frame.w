@@ -2,13 +2,6 @@
 % 폭 3칸 사각 테두리를 도는 진짜 닫힌 나이트 투어로 이 문서의 모든 페이지를 두른다.
 \input kotexgweb
 \input pic
-\def\verbatim{\begingroup
-  \def\do##1{\catcode`##1=12 } \dospecials
-  \parskip 0pt \parindent 2em \let\!=!
-  \catcode`\ =13 \catcode`\^^M=13
-  \tt \catcode`\!=0 \verbatimdefs \verbatimgobble}
-{\catcode`\^^M=13{\catcode`\ =13\gdef\verbatimdefs{\def^^M{\ \par}\let =\ }} %
-  \gdef\verbatimgobble#1^^M{}}
 
 % 모든 페이지를 액자로 두른다. \FrameBG는 세로 자리를 차지하지 않는(=\vbox to 0pt)
 % 액자 덧그림으로, 본문 상자 위에 겹쳐 찍힌다. 액자를 텍스트 영역보다 크게 그려
@@ -19,6 +12,7 @@
   \nointerlineskip}
 \def\plainoutput{\shipout\vbox{\FrameBG\makeheadline\pagebody\makefootline}%
   \advancepageno \ifnum\outputpenalty>-20000 \else\dosupereject\fi}
+
 % 색인은 2단 조판이라 \plainoutput이 아니라 gwebmac의 \coloutput이 직접 shipout
 % 한다. 그 shipout에도 \FrameBG를 얹어 색인 페이지까지 액자로 두른다(정의는
 % gwebmac의 것을 그대로 옮기고 맨 앞에 \FrameBG만 더한 것이다).
@@ -33,6 +27,8 @@
     \global\advance\pageno by1
     \global\setbox\sbox=\vbox{}\global\vsize=\pageheight \gdef\lr{L}%
   \fi}
+
+% 문서 전체가 아닌 타이틀 페이지만 액자로 두루고 싶으면 어것을 사용한다.
 %\def\topofcontents{
 %  \vbox to 0pt{\vskip-.72in
 %    \moveleft.63in\hbox{\pic width 7.55in height 11.05in{frame-1.pdf}}\vss}%
@@ -44,10 +40,17 @@
 \def\redon{\pdfextension literal{1 0 0 rg}}
 \def\redoff{\pdfextension literal{0 g}}
 
-\font\logo=logo10
-
-%\def\adj{\mathrel{\!\mathrel-\mkern-8mu\mathrel-\mkern-8mu\mathrel-\!}}
+\def\verbatim{\begingroup
+  \def\do##1{\catcode`##1=12 } \dospecials
+  \parskip 0pt \parindent 2em \let\!=!
+  \catcode`\ =13 \catcode`\^^M=13
+  \tt \catcode`\!=0 \verbatimdefs \verbatimgobble}
+{\catcode`\^^M=13{\catcode`\ =13\gdef\verbatimdefs{\def^^M{\ \par}\let =\ }} %
+  \gdef\verbatimgobble#1^^M{}}
 \def\adj{\mathrel{\!\mathrel-\mkern-8mu\mathrel-\!}}
+
+% 메타포스트 글꼴에 사용한다.
+\font\logo=logo10
 
 \def\title{나이트 장식 액자}
 
@@ -56,7 +59,7 @@
 그림은 폭이 딱 3칸인 사각 테두리를 나이트가 도는 투어를, 여섯 꼭짓점
 별(육각성)이 촘촘히 맞물린 띠처럼 짜 넣은 겹친 액자다. 그는 이렇게 적어 두었다:
 \smallskip
-{\narrower\noindent\it
+{\narrower\narrower\noindent\it
 The wall to the left of the elevator on level~8 completes the exhibit
 by illustrating a brand-new kind of knight's tour, not previously studied:
 A set of {\sl nested frames}, each only three cells wide. Here we see a
@@ -75,15 +78,15 @@ such tours would be impossible; but suddenly everything clicked into place.
 격자를 맞춘 뒤 나이트가 갈 수 있는 이음마다 흰 선이 그어져 있는지 픽셀을 훑으니,
 {\it 모든 칸이 정확히 두 이음\/}을 갖는 깨끗한 투어가 나왔다. 무늬의 주기는 여섯 칸,
 곧은 변의 한 마디는 열여덟 개의 이음(|knuthMod|)이고, 모서리를 도는 매듭은 서른 개의
-이음이었다. 이 둘이 이 액자의 두 재료다.\footnote*{\ninepoint 뒤에서 뽑아낸 멋진 이음들을
+이음이었다. 이 둘이 이 액자의 두 재료다.\footnote*{\ninepoint 잠시 후에 뽑아낸 멋진 이음들을
 보겠지만, 원본 이미지에서 두 재료의 이음들을 좌표로 뽑아내는 작업이 AI의 도움 없이 가능이나 했을까?
-물론 가능하다. 하지만 지루하고 귀찮은 그 작업은 상상하기도 싫다.}
+가능하지만 그 지루하고 성가신 작업은 생각하기도 싫다.}
 
 처음에 나는 매듭을 {\it 하나\/}만 읽어 내어서 네 모서리에 돌려 놓았다. 그랬더니 모든 칸이
 차수(degree)가 $2$가 되기는 해도 변마다 고리 하나씩 {\it 네 개의 닫힌 고리\/}로 갈려서, 이웃한
 두 고리를 2-opt 알고리즘으로 이어 붙여 하나로 꿰야 했다. 그런데 그렇게 지은 액자를 크누스의 것과
 간선 단위로 견주어 보니 모서리가 서로 달랐다. 2-opt가 바꿔치울 수 있는 이음이 하필
-모서리에만 있었기 때문인데, 이 ``하필''이 실은 피할 길 없는 것이었음을 뒤에서 밝힌다.
+모서리에만 있었기 때문인데, 이 ``하필''이 실은 피할 길 없는 것이었음을 뒤에서 자세히 밝힌다.
 
 그래서 그의 투어에서 네 모서리를 {\it 따로따로\/} 읽어 내 보았다. 놀랍게도 넷이 같지
 않았다---기본꼴 하나에, 이음 다섯이 다른 것과 둘이 다른 것, 그러니까 서로 다른 매듭
@@ -139,9 +142,10 @@ type edge = [2]cell
 달라지지 않는 상수라 프로그램이 지을 까닭이 없어 손으로 옮겨 두었다.
 격자와 점은 이 재료가 폭 3칸 테두리의 어디에 앉는지를 보이려는 것이고, 이음이 닿지 않은
 칸에도 점이 있는데 그 칸의 이음은 이웃 마디에서 온다.
-\bigskip
-\centerline{\pic width 12cm{frame-3.pdf}}
-\bigskip
+$$
+\pic width 12cm{frame-3.pdf}
+$$
+
 @<타입...@>=
 var knuthMod = []edge{
 	{{0, 0}, {1, 2}}, {{1, 0}, {2, 2}}, {{0, 1}, {1, 3}}, {{1, 1}, {0, 3}},
@@ -164,8 +168,10 @@ on level~4''를 끼워 넣어 자란다고 했는데, 바로 그 4층
 프리즈의 모티프를 전시장 안내글의 {\it 다른 층\/} 대목---{\sl Level 3: Long and skinny
 tours\/}---에서 이렇게 적어 두었다:
 \smallskip
-{\narrower\noindent\sl One can verify that, on level~4, $2n$ copies of the motif
-`\.{011-223-110-212-131-222}' will give a $3\times(12n+14)$ cycle.\smallskip}
+{\narrower\narrower\noindent\sl
+One can verify that, on level~4, $2n$ copies of the motif
+`\.{011-223-110-212-131-222}' will give a $3\times(12n+14)$ cycle.
+\smallskip}
 \noindent
 묶음이 여섯이니 $3\times6$ 블록, 곧 칸 열여덟이다. 앞서 본 $E=V$로 한 주기의 이음 수가
 곧 칸 수이니, 우리가 그림에서 읽어 낸 이음 {\it 열여덟\/}과 맞아떨어진다.
@@ -201,11 +207,11 @@ $3$번은 이음 둘이 다르다. 그러니까 실제로는 {\it 세 종류\/}�
 서른 이음을 눈으로 맞대어 보기는 성가시니, 기본꼴은 그대로 두고 뒤따르는 세 절에서
 {\it 기본꼴과 다른 이음만\/} 빨갛게 찍어 두었다. 그러니 빨간 것만 눈으로 걷어 내면
 어느 매듭이든 기본꼴로 돌아온다. 곁들인 그림도 같은 규칙이라, \.{frame.mp}는 세 매듭이
-함께 지니는 스물다섯을 한 번만 적고 갈리는 자리만 따로 둔다. 두 팔이 기역(ㄱ)자로 꺾여 두 변의
+함께 지니는 스물다섯을 한 번만 적고 갈리는 자리만 따로 둔다. 두 팔이 기역({\it ㄱ})자로 꺾여 두 변의
 마디를 이어 주는 모양이 보인다. 기본꼴은 이렇게 생겼다.
-\bigskip
-\centerline{\pic height 5cm{frame-4.pdf}}
-\bigskip
+$$
+\pic height 5cm{frame-4.pdf}
+$$
 @<0번 모서리 매듭@>=
 {
 	{{0, 0}, {1, 2}}, {{0, 0}, {2, 1}}, {{0, 1}, {1, 3}}, {{0, 1}, {2, 2}},
@@ -220,9 +226,9 @@ $3$번은 이음 둘이 다르다. 그러니까 실제로는 {\it 세 종류\/}�
 
 @ 1, 2번 모서리 매듭은 0번 기본꼴에서 이음 다섯이 다르다. 빨간 다섯이 그것이고, 나머지 스물다섯은
 기본꼴 그대로다.
-\bigskip
-\centerline{\pic height 5cm{frame-5.pdf}}
-\bigskip
+$$
+\pic height 5cm{frame-5.pdf}
+$$
 @<1,2번 모서리 매듭@>=
 {
 	{{0, 0}, {1, 2}}, {{0, 0}, {2, 1}}, {{0, 1}, {1, 3}}, @t\redon@>{{0, 1}, {2, 0}}@t\redoff@>,
@@ -238,9 +244,9 @@ $3$번은 이음 둘이 다르다. 그러니까 실제로는 {\it 세 종류\/}�
 @ 3번 모서리 매듭은 기본꼴에서 이음 {\it 둘\/}만 다르다. 그 둘도 $1$번이 바꾼 다섯 가운데
 둘이니, 세 매듭이 손대는 자리는 모두 같은 구석이다. 앞 그림의 빨간 자리와 견주어 보면
 빨강이 두 곳으로 줄었을 뿐 같은 언저리임이 보인다.
-\bigskip
-\centerline{\pic height 5cm{frame-6.pdf}}
-\bigskip
+$$
+\pic height 5cm{frame-6.pdf}
+$$
 @<3번 모서리 매듭@>=
 {
 	{{0, 0}, {1, 2}}, {{0, 0}, {2, 1}}, {{0, 1}, {1, 3}}, {{0, 1}, {2, 2}},
@@ -290,7 +296,7 @@ $$
 ($4\times30=120$). 각 변이 $13$ 이상이어야 하는 까닭이 이것이니, $13$은 매듭 넷이 서로
 밀치지 않고 겨우 들어맞는 가장 작은 크기다.
 
-@ ``겨우 들어맞는다''는 말은 칸으로 재어 볼 수 있다. 매듭 하나가 차지하는 자리는 표에서
+``겨우 들어맞는다''는 말은 칸으로 재어 볼 수 있다. 매듭 하나가 차지하는 자리는 표에서
 바로 읽힌다---행이 $0$부터 $7$까지 여덟 줄, 열이 $0$부터 $6$까지 일곱 칸이다. 그러니 길이
 $N$인 한 변에는 한 매듭의 가로팔이 $0\ldots6$열을, 이웃 매듭의 세로팔이 $N-8\ldots N-1$열을
 차지한다.
@@ -444,8 +450,8 @@ func oneLoop(es map[edge]bool, Nh, Nw int) bool {
 정확히 $2$다. 그러니 차수 $2$는 투어의 {\it 필요조건\/}이다.
 
 충분조건은 아니다. 모든 칸이 차수 $2$인 이음 집합은 하나의 큰 고리일 수도, 여러 개의
-작은 고리일 수도 있다---그래프 이론에서 2-factor라 부르는 것이다. {\bf페이지를
-두르는 나이트 액자} 절에서 말한 네 고리가 바로 그 짝이다. 매듭 하나만 네 모서리에
+작은 고리일 수도 있다---그래프 이론에서 2-factor라 부르는 것이다. 이 문서의 서두에서
+말한 네 고리가 바로 그 짝이다. 매듭 하나만 네 모서리에
 돌려 놓고 $103\times73$을 지으면 $1020$칸이 {\it 모두\/} 차수가 $2$인데도 고리는
 넷으로 갈린다. 크기는 $106$, $404$, $404$, $106$---긴 변 둘과 짧은 변 둘이
 저마다 자기 고리다. 나이트가 위쪽 변을 뱅뱅 돌 뿐 오른쪽 변으로 넘어가지 못한다.
@@ -454,10 +460,10 @@ func oneLoop(es map[edge]bool, Nh, Nw int) bool {
 그 네 고리를 하나로 꿰는 데 쓴 것이 2-opt다. 원래 외판원 문제를 푸는 고전적 개선
 수법으로(Croes, 1958), 이름 그대로 이음 {\it 둘\/}을 바꿔치우는 동작이다. 이음 $a\adj b$와
 $c\adj d$를 골라 지우고, 끝점을 엇갈리게 $a\adj c$와 $b\adj d$로 다시 잇는다.
-\smallskip
-\centerline{\pic{frame-2.pdf}}
-\smallskip
-\noindent 같은 고리에서 두 이음을 고르면 고리는 끊어지지 않고 가운데 구간이 뒤집힐
+$$
+\pic{frame-2.pdf}
+$$
+같은 고리에서 두 이음을 고르면 고리는 끊어지지 않고 가운데 구간이 뒤집힐
 뿐이다---외판원의 길을 줄일 때 쓰는 용법이 그것이다. 그런데 {\it 서로 다른\/} 두 고리에서
 고르면 그림처럼 둘이 하나로 합쳐진다. 옛 코드가 쓴 것이 이쪽이고, 합칠 때마다 고리가
 하나씩 주니 넷을 하나로 만들자면 세 번 해야 했다.
@@ -472,7 +478,7 @@ $c\adj d$를 골라 지우고, 끝점을 엇갈리게 $a\adj c$와 $b\adj d$로 
 그러니 2-opt를 쓰는 한 모서리의 이음은 {\it 반드시\/} 바뀌고, 크누스의 그림과는 반드시
 어긋난다. 매듭 넷을 제자리에 놓는 지금 방식이 답인 까닭이 여기 있다.
 
-@ 재료를 한 줄의 수로 줄인 것이 {\it 지문\/}이다(FNV-1a). 마디와 매듭 넷을 모두 넣어
+@ 재료를 한 줄의 수로 줄인 것이 {\it 지문\/}이다(\.{FNV-1a}). 마디와 매듭 넷을 모두 넣어
 찍으므로 이 프로그램이 지닌 재료 전부를 덮는다. 이웃한 \.{frames} 프로그램도 같은 방식으로
 지문을 찍는데, 그쪽의 마디는 크누스가 적어 둔 모티프로 검증한 것이고 매듭은 그의 투어에서
 {\it 스스로 뽑아낸\/} 것이다. 그러니 두 수를 견주면 여기 적어 둔 재료가 그의 그림 그대로
@@ -639,7 +645,7 @@ $0123$이라는 것은 기본값 $103\times73$에서 크누스 자신의 배치�
 그려 놓고 보면 크누스의 \.{KTf}와 똑같은---별이 촘촘히 맞물린---폭 3칸 직사각
 액자가 나온다. 한 붓에 그린 진짜 닫힌 나이트 투어다. 바로 이것으로 이 문서의
 {\it 모든 페이지\/}가 둘려 있다.
-\bigskip\bigskip
-\centerline{\pic width 7cm{frame-1.pdf}}
-
+$$
+\pic width 7cm{frame-1.pdf}
+$$
 @* 색인.
