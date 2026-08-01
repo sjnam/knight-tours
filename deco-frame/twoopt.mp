@@ -34,7 +34,7 @@ beginfig(1);
   draw L5--L0 withcolor red; draw R2--R3 withcolor red;
   label.urt(btex $a$ etex, L0); label.lrt(btex $b$ etex, L5);
   label.ulft(btex $c$ etex, R2); label.llft(btex $d$ etex, R3);
-  label.bot(btex 고리 둘 etex, (gap/2, -r-13));
+  label.bot(btex 고리 둘 etex, (gap/2, -r-7));
 
   % 화살표.
   drawarrow (gap+32, 0)--(panel-32, 0);
@@ -44,9 +44,9 @@ beginfig(1);
   setup(panel);
   hexbut(L, 5); hexbut(R, 2);
   draw L0--R2 withcolor red; draw L5--R3 withcolor red;
-  label.ulft(btex $a$ etex, L0); label.llft(btex $b$ etex, L5);
-  label.urt(btex $c$ etex, R2); label.lrt(btex $d$ etex, R3);
-  label.bot(btex 고리 하나 etex, (panel+gap/2, -r-13));
+  label.top(btex $a$ etex, L0); label.bot(btex $b$ etex, L5);
+  label.top(btex $c$ etex, R2); label.bot(btex $d$ etex, R3);
+  label.bot(btex 고리 하나 etex, (panel+gap/2, -r-7));
 
   drawoptions();
 endfig;
