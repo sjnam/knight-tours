@@ -60,13 +60,12 @@
 별(육각성)이 촘촘히 맞물린 띠처럼 짜 넣은 겹친 액자다. 그는 이렇게 적어 두었다:
 \smallskip
 {\narrower\narrower\noindent\it
-The wall to the left of the elevator on level~8 completes the exhibit
-by illustrating a brand-new kind of knight's tour, not previously studied:
-A set of {\sl nested frames}, each only three cells wide. Here we see a
-$7\times7$ frame inside a $31\times31$ frame inside a $55\times55$ frame. Each
-larger frame is obtained from the next-smaller one by inserting four of the
-modules that were used in the frieze on level~4. For several days I feared that
-such tours would be impossible; but suddenly everything clicked into place.
+8층 엘리베이터 왼쪽 벽은 여태 연구된 적 없는 아주 새로운 종류의 나이트 투어를 보이며
+이 전시를 마무리한다: 저마다 폭이 딱 세 칸인 겹친 액자 한 벌이다. 여기 $7\times7$
+액자가 $31\times31$ 액자 안에 들고, 그것이 다시 $55\times55$ 액자 안에 든
+것을 본다. 큰 액자는 저마다 그다음으로 작은 액자에 {\rm``{\it 4층 프리즈에 쓰인
+마디\/}''} 넷을 끼워 넣어 얻는다. 며칠 동안 나는 그런 투어가 불가능하지 않을까 두려웠다.
+그런데 갑자기 {\rm``{\it 모든 것이 제자리를 찾았다\/}.''}
 \smallskip}
 \noindent
 나는 이 무늬로 종이(A4)처럼 세로가 긴 직사각형 액자를 지어, 이 문서의 페이지를
@@ -77,10 +76,10 @@ such tours would be impossible; but suddenly everything clicked into place.
 에서 간선 단위로 읽어 냈다. 곧은 변에 칸
 격자를 맞춘 뒤 나이트가 갈 수 있는 이음마다 흰 선이 그어져 있는지 픽셀을 훑으니,
 {\it 모든 칸이 정확히 두 이음\/}을 갖는 깨끗한 투어가 나왔다. 무늬의 주기는 여섯 칸,
-곧은 변의 한 마디는 열여덟 개의 이음(|knuthMod|)이고, 모서리를 도는 매듭은 서른 개의
-이음이었다. 이 둘이 이 액자의 두 재료다.\footnote*{\ninepoint 잠시 후에 뽑아낸 멋진 이음들을
-보겠지만, 원본 이미지에서 두 재료의 이음들을 좌표로 뽑아내는 작업이 AI의 도움 없이 가능이나 했을까?
-가능하지만 그 지루하고 성가신 작업은 생각하기도 싫다.}
+곧은 변의 한 마디는 열여덟 개의 이음이고, 모서리를 도는 매듭은 서른 개의 이음이었다.
+이 둘이 이 액자의 두 재료다.\footnote*{\ninepoint 잠시 후에 뽑아낸 멋진 이음들을
+보겠지만, 원본 이미지에서 두 재료의 이음들을 좌표로 뽑아내는 작업이 AI의 도움 없이 가능이나
+했을까? 가능하지만 그 지루하고 성가신 작업은 생각하기도 싫다.}
 
 처음에 나는 매듭을 {\it 하나\/}만 읽어 내어서 네 모서리에 돌려 놓았다. 그랬더니 모든 칸이
 차수(degree)가 $2$가 되기는 해도 변마다 고리 하나씩 {\it 네 개의 닫힌 고리\/}로 갈려서, 이웃한
@@ -91,7 +90,7 @@ such tours would be impossible; but suddenly everything clicked into place.
 그래서 그의 투어에서 네 모서리를 {\it 따로따로\/} 읽어 내 보았다. 놀랍게도 넷이 같지
 않았다---기본꼴 하나에, 이음 다섯이 다른 것과 둘이 다른 것, 그러니까 서로 다른 매듭
 {\it 세 종류\/}를 그는 자리마다 골라 쓰고 있었다. 고리를 잇는 {\it 건너뜀이 매듭 안에
-이미 들어 있는\/} 것이다. 그것이 그가 말한 ``{\it everything clicked into place\/}''의 정체다.
+이미 들어 있는\/} 것이다. 그것이 그가 말한 ``{\it 모든 것이 제자리를 찾았다\/}''의 정체다.
 그래서 이 프로그램은 2-opt를 쓰지 않는다. 네 매듭을 어느 자리에 놓을지만 고르면
 하나의 닫힌 투어가 저절로 나온다.
 
@@ -163,21 +162,20 @@ $E=V$는 주기마다 성립하므로 한 마디의 이음도 열여덟이다. |
 같은 $6(N_h+N_w)-4\times9$이다.
 
 @ 나중에야 알게 된 사실인데, 첫번째 이음 |knuthMod|가 어디서 온 것인지 크누스가 이미 밝혀 두었다.
-맨 앞에 옮긴 글에서 그는 액자가 ``the modules that were used in the frieze
-on level~4''를 끼워 넣어 자란다고 했는데, 바로 그 4층
-프리즈의 모티프를 전시장 안내글의 {\it 다른 층\/} 대목---{\sl Level 3: Long and skinny
+맨 앞에 옮긴 글에서 그는 액자가 ``{\it 4층 프리즈에 쓰인 마디\/}''를 끼워 넣어 자란다고 했는데,
+바로 그 4층 프리즈의 모티프를 전시장 안내글의 {\it 다른 층\/} 대목---{\sl Level 3: Long and skinny
 tours\/}---에서 이렇게 적어 두었다:
 \smallskip
 {\narrower\narrower\noindent\sl
-One can verify that, on level~4, $2n$ copies of the motif
-`\.{011-223-110-212-131-222}' will give a $3\times(12n+14)$ cycle.
+4층에서 모티프 {\rm`\.{011-223-110-212-131-222}'}를 $2n$벌 이어 붙이면
+$3\times(12n+14)$ 고리가 된다는 것을 확인할 수 있다.
 \smallskip}
 \noindent
 묶음이 여섯이니 $3\times6$ 블록, 곧 칸 열여덟이다. 앞서 본 $E=V$로 한 주기의 이음 수가
 곧 칸 수이니, 우리가 그림에서 읽어 낸 이음 {\it 열여덟\/}과 맞아떨어진다.
 $2n$개를 이어 $12n+14$가 되는 것도 여섯 칸짜리 모티프와 앞뒤가 맞는다.
 
-표기법은 그의 책 {\it Selected Papers on Fun and Games\/} 42장 {\sl Long and Skinny
+표기법은 그의 책 {\sl Selected Papers on Fun and Games\/} 42장 {\sl Long and Skinny
 Knight's Tours\/}에 있다. 책장에서 그 책을 꺼내어 42번째 장을 읽으니 규칙이 또렷했다.
 여섯 묶음을 그 규칙대로 풀어 이음으로 펴 보면 아래 표와 한 이음도 어긋나지 않는다.
 그러니 이제 |knuthMod|가 기댈 곳은 그림의 픽셀이 아니라 {\it 그가 손수 적은 문자열\/}이다.
