@@ -331,9 +331,9 @@ beginfig(4); lvl_eight_frz(2, true,  true ); endfig;
 
 % 3층의 띠 셋 --- 벽에 걸린 크기.
 beginfig(5); allthree; endfig;
-beginfig(6); lvl_three_lft(3,  true, false); endfig;
-beginfig(7); lvl_three_mid(4,   true, false); endfig;
+beginfig(6); lvl_three_lft(3, true, false); endfig;
+beginfig(7); lvl_three_mid(4, true, false); endfig;
 beginfig(8); lvl_three_rgt(2, true, false); endfig;
-beginfig(9); lvl_three_lft(3,  false, true); endfig;
+beginfig(9); lvl_three_lft(3, false, true); endfig;
 
 end.
