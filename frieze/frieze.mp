@@ -3,10 +3,10 @@
 % 두 벌이 들어 있다. 둘 다 폭이 3칸이고 저마다 하나의 닫힌 나이트 투어이며,
 % 길이를 매개변수로 받는다.
 %
-%   lvl_eight_frz   (n, vert, grid)   3x(10n+20)   8층 엘리베이터 문 위의 프리즈
+%   lvl_eight_frz (n, vert, grid)   3x(10n+20)   8층 엘리베이터 문 위의 프리즈
 %   lvl_three_lft (n, vert, grid)   3x(4n+16)    KTb.jpg의 왼쪽 띠   (사진은 n=3)
-%   lvl_three_mid  (n, vert, grid)   3x(4n+10)    KTb.jpg의 가운데 띠 (사진은 n=4)
-%   lvl_three_rgt(n, vert, grid)   3x(8n+12)    KTb.jpg의 오른쪽 띠 (사진은 n=2)
+%   lvl_three_mid (n, vert, grid)   3x(4n+10)    KTb.jpg의 가운데 띠 (사진은 n=4)
+%   lvl_three_rgt (n, vert, grid)   3x(8n+12)    KTb.jpg의 오른쪽 띠 (사진은 n=2)
 %
 % 인자는 넷 다 같다.
 %   n     주기 몇 벌인가. 0 이상.
