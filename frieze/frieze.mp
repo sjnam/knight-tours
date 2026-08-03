@@ -3,10 +3,10 @@
 % 두 벌이 들어 있다. 둘 다 폭이 3칸이고 저마다 하나의 닫힌 나이트 투어이며,
 % 길이를 매개변수로 받는다.
 %
-%   frieze   (n, vert, grid)   3x(10n+20)   8층 엘리베이터 문 위의 프리즈
-%   bandleft (n, vert, grid)   3x(4n+16)    KTb.jpg의 왼쪽 띠   (사진은 n=3)
-%   bandmid  (n, vert, grid)   3x(4n+10)    KTb.jpg의 가운데 띠 (사진은 n=4)
-%   bandright(n, vert, grid)   3x(8n+12)    KTb.jpg의 오른쪽 띠 (사진은 n=2)
+%   lvl_eight_frz   (n, vert, grid)   3x(10n+20)   8층 엘리베이터 문 위의 프리즈
+%   lvl_three_lft (n, vert, grid)   3x(4n+16)    KTb.jpg의 왼쪽 띠   (사진은 n=3)
+%   lvl_three_mid  (n, vert, grid)   3x(4n+10)    KTb.jpg의 가운데 띠 (사진은 n=4)
+%   lvl_three_rgt(n, vert, grid)   3x(8n+12)    KTb.jpg의 오른쪽 띠 (사진은 n=2)
 %
 % 인자는 넷 다 같다.
 %   n     주기 몇 벌인가. 0 이상.
@@ -19,7 +19,7 @@
 % 이 파일은 홀로 선다---바깥에서 input하는 것도, TeX 라벨도 없다.
 %
 % ============================================================================
-% 8층 문 위의 프리즈 (frieze)
+% 8층 문 위의 프리즈 (lvl_eight_frz)
 % ============================================================================
 % 같은 8층이라도 엘리베이터 {\it 왼쪽 벽\/}에 있는 것은 겹친 액자(nested frames)라
 % 이것과 다른 무늬다. 폭은 똑같이 3칸이니 헷갈리지 말 일이다.
@@ -46,7 +46,7 @@
 % 확인했다.
 %
 % ============================================================================
-% KTb.jpg의 띠 셋 (bandleft, bandmid, bandright)
+% 3층의 띠 셋 (lvl_three_lft, lvl_three_mid, lvl_three_rgt)
 % ============================================================================
 % 원본은 크누스의 사진이다.  https://cs.stanford.edu/~knuth/KTb.jpg
 % 벽에 세로로 나란히 걸린 띠 셋인데, 여기 적은 이음은 그 사진에서 픽셀 단위로 읽어
@@ -161,7 +161,7 @@ def capright =
 enddef;
 
 % 주기 n벌짜리 프리즈. 판은 3x(10n+20)이고 이음은 30n+60 = 3(10n+20)개다.
-vardef friezepic(expr n) =
+vardef lvl_eight_frzpic(expr n) =
   save fz; picture fz;
   blackpen;
   fz := image(period);
@@ -172,7 +172,7 @@ vardef friezepic(expr n) =
   )
 enddef;
 
-def frieze(expr n, vert, grid) = showband(friezepic(n), 10n+20, vert, grid); enddef;
+def lvl_eight_frz(expr n, vert, grid) = showband(lvl_eight_frzpic(n), 10n+20, vert, grid); enddef;
 
 % ===== KTb.jpg의 띠 셋 ========================================================
 
@@ -222,7 +222,7 @@ vardef leftpic(expr n) =
   )
 enddef;
 
-def bandleft(expr n, vert, grid) = showband(leftpic(n), 4n+16, vert, grid); enddef;
+def lvl_three_lft(expr n, vert, grid) = showband(leftpic(n), 4n+16, vert, grid); enddef;
 
 % ----- 가운데 띠 --- 3x(4n+10), 이음 12n+30개.
 % 벽에 걸린 것은 n=4, 곧 3x26이다.
@@ -264,7 +264,7 @@ vardef midpic(expr n) =
   )
 enddef;
 
-def bandmid(expr n, vert, grid) = showband(midpic(n), 4n+10, vert, grid); enddef;
+def lvl_three_mid(expr n, vert, grid) = showband(midpic(n), 4n+10, vert, grid); enddef;
 
 % ----- 오른쪽 띠 --- 3x(8n+12), 이음 24n+36개.
 % 벽에 걸린 것은 n=2, 곧 3x28이다.
@@ -312,28 +312,28 @@ vardef rightpic(expr n) =
   )
 enddef;
 
-def bandright(expr n, vert, grid) = showband(rightpic(n), 8n+12, vert, grid); enddef;
+def lvl_three_rgt(expr n, vert, grid) = showband(rightpic(n), 8n+12, vert, grid); enddef;
 
 % 사진처럼 셋을 나란히 세운다. 벽에 걸린 크기 그대로다.
 def allthree =
   begingroup save qq; picture qq;
-    bandleft(3, true, false);
-    qq := image(bandmid(4, true, false));   draw qq shifted (6uu, -uu);
-    qq := image(bandright(2, true, false)); draw qq shifted (12uu, 0);
+    lvl_three_lft(3, true, false);
+    qq := image(lvl_three_mid(4, true, false));   draw qq shifted (6uu, -uu);
+    qq := image(lvl_three_rgt(2, true, false)); draw qq shifted (12uu, 0);
   endgroup
 enddef;
 
 % 8층 프리즈 --- 네 조합.
-beginfig(1); frieze(2, false, false); endfig;
-beginfig(2); frieze(2, true,  false); endfig;
-beginfig(3); frieze(2, false, true ); endfig;
-beginfig(4); frieze(2, true,  true ); endfig;
+beginfig(1); lvl_eight_frz(2, false, false); endfig;
+beginfig(2); lvl_eight_frz(2, true,  false); endfig;
+beginfig(3); lvl_eight_frz(2, false, true ); endfig;
+beginfig(4); lvl_eight_frz(2, true,  true ); endfig;
 
-% KTb의 띠 셋 --- 벽에 걸린 크기.
+% 3층의 띠 셋 --- 벽에 걸린 크기.
 beginfig(5); allthree; endfig;
-beginfig(6); bandleft(3,  true, false); endfig;
-beginfig(7); bandmid(4,   true, false); endfig;
-beginfig(8); bandright(2, true, false); endfig;
-beginfig(9); bandleft(3,  false, true); endfig;
+beginfig(6); lvl_three_lft(3,  true, false); endfig;
+beginfig(7); lvl_three_mid(4,   true, false); endfig;
+beginfig(8); lvl_three_rgt(2, true, false); endfig;
+beginfig(9); lvl_three_lft(3,  false, true); endfig;
 
 end.
