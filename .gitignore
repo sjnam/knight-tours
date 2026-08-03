@@ -9,6 +9,13 @@ frame.[0-9]
 frame-[0-9].pdf
 frame.mpx
 
+# frieze.mp 생성물 (mptopdf)
+frieze.[0-9]
+frieze-[0-9].pdf
+frieze.mpx
+frieze.log
+frieze.pdf
+
 # gweave · luatex 생성물
 frame.tex
 frame.toc
