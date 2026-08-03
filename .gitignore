@@ -15,11 +15,6 @@ frieze-[0-9].pdf
 frieze.mpx
 frieze.log
 frieze.pdf
-KTb.[0-9]
-KTb-[0-9].pdf
-KTb.mpx
-KTb.log
-KTb.pdf
 
 # gweave · luatex 생성물
 frame.tex
