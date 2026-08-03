@@ -305,56 +305,20 @@ $5,6$ 두 열에서 맞닿는데, 이 겹침은 성하다---두 매듭이 서로
 포개지면 칸마다 이음이 둘을 넘어 버리고, 남아도는 것 가운데 무엇을 덜어 낼지는 이 구성법이
 말해 주지 않는다. $13$이 하한인 까닭은 산술에만 있는 것이 아니라 기하에도 있는 셈이다.
 
-@* 액자 투어를 짓는다. 앞서 액자를 만들기 위한 기본 이음들을 만들어 내는 것이 어렵지,
-그 재료들을 잘 조합해서 액자를 만드는 일은 쉽다. 매듭을 어느 모서리에 놓을지를 |asg|라 하자.
-네 자리에 각각 넷 중 하나를 놓으니 배치는 $4^4=256$가지다. 크누스 자신의 배치 $(0,1,2,3)$부터
-차례로 깔아 보아, {\it 하나의 닫힌 투어\/}가 되는 첫 배치를 쓴다. 기본값 $103\times73$을
-비롯해 크기의 절반쯤은 크누스의 배치가 그대로 통하고, 나머지도 256가지 안에서 반드시 하나는
-통한다(내가 아는 모든 크기에서 그랬다).
-@<보조...@>=
-func ringTour(Nh, Nw int) ([]edge, [4]int) {
-	if es := layout(Nh, Nw, knuthAsg); oneLoop(es, Nh, Nw) {
-		return sortEdges(es), knuthAsg
-	}
-	@<나머지 배치를 차례로 깔아 본다@>
-	log.Fatalf("%d×%d 액자를 하나의 닫힌 투어로 짓지 못했다", Nh, Nw)
-	return nil, knuthAsg
-}
-
-@ 크누스가 쓴 배치다---모서리를 도는 차례대로 $0,1,2,3$번 매듭.
+@* 액자 투어를 짓는다. 지금까지 만든 액자의 기본 이음들과 매듭들을 이용해서 액자를
+만들어 보자. 기본 재료들을 잘 조합하고 배치하는 일은 신경 쓸 것이 많다. 한 바탕 전투를 대비해서
+필요한 자료형과 각종 보조 루틴들을 미리 만들어 놓자.
+|knuthAsg|는 모서리를 도는 차례대로 $0,1,2,3$번 매듭으로 크누스가 쓴 배치다.
 @<타입...@>=
 var knuthAsg = [4]int{0, 1, 2, 3}
-
-@ 256가지를 네 자리 $4$진수로 세며 훑는다. 크누스의 배치는 이미 보았으니 건너뛴다.
-@<나머지 배치를 차례로 깔아 본다@>=
-for k := 0; k < 256; k++ {
-	var asg [4]int
-	for q := range asg {
-		asg[q] = k >> (2 * q) & 3
-	}
-	if asg == knuthAsg {
-		continue
-	}
-	if es := layout(Nh, Nw, asg); oneLoop(es, Nh, Nw) {
-		return sortEdges(es), asg
-	}
-}
-
-@ 함수 |layout|이 배치 하나를 실제로 깐다.
-@<보조...@>=
-func layout(Nh, Nw int, asg [4]int) map[edge]bool {
-	es := map[edge]bool{}
-	@<네 변에 마디를, 네 모서리에 매듭을 깐다@>
-	return es
-}
 
 @ 폭 3칸 테두리의 칸을 |isBorder|가 가린다. 판 밖이거나 테두리가 아닌 칸으로 가는
 이음은 받지 않는다.
 @<보조...@>=
-func isBorder(c cell, Nh, Nw int) bool {
-	r, cc := c[0], c[1]
-	return r >= 0 && r < Nh && cc >= 0 && cc < Nw &&
-		(r < 3 || r > Nh-4 || cc < 3 || cc > Nw-4)
+func isBorder(cl cell, Nh, Nw int) bool {
+	r, c := cl[0], cl[1]
+	return r >= 0 && r < Nh && c >= 0 && c < Nw &&
+		(r < 3 || r > Nh-4 || c < 3 || c > Nw-4)
 }
 
 @ 함수 |canon|은 이음을 한 방향으로 정규화해 중복을 없앤다.
@@ -366,23 +330,61 @@ func canon(a, b cell) edge {
 	return edge{a, b}
 }
 
-@ 위쪽 변은 그대로, 오른쪽 $\cdot$ 아래쪽 $\cdot$ 왼쪽 변은 $90^\circ$씩 돌린 네 변환으로
-마디와 매듭을 함께 옮겨 놓는다. 마디는 오프셋 $5,11,\ldots$로 이어 깔되 모서리 다섯
-칸은 매듭에 내주고, 두 끝이 모두 테두리 칸인 이음만 받는다.
+@ 이제 배치 하나를 실제로 까는 |layout|이다. 여기서 알아 둘 것이 하나 있다. 앞서 적어 둔
+마디와 매듭은 {\it 위쪽 변의 띠 좌표\/} 한 벌뿐이다---행 $0,1,2$가 테두리 세 줄이고 열은
+오른쪽으로 간다. 나머지 세 변에 쓸 표는 없다. 그것을 네 변에 돌려 앉히는 것이 |xf|의
+할 일이다.
+@<보조...@>=
+func layout(Nh, Nw int, asg [4]int) map[edge]bool {
+	es := map[edge]bool{}
+	@<네 변으로 옮기는 변환을 짓는다@>
+	@<이음을 받아 담는 |put|을 짓는다@>
+	@<네 변에 마디를, 네 모서리에 매듭을 깐다@>
+	return es
+}
 
-@<네 변에 마디를, 네 모서리에 매듭을 깐다@>=
+@ 띠 좌표 $(r,c)$를 이렇게 읽자---$c$는 {\it 변을 따라 나아간 거리\/}, $r$은 {\it 테두리
+바깥에서 안쪽으로 파고든 깊이\/}. 그러면 아래 네 줄이 모두 같은 말을 하고 있음이 보인다.
+$c$가 가는 쪽만 $90^\circ$씩 돌아갈 뿐이다. 미덥지 않으면 $31\times31$에서 띠 좌표
+$(0,1)$을 넣어 보라. 차례로 $(0,1)\cdot(1,30)\cdot(30,29)\cdot(29,0)$이 나오니,
+네 변을 시계 방향으로 도는 것이다.
+@<네 변으로 옮기는 변환을 짓는다@>=
 xf := []func(r, c int) cell{
-	func(r, c int) cell { return cell{r, c} },
-	func(r, c int) cell { return cell{c, Nw - 1 - r} },
-	func(r, c int) cell { return cell{Nh - 1 - r, Nw - 1 - c} },
-	func(r, c int) cell { return cell{Nh - 1 - c, r} },
+	func(r, c int) cell { return cell{r, c} }, // 위: |c|가 오른쪽으로, |r|은 위에서 안쪽으로
+	func(r, c int) cell { return cell{c, Nw - 1 - r} }, // 오른: |c|가 아래로, |r|은 오른쪽에서 안쪽으로
+	func(r, c int) cell { return cell{Nh - 1 - r, Nw - 1 - c} }, // 아래: |c|가 왼쪽으로, |r|은 아래에서 안쪽으로
+	func(r, c int) cell { return cell{Nh - 1 - c, r} }, // 왼: |c|가 위로, |r|은 왼에서 안쪽으로
 }
 length := []int{Nw, Nh, Nw, Nh}
+
+@ |length|가 $N_w,N_h,N_w,N_h$로 엇갈리는 것도 같은 까닭이다. $c$가 변을 따라 가는
+거리이니 $c$가 갈 수 있는 데까지가 곧 그 변의 길이인데, 위$\cdot$아래 변은 가로로
+누웠으니 $N_w$이고 오른쪽$\cdot$왼쪽 변은 세로로 섰으니 $N_h$다. |xf|의 둘째 줄이
+결과의 {\it 행\/}을 $c$로 삼는 것을 보면 거기서는 $c<N_h$여야 함이 바로 드러난다.
+
+@ 이음을 담는 |put|은 두 끝이 모두 테두리 칸일 때만 받는다. 그런데 실은 이 체에 걸리는
+이음이 하나도 없다---$13\times13$부터 $103\times73$까지 죄다 세어 보았다. 재료가 애초에
+빈틈없이 맞물리게 짜여 있어서, |isBorder|는 걸러 내는 체라기보다 어긋나면 알아채려고
+세워 둔 안전장치다.
+@<이음을 받아 담는 |put|을 짓는다@>=
 put := func(a, b cell) {
 	if isBorder(a, Nh, Nw) && isBorder(b, Nh, Nw) {
 		es[canon(a, b)] = true
 	}
 }
+
+@ 남은 것은 마디를 어디에 깔지다. 재료가 띠에서 차지하는 자리부터 재어 두자.
+{\it 마디\/}는 행 $0\ldots2$, 열 $0\ldots7$을 쓴다---주기가 $6$이라 제 몫은 열
+$0\ldots5$이고, $6\cdot7$열로 삐져나온 이음은 다음 마디 자리에서 만난다. {\it 매듭\/}은
+행 $0\ldots7$, 열 $0\ldots6$인 기역자라, 가로팔이 이 변에 눕고 세로팔은 이웃 변으로
+넘어간다.
+그래서 길이 $L$인 한 변은 {\it 두 칸씩 맞물린 사슬\/}이 된다. $L=31$이면 이렇다.
+$$\pic{frame-7.pdf}$$
+겹치는 폭이 어디서나 꼭 두 열이다. |off|가 $5$에서 시작하는 것은 매듭 가로팔
+($0\ldots6$)의 끝 두 칸에 물리기 때문이고, $6$씩 나아가는 것은 무늬의 주기이며,
+|off <= length[i]-13|은 반대쪽 매듭에게 제 자리를 남겨 두라는 뜻이다. 그러니
+$L=6k+1$인 변에는 마디가 $k-2$개 깔린다---$31$이면 셋이고 $13$이면 하나도 없다.
+@<네 변에 마디를, 네 모서리에 매듭을 깐다@>=
 for i, f := range xf {
 	for off := 5; off <= length[i]-13; off += 6 {
 		for _, e := range knuthMod {
@@ -443,6 +445,57 @@ func oneLoop(es map[edge]bool, Nh, Nw int) bool {
 	return nl == 1
 }
 
+@ 함수 |lessE|는 이음을 한 줄로 세워 출력을 재현 가능하게 한다. 함수 |sortEdges|는
+이음을 한 줄로 세워 돌려준다. 맵을 훑는 차례는 Go에서 뒤죽박죽이므로, 정렬해야 같은 입력에
+늘 같은 \.{framedef.mp}가 나온다.
+@<보조...@>=
+func lessE(x, y edge) bool {
+	if x[0] != y[0] {
+		return x[0][0] < y[0][0] || (x[0][0] == y[0][0] && x[0][1] < y[0][1])
+	}
+	return x[1][0] < y[1][0] || (x[1][0] == y[1][0] && x[1][1] < y[1][1])
+}
+
+func sortEdges(es map[edge]bool) []edge {
+	out := make([]edge, 0, len(es))
+	for e := range es {
+		out = append(out, e)
+	}
+	sort.Slice(out, func(i, j int) bool { return lessE(out[i], out[j]) })
+	return out
+}
+
+@ 본격적으로 액자를 만들어보자.
+매듭을 어느 모서리에 놓을지를 |asg|라 하자. 네 자리에 각각 넷 중 하나를 놓으니 배치는
+$4^4=256$가지다. 크누스 자신의 배치 $(0,1,2,3)$부터 차례로 깔아 보아,
+{\it 하나의 닫힌 투어\/}가 되는 첫 배치를 쓴다. 기본값 $103\times73$을
+비롯해 크기의 절반쯤은 크누스의 배치가 그대로 통하고, 나머지도 256가지 안에서 반드시 하나는
+통한다(내가 아는 모든 크기에서 그랬다).
+@<보조...@>=
+func ringTour(Nh, Nw int) ([]edge, [4]int) {
+	if es := layout(Nh, Nw, knuthAsg); oneLoop(es, Nh, Nw) {
+		return sortEdges(es), knuthAsg
+	}
+	@<나머지 배치를 차례로 깔아 본다@>
+	log.Fatalf("%d×%d 액자를 하나의 닫힌 투어로 짓지 못했다", Nh, Nw)
+	return nil, knuthAsg
+}
+
+@ 256가지를 네 자리 $4$진수로 세며 훑는다. 크누스의 배치는 이미 보았으니 건너뛴다.
+@<나머지 배치를 차례로 깔아 본다@>=
+for k := 0; k < 256; k++ {
+	var asg [4]int
+	for q := range asg {
+		asg[q] = k >> (2 * q) & 3
+	}
+	if asg == knuthAsg {
+		continue
+	}
+	if es := layout(Nh, Nw, asg); oneLoop(es, Nh, Nw) {
+		return sortEdges(es), asg
+	}
+}
+
 @ 여기서 차수가 $2$와 고리 수 사이를 짚어 두자. 어떤 칸의 차수란 거기 붙은 이음의
 개수다. 닫힌 투어에서 나이트는 칸마다 한 번 들어와 한 번 나가므로 모든 칸의 차수가
 정확히 $2$다. 그러니 차수 $2$는 투어의 {\it 필요조건\/}이다.
@@ -496,26 +549,6 @@ func fingerprint(mod []edge, kn [4][]edge) uint32 {
 	return h
 }
 
-@ 함수 |lessE|는 이음을 한 줄로 세워 출력을 재현 가능하게 한다. 함수 |sortEdges|는
-이음을 한 줄로 세워 돌려준다. 맵을 훑는 차례는 Go에서 뒤죽박죽이므로, 정렬해야 같은 입력에
-늘 같은 \.{framedef.mp}가 나온다.
-@<보조...@>=
-func lessE(x, y edge) bool {
-	if x[0] != y[0] {
-		return x[0][0] < y[0][0] || (x[0][0] == y[0][0] && x[0][1] < y[0][1])
-	}
-	return x[1][0] < y[1][0] || (x[1][0] == y[1][0] && x[1][1] < y[1][1])
-}
-
-func sortEdges(es map[edge]bool) []edge {
-	out := make([]edge, 0, len(es))
-	for e := range es {
-		out = append(out, e)
-	}
-	sort.Slice(out, func(i, j int) bool { return lessE(out[i], out[j]) })
-	return out
-}
-
 @* 매크로 파일을 쓴다. 명령행에서 받은 크기(기본 A4 비율 $103\times73$)로 액자 투어를
 지어 \.{framedef.mp}에 담는다. 그것을 {\it 선 색 $\cdot$ 배경색 $\cdot$ 선 굵기를
 입력으로 받는\/} {\logo METAPOST} 매크로 \.{frame()} 하나로 정의한다. 지은 것이
@@ -532,7 +565,7 @@ func sortEdges(es map[edge]bool) []edge {
 다시 쓸 수 있다. \.{expr} 매개변수는 색 타입을 가리지 않으므로 \.{RGB} 세 원소든 \.{CMYK} 네
 원소든 그대로 넘어간다.
 
-@ 낼 파일이 하나뿐이니 그저 열고, 누가 썼는지 밝히는 머리글 주석을 얹는다.
+@ 낼 파일이 하나뿐이니 그저 열고, 누가 썼는지 밝히는 주석을 얹는다.
 @<출력 파일을 연다@>=
 out, err := os.Create("framedef.mp")
 if err != nil {
@@ -593,11 +626,11 @@ fmt.Fprintf(w, "  fill (%.1f,%.1f)--(%.1f,%.1f)--(%.1f,%.1f)--(%.1f,%.1f)--cycle
 	-xr, -yr, xr, -yr, xr, yr, -xr, yr)
 @<이음 집합을 {\logo METAPOST} 선분들로 그린다@>
 
-@ 이음 집합을 {\logo METAPOST} 선분들로 그린다. 펜(굵기 \.{pw})과 선 색(\.{line})은
+@ 이음 집합을 {\logo METAPOST} 선분들로 그린다. 펜 굵기(\.{pw})와 선 색(\.{line})은
 \.{drawoptions}로 {\it 한 번만\/} 지정한다. {\logo METAPOST}의 \.{for}는 쉼표로
 늘어놓은 값 목록을 그대로 돌 수 있으니, 배열도 인덱스도 없이 경로 목록을
 \.{for q = 경로, 경로, ...: draw q; endfor}로 그린다---그래서 \.{framedef.mp}에는
-\.{draw}도 한 번, 첨자도 없이 경로 `\.{()--()}' 데이터만 남는다. 끝나면 \.{drawoptions()}로
+\.{draw}도 한 번, 첨자도 없이 경로 데이터만 남는다. 끝나면 \.{drawoptions()}로
 되돌려 다음 그림에 새지 않게 한다. 판의 위쪽이 위로 오도록 $y$를 뒤집고, 중심을 원점에 맞춘다.
 @<이음 집합을...@>=
 offx := float64(Nw-1) / 2

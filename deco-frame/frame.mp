@@ -11,6 +11,7 @@
 %   frame-4.pdf  0번 모서리 매듭 (기본꼴)
 %   frame-5.pdf  1·2번 모서리 매듭
 %   frame-6.pdf  3번 모서리 매듭
+%   frame-7.pdf  한 변이 두 칸씩 맞물린 사슬 (길이 31을 예로)
 %
 % 그림 3~6의 좌표는 frame.w의 knuthMod·knuthCorners 표를 (행,열) 그대로 옮긴 것이다.
 % 좌표가 두 벌인 셈이니 표를 고치는 날에는 이 파일도 함께 고쳐야 한다.
@@ -173,6 +174,57 @@ endfig;
 % 그림 6 — 3번. 갈리는 것이 둘뿐이라 빨강도 둘이다.
 beginfig(6);
   grid(7, 6); blackpen; common; keepthree; redpen; swaptwo; drawoptions();
+endfig;
+
+% 그림 7 — 한 변에 재료가 앉는 자리. 길이 31인 변을 예로 들어, 매듭과 마디가 덮는 열
+% 구간을 층층이 늘어놓았다. 세로 띠가 겹치는 자리인데 어디서나 폭이 꼭 두 열이다.
+% ba/bb는 층마다의 시작 열과 끝 열---layout이 off = 5, 11, 17로 마디를 까는 그것이다.
+
+numeric cw, bh, bg, nlev, side;
+cw := 9;    % 한 열의 너비
+bh := 12;   % 막대 높이
+bg := 17;   % 층 사이 간격
+nlev := 4;  % 맨 아래 층 번호
+side := 31; % 예로 든 변의 길이
+
+numeric ba[], bb[];
+ba0 := 0;  bb0 := 6;   % 가까운 모서리의 매듭
+ba1 := 5;  bb1 := 12;  % 마디 (off=5)
+ba2 := 11; bb2 := 18;  % 마디 (off=11)
+ba3 := 17; bb3 := 24;  % 마디 (off=17)
+ba4 := 23; bb4 := 30;  % 먼 모서리의 매듭
+
+beginfig(7);
+  defaultscale := .7;
+
+  % 겹치는 두 열을 세로 띠로 밝힌다.
+  for p = 5, 11, 17, 23:
+    fill unitsquare xscaled 2cw yscaled (nlev*bg + bh + 8)
+      shifted (p*cw, -nlev*bg - 4) withcolor (1, .87, .87);
+  endfor
+
+  % 층마다 막대 하나. 열 ba부터 bb까지를 덮는다.
+  for k = 0 upto nlev:
+    fill unitsquare xscaled ((bb[k] + 1 - ba[k])*cw) yscaled bh
+      shifted (ba[k]*cw, -k*bg) withcolor .94white;
+    draw unitsquare xscaled ((bb[k] + 1 - ba[k])*cw) yscaled bh
+      shifted (ba[k]*cw, -k*bg) withpen pencircle scaled .4pt;
+  endfor
+
+  label(btex 매듭 $0\ldots6$ etex,       ((ba0 + bb0 + 1)/2*cw, bh/2));
+  label(btex 마디 $5\ldots12$ etex,      ((ba1 + bb1 + 1)/2*cw, -bg + bh/2));
+  label(btex 마디 $11\ldots18$ etex,     ((ba2 + bb2 + 1)/2*cw, -2bg + bh/2));
+  label(btex 마디 $17\ldots24$ etex,     ((ba3 + bb3 + 1)/2*cw, -3bg + bh/2));
+  label(btex 매듭 $23\ldots30$ etex,     ((ba4 + bb4 + 1)/2*cw, -4bg + bh/2));
+
+  % 열 눈금. 겹침이 시작하고 끝나는 열만 적는다.
+  numeric yr; yr := -nlev*bg - 13;
+  draw (0, yr)--(side*cw, yr) withpen pencircle scaled .4pt;
+  for p = 0, 5, 6, 11, 12, 17, 18, 23, 24, 30:
+    draw ((p + .5)*cw, yr)--((p + .5)*cw, yr - 3) withpen pencircle scaled .4pt;
+    label.bot(decimal p, ((p + .5)*cw, yr - 3));
+  endfor
+  label.lft(btex 열 etex, (-3, yr));
 endfig;
 
 end.
