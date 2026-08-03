@@ -176,55 +176,96 @@ beginfig(6);
   grid(7, 6); blackpen; common; keepthree; redpen; swaptwo; drawoptions();
 endfig;
 
-% 그림 7 — 한 변에 재료가 앉는 자리. 길이 31인 변을 예로 들어, 매듭과 마디가 덮는 열
-% 구간을 층층이 늘어놓았다. 세로 띠가 겹치는 자리인데 어디서나 폭이 꼭 두 열이다.
-% ba/bb는 층마다의 시작 열과 끝 열---layout이 off = 5, 11, 17로 마디를 까는 그것이다.
+% 그림 7 — 한 변에 재료가 앉는 자리. 길이 31인 변을 예로 든다. 위층은 매듭과 마디가
+% 덮는 열 구간을 막대로 늘어놓은 것이고, 아래층은 바로 그 자리에 실제로 놓이는 이음이다.
+% 두 층이 같은 x 축척을 쓰므로 막대와 이음이 열 단위로 그대로 포개진다. 세로 띠가 겹치는
+% 자리인데 어디서나 폭이 꼭 두 열이고, 그 띠가 두 층을 꿰어 눈이 따라가게 한다.
+% ba/bb는 막대마다의 시작 열과 끝 열---layout이 off = 5, 11, 17로 마디를 까는 그것이다.
 
-numeric cw, bh, bg, nlev, side;
-cw := 9;    % 한 열의 너비
-bh := 12;   % 막대 높이
-bg := 17;   % 층 사이 간격
-nlev := 4;  % 맨 아래 층 번호
-side := 31; % 예로 든 변의 길이
+numeric bh, bg, ybase, W;
+bh := 10;    % 막대 높이
+bg := 14;    % 막대 사이 간격
+ybase := 26; % 맨 아래 막대의 밑변
+W := 31;     % 예로 든 변의 길이
 
 numeric ba[], bb[];
-ba0 := 0;  bb0 := 6;   % 가까운 모서리의 매듭
+ba0 := 0;  bb0 := 6;   % 가까운 모서리의 매듭 (가로팔)
 ba1 := 5;  bb1 := 12;  % 마디 (off=5)
 ba2 := 11; bb2 := 18;  % 마디 (off=11)
 ba3 := 17; bb3 := 24;  % 마디 (off=17)
-ba4 := 23; bb4 := 30;  % 먼 모서리의 매듭
+ba4 := 23; bb4 := 30;  % 먼 모서리의 매듭 (세로팔)
+
+% 먼 모서리의 매듭은 xf[1]을 타고 이 변에 앉는다: 띠 좌표 (r,c)가 판의 (c, W-1-r)로 간다.
+% 그래서 띠의 행이 열로, 열이 행으로 바뀐다. e를 이것으로 바꿔 끼우면 같은 표가 그려진다.
+def eright(expr ra, ca, rb, cb) =
+  draw ((W-1-ra)*uu, -ca*uu)--((W-1-rb)*uu, -cb*uu);
+enddef;
+
+% 그 모서리에는 이웃 변(오른쪽)의 첫 마디(off=5)도 세 이음만큼 걸쳐 든다---두 끝이 다
+% 이 그림 안에 드는 것이 그 셋뿐이다. 그것까지 그려야 이 그림이 진짜 31×31 액자의 그
+% 자리와 이음 하나까지 같아진다. 마디의 열이 2를 넘으면 판의 행이 8이 되어 그림 밖이다.
+def enext(expr ra, ca, rb, cb) =
+  if (ca <= 2) and (cb <= 2):
+    draw ((W-1-ra)*uu, -(ca+5)*uu)--((W-1-rb)*uu, -(cb+5)*uu);
+  fi
+enddef;
+
+% 위쪽 띠 세 줄에 두 모서리의 팔이 걸쳐 ㄷ자가 된다.
+def sidegrid =
+  drawoptions(withpen pencircle scaled .3pt withcolor .75white);
+  for r = 0 upto 7: for c = 0 upto W-1:
+    if (r <= 2) or (c <= 2) or (c >= W-3):
+      draw unitsquare scaled uu shifted ((c-.5)*uu, (-r-.5)*uu);
+    fi
+  endfor endfor
+  drawoptions();
+  for r = 0 upto 7: for c = 0 upto W-1:
+    if (r <= 2) or (c <= 2) or (c >= W-3):
+      fill fullcircle scaled 1.2 shifted (c*uu, -r*uu);
+    fi
+  endfor endfor
+enddef;
 
 beginfig(7);
   defaultscale := .7;
 
-  % 겹치는 두 열을 세로 띠로 밝힌다.
+  % 겹치는 두 열. 막대층에서 이음층까지 내리꽂아 두 층을 잇는다.
   for p = 5, 11, 17, 23:
-    fill unitsquare xscaled 2cw yscaled (nlev*bg + bh + 8)
-      shifted (p*cw, -nlev*bg - 4) withcolor (1, .87, .87);
+    fill unitsquare xscaled 2uu yscaled (ybase + 4bg + bh + 2.5uu)
+      shifted ((p-.5)*uu, -2.5uu) withcolor (1, .88, .88);
   endfor
 
-  % 층마다 막대 하나. 열 ba부터 bb까지를 덮는다.
-  for k = 0 upto nlev:
-    fill unitsquare xscaled ((bb[k] + 1 - ba[k])*cw) yscaled bh
-      shifted (ba[k]*cw, -k*bg) withcolor .94white;
-    draw unitsquare xscaled ((bb[k] + 1 - ba[k])*cw) yscaled bh
-      shifted (ba[k]*cw, -k*bg) withpen pencircle scaled .4pt;
+  % 위층 --- 덮는 열을 막대로.
+  for k = 0 upto 4:
+    fill unitsquare xscaled ((bb[k] + 1 - ba[k])*uu) yscaled bh
+      shifted ((ba[k] - .5)*uu, ybase + (4-k)*bg) withcolor .94white;
+    draw unitsquare xscaled ((bb[k] + 1 - ba[k])*uu) yscaled bh
+      shifted ((ba[k] - .5)*uu, ybase + (4-k)*bg) withpen pencircle scaled .4pt;
   endfor
+  label(btex \small 매듭 $0\ldots6$ etex,   ((ba0+bb0)/2*uu, ybase + 4bg + bh/2));
+  label(btex \small 마디 $5\ldots12$ etex,  ((ba1+bb1)/2*uu, ybase + 3bg + bh/2));
+  label(btex \small 마디 $11\ldots18$ etex, ((ba2+bb2)/2*uu, ybase + 2bg + bh/2));
+  label(btex \small 마디 $17\ldots24$ etex, ((ba3+bb3)/2*uu, ybase + bg + bh/2));
+  label(btex \small 매듭 $23\ldots30$ etex, ((ba4+bb4)/2*uu, ybase + bh/2));
 
-  label(btex 매듭 $0\ldots6$ etex,       ((ba0 + bb0 + 1)/2*cw, bh/2));
-  label(btex 마디 $5\ldots12$ etex,      ((ba1 + bb1 + 1)/2*cw, -bg + bh/2));
-  label(btex 마디 $11\ldots18$ etex,     ((ba2 + bb2 + 1)/2*cw, -2bg + bh/2));
-  label(btex 마디 $17\ldots24$ etex,     ((ba3 + bb3 + 1)/2*cw, -3bg + bh/2));
-  label(btex 매듭 $23\ldots30$ etex,     ((ba4 + bb4 + 1)/2*cw, -4bg + bh/2));
+  % 아래층 --- 그 자리에 실제로 놓이는 이음.
+  sidegrid;
+  blackpen;
+  picture mm; mm := image(modul);
+  common; basefive;                                    % 가까운 모서리: 0번 매듭
+  begingroup save e; let e = eright; common; altfive; endgroup;  % 먼 모서리: 1번 매듭
+  begingroup save e; let e = enext;  modul;          endgroup;   % 이웃 변의 첫 마디
+  drawoptions();
+  for oo = 5, 11, 17: draw mm shifted (oo*uu, 0); endfor
 
   % 열 눈금. 겹침이 시작하고 끝나는 열만 적는다.
-  numeric yr; yr := -nlev*bg - 13;
-  draw (0, yr)--(side*cw, yr) withpen pencircle scaled .4pt;
+  numeric yr; yr := -7uu - 12;
+  draw (-.5uu, yr)--((W-.5)*uu, yr) withpen pencircle scaled .4pt;
   for p = 0, 5, 6, 11, 12, 17, 18, 23, 24, 30:
-    draw ((p + .5)*cw, yr)--((p + .5)*cw, yr - 3) withpen pencircle scaled .4pt;
-    label.bot(decimal p, ((p + .5)*cw, yr - 3));
+    draw (p*uu, yr)--(p*uu, yr - 3) withpen pencircle scaled .4pt;
+    label.bot(decimal p, (p*uu, yr - 3));
   endfor
-  label.lft(btex 열 etex, (-3, yr));
+  %label.lft(btex \small 열 etex, (-.5uu - 3, yr));
 endfig;
 
 end.
