@@ -12,7 +12,7 @@
 %   n     주기 몇 벌인가. 0 이상.
 %   vert  참이면 세로로 세운다. 그리는 좌표는 넷 다 가로로 누운 꼴이라, 참이면
 %         90도 돌린다. KTb.jpg의 띠 셋은 벽에 세로로 걸려 있으니 참이 벽 모습이다.
-%   grid  참이면 격자와 칸 점을 함께 깐다.
+%   grid  참이면 격자와 칸을 함께 깐다.
 %
 % 바탕과 선 빛깔은 옆 방의 ../celtic-tours/ktknot.mp에서 차림새 둘을 빌려다 쓴다.
 % paperlook이면 흰 바탕에 검은 가는 선, walllook이면 크누스의 사진 속 벽처럼 어두운
@@ -97,13 +97,6 @@ enddef;
 % 무늬를 긋는 펜. 차림새가 정해 준다---종이에서는 검은 가는 선, 벽에서는 흰 굵은 선.
 def cordpen = drawoptions(withpen pencircle scaled hairw withcolor hair); enddef;
 
-% 칸마다 찍는 점. 격자 위에 놓이니 선과 같은 빛깔로 찍는다.
-def celldots(expr len) =
-  for c = 0 upto len-1: for r = 0 upto 2:
-    fill fullcircle scaled .15uu shifted (c*uu, -r*uu) withcolor hair;
-  endfor endfor
-enddef;
-
 % 띠 그림 하나를 매개변수대로 놓는다. 넷이 이것을 함께 쓴다.
 %   pp    무늬 그림 (가로로 누운 꼴)
 %   len   판의 길이. 격자를 그 길이에 맞춘다.
@@ -122,7 +115,7 @@ def showband(expr pp, len, vert, grid) =
     qq := image(
       setboard(len, 3);
       backdrop(brim);
-      if grid: gridboard; celldots(len); fi
+      if grid: gridboard; fi
       draw pp;
     );
     draw if vert: qq rotated 90 else: qq fi;
