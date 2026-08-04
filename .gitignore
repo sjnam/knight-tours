@@ -11,8 +11,7 @@ frame.mpx
 
 # frieze/ 생성물 (mptopdf)
 frieze.[0-9]*
-frieze-[0-9].pdf
-frieze-[0-9]*
+frieze-[0-9]*.pdf
 frieze.mpx
 frieze.log
 frieze.pdf

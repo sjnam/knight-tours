@@ -73,6 +73,9 @@
 %
 % 셋은 서로 다른 투어다. 왼쪽과 오른쪽은 크기가 같은데도 뒤집거나 돌려서 포갤 수
 % 없다. 가운데가 3x26인 것이 반갑다---크누스가 적어 둔 3x(12n+14)의 n=1이 26이다.
+%
+% 이 셋을 벽까지 곁들여 사진 그대로 세운 것이 맨 끝의 20번 그림이다. 잰 값과 벽
+% 얼룩을 흉내 내는 법은 거기 적어 두었다.
 
 % 바탕은 켈트 매듭 꾸러미의 것을 그대로 빌려 쓴다. paperlook과 walllook이 정해 주는
 % 대로 칸이 깔리고 선 빛깔이 정해지니, 이 띠들이 옆 방의 걸개그림과 한 살림이 된다.
@@ -340,7 +343,8 @@ enddef;
 
 % 아홉 그림을 두 차림새로 뽑는다. 1~9가 종이, 11~19가 벽이고 번호의 일의 자리가 서로
 % 같다---1과 11이 같은 그림, 9와 19가 같은 그림이다. 벽 쪽은 uu를 조금 키웠다. 한 칸이
-% 8bp면 타일 사이 틈이 1.4bp밖에 안 되어 칸이 뭉개져 보인다.
+% 8bp면 타일 사이 틈이 1.4bp밖에 안 되어 칸이 뭉개져 보인다. 사진 KTb.jpg를 통째로
+% 흉내 낸 20번이 그 뒤에 하나 더 붙는다.
 %
 % 차림새를 먼저 부르고 uu를 나중에 정해야 한다. 차림새는 uu를 건드리지 않지만 brim은
 % 다시 정하니, 여백 띠를 손보려면 그것도 차림새 뒤에 두어야 한다.
@@ -370,5 +374,130 @@ beginfig(16); walllook; uu := 12; lvl_three_lft(3, true, false); endfig;
 beginfig(17); walllook; uu := 12; lvl_three_mid(4, true, false); endfig;
 beginfig(18); walllook; uu := 12; lvl_three_rgt(2, true, false); endfig;
 beginfig(19); walllook; uu := 12; lvl_three_lft(3, false, true); endfig;
+
+% ============================================================================
+% 사진 통째로 --- KTb.jpg
+% ============================================================================
+% 위의 allthree는 띠 셋을 나란히 세우기만 한 것이라 사이가 넉넉하다. 여기서는
+% 사진 https://cs.stanford.edu/~knuth/KTb.jpg를 통째로 흉내 낸다. 걸린 자리도
+% 벽까지도 사진에서 잰 대로다. 잰 것을 적어 둔다.
+%
+%   걸개 한 칸        105.5화소
+%   벽 타일 한 칸      52.8화소  --- 걸개 칸의 꼭 반이다
+%   걸개 타일 사이 틈    9화소 = 한 칸의 0.085
+%   타일 테두리        두께 2화소, 밝기 255분의 67
+%   타일 네 귀         모나다 --- 여덟 배로 늘여도 각이 그대로다(KTg.jpg는 둥글었다)
+%   끈                두께 3.0화소 = 한 칸의 0.028, 봉우리 밝기 255분의 245
+%   걸개 타일          체스판처럼 번갈아 255분의 20과 35
+%   벽 바탕            255분의 18
+%   밝은 벽 타일       255분의 37
+%
+% 벽 타일이 걸개 칸의 반이라는 것이 이 사진의 열쇠다. 그 덕에 띠 셋이 서로 반 칸씩
+% 어긋나 걸릴 수 있다. 벽칸으로 세면 왼쪽 띠가 0~5열, 가운데가 7~12열, 오른쪽이
+% 14~19열이라 사이가 꼭 한 벽칸씩이다. 세로로는 왼쪽과 오른쪽이 0~55행(28걸개칸),
+% 가운데가 2~53행(26걸개칸)이니 가운데가 위아래로 한 걸개칸씩 들어와 있다.
+% 격자 자리는 밝은 테두리가 세로줄·가로줄 평균에서 뾰족한 봉우리로 드러나 화소
+% 단위로 읽었다. 세로 봉우리 열여덟이 모두 52.8화소 격자에 0.5화소 안으로 맞았다.
+%
+% 벽 얼룩은 KTg.jpg의 것과 딴판이다. 거기서는 걸개에서 멀어질수록 어두워지는
+% 연속 분포였는데 여기서는 값이 둘뿐이다. 걸개를 밟지 않는 벽칸 292개를 재니
+% 밝은 것 181개와 어두운 것 111개로 딱 갈리고 그 사이가 텅 비어 있다. 그래서
+% 밝을 확률 0.64로 칸마다 동전을 던진다. 이웃끼리 같을 확률은 0.62로 나왔는데
+% 그냥 던지기만 해도 0.54가 나오니(표본 110에 표준편차 0.05) 뭉침의 증거로는
+% 약하다. KTg 쪽 2x2 묶음을 여기 들여오지 않은 까닭이다.
+%
+% 다만 이웃한 밝은 칸 둘은 사진에서 틈 없이 한 덩이가 된다. 가로줄 하나를 훑으면
+% 밝은 자리 36화소와 틈 17화소가 되풀이되다가, 두 칸이 잇달아 밝은 데서는 88화소
+% 짜리 한 덩이가 되고 가운데 틈이 없다. 그래서 타일마다 네 변을 따로 보아 이웃이
+% 어두울 때만 그쪽으로 틈만큼 물러난다.
+
+numeric wallcols; wallcols := 20;   % 벽의 크기 (벽칸)
+numeric wallrows; wallrows := 56;
+numeric wcell;                      % 벽 타일 한 칸. 걸개 칸의 반이다.
+numeric wseam;  wseam := .32;       % 벽 타일 사이 틈 (벽칸 단위)
+numeric lite;   lite  := .64;       % 밝은 벽 타일이 될 확률
+color wtile;    wtile := .145white;
+
+% 밝은 칸인가. 지표는 둘씩 밀어 놓았다---칸 -1..wallcols를 그리는데 이웃을 물으려면
+% 그 바깥 한 겹까지 있어야 해서다. 바깥 겹도 던져 둔다. 그리지는 않지만 가장자리
+% 칸이 밖으로 이어지는지를 그것이 정한다. 사진의 벽도 사진 밖으로 이어지니 맞다.
+boolean wl[][];
+def scatter =
+  for i = 0 upto wallcols+3: for j = 0 upto wallrows+3:
+    wl[i][j] := (uniformdeviate 1 < lite);
+  endfor endfor
+enddef;
+
+% 밝은 벽 타일 하나. 걸개 위의 타일과 달리 밝은 테두리가 없다---사진이 그렇다.
+def wspot(expr i, j) =
+  begingroup save a, b, c, e; numeric a, b, c, e;
+    a := (i - .5)*wcell; b := (i + .5)*wcell;
+    c := (-j - .5)*wcell; e := (-j + .5)*wcell;
+    if not wl[i+1][j+2]: a := a + .5wseam*wcell; fi
+    if not wl[i+3][j+2]: b := b - .5wseam*wcell; fi
+    if not wl[i+2][j+3]: c := c + .5wseam*wcell; fi
+    if not wl[i+2][j+1]: e := e - .5wseam*wcell; fi
+    fill (a,c) -- (b,c) -- (b,e) -- (a,e) -- cycle withcolor wtile;
+  endgroup
+enddef;
+
+% 걸개가 차지하는 벽칸을 적어 둔다. 얼룩은 그 자리를 건너뛴다. 걸개 타일 사이에는
+% 틈이 있어서 얼룩을 먼저 뿌리고 덮으면 그 틈으로 얼룩이 비친다.
+numeric np; np := 0;
+numeric px[], py[], qx[], qy[];
+def claim(expr X, Y, nc, nr) =
+  px[np] := X; py[np] := Y; qx[np] := X + nc - 1; qy[np] := Y + nr - 1;
+  np := np + 1;
+enddef;
+vardef covered(expr x, y) =
+  save k, b; numeric k; boolean b; b := false;
+  for k = 0 upto np-1:
+    if (x >= px[k]) and (x <= qx[k]) and (y >= py[k]) and (y <= qy[k]):
+      b := true;
+    fi
+  endfor
+  b
+enddef;
+
+% 띠 하나를 벽칸 (X,Y)를 왼쪽 위로 삼아 건다. showband과 달리 바탕을 깔지 않는다---
+% 바탕은 벽이 통째로 한 번만 깔기 때문이다. 세운 그림은 x로 -1..5벽칸, y로 -1..
+% (2len-1)벽칸을 차지하니 그만큼 옮기면 제자리에 온다.
+def hangband(expr pp, len, X, Y) =
+  begingroup
+    save qq; picture qq;
+    drawoptions();
+    qq := image(setboard(len, 3); gridboard; draw pp;);
+    draw (qq rotated 90) shifted ((X + .5)*wcell, -(Y + 2len - 1.5)*wcell);
+    drawoptions();
+  endgroup
+enddef;
+
+% 그리는 차례는 벽 바탕, 얼룩, 띠 셋이다. 난수는 randomseed를 박아 다시 그려도 같은
+% 무늬가 나오게 했다. 여백은 둘레로 한 벽칸씩 두었다---사진은 반 칸쯤에서 잘렸는데,
+% 반 칸으로 두면 가장자리 타일이 잘려 나가 어수선해 보인다.
+beginfig(20);
+  walllook; drawoptions();
+  uu := 24bp; wcell := .5uu;
+  seam := .085; bevel := 0; rim := .019uu; mesh := .26white;
+  tilea := .078white; tileb := .137white;
+  hairw := .0285uu;
+  randomseed := 3184;
+
+  np := 0;
+  claim(0, 0, 6, 56); claim(7, 2, 6, 52); claim(14, 0, 6, 56);
+
+  fill (-1.5wcell, 1.5wcell) -- ((wallcols + .5)*wcell, 1.5wcell)
+    -- ((wallcols + .5)*wcell, -(wallrows + .5)*wcell)
+    -- (-1.5wcell, -(wallrows + .5)*wcell) -- cycle withcolor slab;
+
+  scatter;
+  for i = -1 upto wallcols: for j = -1 upto wallrows:
+    if wl[i+2][j+2] and not covered(i,j): wspot(i, j); fi
+  endfor endfor
+
+  hangband(leftpic(3),  28,  0, 0);
+  hangband(midpic(4),   26,  7, 2);
+  hangband(rightpic(2), 28, 14, 0);
+endfig;
 
 end.

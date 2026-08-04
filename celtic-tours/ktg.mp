@@ -390,4 +390,138 @@ beginfig(21);
   showknot(true, true, false);
 endfig;
 
+% ============================================================================
+% 전시장 벽 --- KTg.jpg를 통째로 흉내 낸다
+% ============================================================================
+% 여태 그린 열 가지를 사진에 걸린 그대로 한 벽에 모은다. 자리는 눈대중이 아니라
+% 사진에서 재어 잡았다. 벽의 타일 격자를 먼저 맞추니 한 칸이 50.70화소였고, 그
+% 격자 위에 걸개마다의 판 원점을 얹어 보니 열 개가 모두 정수 칸에 떨어졌다---어긋난
+% 것이 가장 큰 것도 0.13칸이다. 그러니 열 폭이 다른 걸개들이 한 격자를 함께 쓰고 있다.
+%
+% 왼쪽 열의 5x10 셋이 무엇인지도 이참에 가렸다. 사진에서 이음을 읽어 내어 503쪽
+% Figure 20의 셋과 이음집합째 대 보니 딱 맞는데, 벽에 걸린 차례가 책과 다르다.
+% 위에서부터 (b)-(a)-(c)다. figb는 제자리 대칭이 180도 회전이라 뒤집어도 같고,
+% figc는 아래위를 뒤집어도 같다.
+%
+% 체스판 무늬의 위상은 걸개마다 따로 논다. 열 개 가운데 아홉은 왼쪽 위 칸이 밝고
+% 맨 위 3x16만 어둡다. 벽 하나에 놓인 격자였다면 (X+Y)의 홀짝으로 한결같아야 하는데
+% 그렇지가 않다. 타일이 벽의 것이 아니라 걸개마다 딸린 것이라는 뜻이겠다.
+
+numeric wallcols; wallcols := 18;   % 벽의 크기 (칸)
+numeric wallrows; wallrows := 56;
+
+% 걸개가 차지하는 칸의 범위를 적어 둔다. 얼룩을 뿌릴 때 피하고, 걸개에서 몇 칸
+% 떨어졌는지를 재는 데도 쓴다.
+numeric np; np := 0;
+numeric px[], py[], qx[], qy[];
+def claim(expr X, Y, nc, nr) =
+  px[np] := X; py[np] := Y; qx[np] := X + nc - 1; qy[np] := Y + nr - 1;
+  np := np + 1;
+enddef;
+
+% 칸 (x,y)가 가장 가까운 걸개에서 몇 칸인가. 걸림돌이 없으니 너비 우선 탐색을 할
+% 것 없이 직사각형까지의 맨해튼 거리를 재면 그만이다. 걸개 위면 0이다.
+vardef celldist(expr x, y) =
+  save d, m, k; numeric d, m, k;
+  d := 999;
+  for k = 0 upto np-1:
+    m := max(0, px[k]-x) + max(0, x-qx[k]) + max(0, py[k]-y) + max(0, y-qy[k]);
+    if m < d: d := m; fi
+  endfor
+  d
+enddef;
+
+% 벽 얼룩의 밝기. 사진에서 걸개를 밟지 않는 타일을 모아 재니, 걸개에 가까울수록
+% 밝았다---걸개를 비추는 빛이 둘레에 번진 것이다. 그래서 거리마다 따로 재어 백분위
+% 0.20.40.60.80.100을 적어 두었다. 표본은 차례로 237.96.65.12.8개다. 뽑을 때는 이
+% 여섯 점을 이은 꺾은선을 역누적분포로 삼아 사이를 고르게 메운다.
+numeric wsh[][];
+numeric blockq;   % 한 블록이 나누어 갖는 분위수
+def wallshades =
+  wsh[1][0] := 12; wsh[1][1] := 22; wsh[1][2] := 29;
+  wsh[1][3] := 38; wsh[1][4] := 42; wsh[1][5] := 48;
+  wsh[2][0] := 12; wsh[2][1] := 22; wsh[2][2] := 27;
+  wsh[2][3] := 30; wsh[2][4] := 34; wsh[2][5] := 43;
+  wsh[3][0] := 11; wsh[3][1] := 18; wsh[3][2] := 22;
+  wsh[3][3] := 24; wsh[3][4] := 30; wsh[3][5] := 37;
+  wsh[4][0] := 15; wsh[4][1] := 19; wsh[4][2] := 20;
+  wsh[4][3] := 22; wsh[4][4] := 26; wsh[4][5] := 35;
+  wsh[5][0] := 12; wsh[5][1] := 12; wsh[5][2] := 12;
+  wsh[5][3] := 15; wsh[5][4] := 20; wsh[5][5] := 20;
+enddef;
+
+% 얼룩은 칸마다 따로 놀지 않고 2x2씩 뭉친다. 사진에서 이웃한 타일의 밝기 차이를 재면
+% 블록 안이 2~5, 블록을 건너뛰면 5~7, 멀리 떨어지면 11이다. 그렇다고 블록 안 넷이
+% 똑같지도 않으니, 밑값을 나누어 가지되 조금씩 흔들리는 꼴이다.
+%
+% 그래서 블록마다 분위수 u를 하나 뽑아 넷이 함께 쓰고, 칸마다 제 거리로 그 분위수의
+% 밝기를 찾은 뒤 잔 떨림을 더한다. 이러면 걸개에 가까운 칸이 더 밝은 것과 넷이 한
+% 덩이로 보이는 것이 한꺼번에 된다. 밑값을 그냥 나누어 쓰면 블록이 걸개 가장자리에
+% 걸칠 때 먼 칸까지 덩달아 밝아진다.
+vardef wallshade(expr d, u) =
+  save k, f, dd, q; numeric k, f, dd, q;
+  dd := d; if dd < 1: dd := 1; fi if dd > 5: dd := 5; fi
+  q := u*5;
+  k := floor q; if k > 4: k := 4; fi
+  f := q - k;
+  (wsh[dd][k]*(1-f) + wsh[dd][k+1]*f + (uniformdeviate 10) - 5)/255
+enddef;
+
+% 벽 타일 하나. 걸개 위의 타일과 달리 밝은 테두리가 없다---사진이 그렇다. 자리는
+% gridboard가 판 위에 까는 것과 똑같이 잡아 안팎이 한 격자에 놓이게 한다.
+def spot(expr i, j, v) =
+  fill tilepath((1-seam)*uu, bevel*uu)
+    shifted ((i - .5(1-seam))*uu, (-j - .5(1-seam))*uu)
+    withcolor v*white;
+enddef;
+
+% 걸개 하나를 벽의 (X,Y)칸에 건다. showknot과 달리 바탕을 깔지 않는다---바탕은 벽이
+% 통째로 한 번만 깔기 때문이다. 격자와 매듭을 한 그림으로 뜬 뒤에 옮기는 것이 요령이다.
+def hangknot(expr closed, X, Y, ph) =
+  begingroup
+    save pp; picture pp;
+    tilephase := ph;
+    pp := image(measureboard; gridboard; drawknot(closed););
+    draw pp shifted (X*uu, -Y*uu);
+  endgroup
+enddef;
+
+% 그리는 차례는 벽 바탕, 얼룩, 걸개 열이다. 얼룩은 걸개가 앉은 칸을 건너뛰니 서로
+% 덮을 일이 없다. 난수는 randomseed를 박아 다시 그려도 같은 무늬가 나오게 했다.
+beginfig(22);
+  walllook; uu := 12bp; rim := .03uu;
+  randomseed := 2604;
+  wallshades;
+
+  np := 0;
+  claim(3,1,3,16);  claim(1,18,5,10); claim(1,31,5,10); claim(1,44,5,10);
+  claim(7,1,6,6);   claim(7,8,8,8);   claim(7,17,8,8);
+  claim(7,26,8,8);  claim(7,35,8,8);  claim(7,44,10,10);
+
+  fill (-.5uu, .5uu) -- ((wallcols - .5)*uu, .5uu)
+    -- ((wallcols - .5)*uu, (.5 - wallrows)*uu) -- (-.5uu, (.5 - wallrows)*uu)
+    -- cycle withcolor slab;
+  for bi = 0 step 2 until wallcols-1:
+    for bj = -1 step 2 until wallrows-1:
+      blockq := uniformdeviate 1;
+      for i = bi upto min(bi+1, wallcols-1):
+        for j = max(bj,0) upto min(bj+1, wallrows-1):
+          if celldist(i,j) > 0: spot(i, j, wallshade(celldist(i,j), blockq)); fi
+        endfor
+      endfor
+    endfor
+  endfor
+
+  tour_lft_top;      hangknot(false, 3, 1,  0);
+  tour_figb;         hangknot(true,  1, 18, 1);
+  tour_figa;         hangknot(true,  1, 31, 1);
+  tour_figc;         hangknot(true,  1, 44, 1);
+  tour_euler;        hangknot(true,  7, 1,  1);
+  tour_jelliss;      hangknot(true,  7, 8,  1);
+  tour_most_celtic;  hangknot(true,  7, 17, 1);
+  tour_many_ex;      hangknot(true,  7, 26, 1);
+  tour_max_cross;    hangknot(true,  7, 35, 1);
+  tour_quaternary;   hangknot(true,  7, 44, 1);
+endfig;
+
 end.
