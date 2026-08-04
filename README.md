@@ -4,6 +4,8 @@
   <img src="KTf.jpg" width="600">
 </p>
 
+- [켈트 기사 행마](celtic)
 - [장식용 기사 행마 액자](deco-frame)
 - [크누스의 겹친 기사 행마 액자](frames)
+- [가늘고 긴 기사 행마](long-and-skinny)
 
