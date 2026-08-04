@@ -32,5 +32,11 @@ frames.toc
 frames.log
 frames.pdf
 
+# celtic-tours/ 생성물 (mptopdf)
+ktg.[0-9]*
+ktg-[0-9]*.pdf
+ktg.mpx
+ktg.log
+
 # macOS
 .DS_Store
