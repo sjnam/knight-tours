@@ -69,6 +69,9 @@ color mesh;  mesh  := .78white;% 타일 테두리 빛깔
 color tilea; tilea := white;   % 어두운 칸의 빛깔 (열+행이 짝수)
 color tileb; tileb := white;   % 밝은 칸의 빛깔 (열+행이 홀수)
 color slab;  slab  := white;   % 판 바깥 여백의 빛깔
+color hair;   hair  := black;  % 리본 대신 가는 선 하나로만 그릴 때의 선 빛깔.
+numeric hairw; hairw := .5pt;  % 이 꾸러미는 안 쓰고, frieze.mp처럼 격자만 빌려다
+                               % 쓰는 그림이 차림새를 따라가게 하려고 둔다.
 numeric brim; brim := .6;      % 판 둘레에 두는 여백 띠의 폭 (칸 단위). 0이면 띠가
                                % 없어 격자가 그림 가장자리까지 꽉 찬다.
 numeric seam; seam := .08;     % 타일 사이에 두는 틈 (칸 단위)
@@ -90,6 +93,7 @@ tilephase := 0;                % 타일 위에 어느 위상으로 놓였나에 
 def paperlook =
   ink := black; pulp := white; slab := white; mesh := .78white;
   tilea := white; tileb := white; tilephase := 0;
+  hair := black; hairw := .5pt;
   brim := .6; seam := .08; bevel := 0; rim := .4bp;
   hw := .038; gap := 0;    bulb := 2.0; wire := .4bp; roundjoin := true;
   bend := 1;
@@ -98,6 +102,7 @@ enddef;
 def walllook =
   ink := black; pulp := white; slab := .075white;
   tilea := .10white; tileb := .17white; mesh := .38white; tilephase := 0;
+  hair := white; hairw := .8pt;
   brim := .6; seam := .17; bevel := .04; rim := .7bp;
   hw := .054; gap := .032; bulb := 2.2; wire := 0; roundjoin := true;
   bend := 1.8;
@@ -113,8 +118,17 @@ numeric tn; pair tv[];
 def newtour = tn := 0; enddef;
 def K(expr x, y) = tv[tn] := (x*uu, -y*uu); tn := tn + 1; enddef;
 
-% 판의 크기를 스스로 잰다. 투어를 다 적은 뒤에 불러야 한다.
+% 판의 자리는 blo·bhi 둘로 적는다. 이것을 정하는 길이 둘 있다. measureboard는 적어
+% 둔 투어에서 재고, setboard는 열과 행의 수로 곧바로 정한다. backdrop과 gridboard는
+% 둘 다 blo·bhi만 보니, 투어가 없는 그림도 격자를 빌려다 쓸 수 있다. frieze.mp가
+% 그렇게 쓴다. 다만 둘 중 하나를 반드시 먼저 불러야 한다.
 pair blo, bhi;
+def setboard(expr nc, nr) =
+  blo := (-.5uu, -(nr - .5)*uu);
+  bhi := ((nc - .5)*uu, .5uu);
+enddef;
+
+% 투어를 다 적은 뒤에 불러야 한다.
 def measureboard =
   blo := bhi := tv[0];
   for i = 1 upto tn-1:
@@ -126,7 +140,6 @@ enddef;
 
 % 바탕. mg는 판 둘레로 더 두는 여백이다(칸 단위).
 def backdrop(expr mg) =
-  measureboard;
   fill (blo - (mg*uu, mg*uu)) -- (xpart bhi + mg*uu, ypart blo - mg*uu)
     -- (bhi + (mg*uu, mg*uu)) -- (xpart blo - mg*uu, ypart bhi + mg*uu)
     -- cycle withcolor slab;
@@ -167,7 +180,6 @@ def gridboard =
   begingroup
     save nc, nr, cx, cy, side, tile;
     numeric nc, nr, cx, cy, side; path tile;
-    measureboard;
     nc := round((xpart bhi - xpart blo)/uu);
     nr := round((ypart bhi - ypart blo)/uu);
     side := (1 - seam)*uu;
@@ -192,6 +204,7 @@ def showknot(expr closed, vert, grid) =
     keeplit := lit;
     if not vert: lit := lit + 90; fi
     pp := image(
+      measureboard;
       backdrop(brim);
       if grid: gridboard; fi
       drawknot(closed);

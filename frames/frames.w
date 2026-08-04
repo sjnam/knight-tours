@@ -75,6 +75,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"sort"
 	"strings"
@@ -760,13 +761,14 @@ if err != nil {
 	log.Fatal(err)
 }
 w := bufio.NewWriter(out)
-fmt.Fprintln(w, `% frames.mp — 크누스의 겹친 나이트 투어 액자 (frames.go가 씀).`)
+@<머리말과 잔손질 매크로를 쓴다@>
 fmt.Fprintln(w, "beginfig(1);")
 for i := len(tours) - 1; i >= 0; i-- {
 	@<투어 하나를 그린다@>
 }
 fmt.Fprintln(w, "drawoptions();")
 fmt.Fprintln(w, "endfig;")
+@<벽에 걸린 꼴을 그린다@>
 fmt.Fprintln(w, "end.")
 w.Flush()
 out.Close()
@@ -777,11 +779,15 @@ fmt.Println("겹친 액자 frames.mp를 썼다 (7·31·55, 진짜 닫힌 투어 
 @<타입...@>=
 var colors = []string{"0.5green", "0.65blue", "0.8red"}
 
+@ 그리는 단위. 두 그림이 같은 자를 써야 하니 여기 한 번만 적는다. 한 칸이 두 배
+좌표로 2이니 {\logo METAPOST}에서 한 칸은 |2*u|다.
+@<타입...@>=
+const u = 1.9
+
 @ 두 배 좌표를 그대로 점으로 삼고, 판의 위가 위로 오도록 $y$를 뒤집는다. 단위는
 $1.9\,$pt라 가장 큰 $55$ 액자(폭 $108$)가 $9\,$cm쯤 된다. 펜과 색은 투어마다
 \.{drawoptions}로 {\it 한 번만\/} 지정하니, \.{draw} 줄에는 경로만 남는다.
 @<투어 하나를 그린다@>=
-const u = 1.9
 fmt.Fprintf(w, "drawoptions(withpen pencircle scaled .7pt withcolor %s);\n", colors[i])
 for _, e := range tours[i].edges() {
 	fmt.Fprintf(w, "draw (%.1f,%.1f)--(%.1f,%.1f);\n",
@@ -791,9 +797,9 @@ for _, e := range tours[i].edges() {
 
 @ 그려 놓고 보면 크누스의 \.{KTf.jpg}와 똑같이, 폭 3칸 액자 셋이 이 빠진 곳 없이 서로를
 감싼다---저마다 한 붓에 그린 닫힌 나이트 투어다.
-\medskip
-\centerline{\pic height 9cm{frames-1.pdf}}
-
+$$
+\pic height 9cm{frames-1.pdf}
+$$
 @ 프로그램이 표준 출력에 찍는 것은 이렇다.
 \medskip
 \begingroup
@@ -821,5 +827,188 @@ $24$칸씩 늘었는데, 이는 여섯 칸짜리 마디 {\it 넷\/}이다---그�
 of the modules''라 한 그대로다. 그러니 마디 수가 $0\to3\to7$로 나온 것에서 뒤의
 $+4$가 바로 그 넷이고, 앞의 $+3$은 $7$ 액자에 온전한 마디가 하나도 들어서지 못해
 생긴 셈법의 어긋남일 뿐이다.
+
+@* 벽에 걸린 꼴. 위의 그림은 겹을 가리려고 색을 나눈 것이고, 크누스의 사진 속 실물은
+어두운 타일 벽에 흰 실 하나로 걸려 있다. 그 꼴을 한 장 더 그린다. 바탕은 옆 방의
+\.{../celtic-tours/ktknot.mp}에서 |walllook|을 통째로 빌려다 쓴다. 거기 적힌 타일
+빛깔$\cdot$틈$\cdot$테두리는 모두 같은 벽을 찍은 \.{KTg.jpg}에서 화소로 잰 것이라
+\.{KTf.jpg}에도 그대로 맞는다---나도 \.{KTf.jpg}에서 다시 재어 보았는데, 타일 테두리가
+$80$--$90$, 밝은 칸이 $40$--$55$, 어두운 칸이 $17$--$27$로 나와 |walllook|의
+$95\cdot43\cdot25$와 어긋나지 않는다.
+
+사진을 크게 놓고 보면 타일이 {\it 투어가 밟는 칸에만\/} 깔려 있다. 액자 한가운데의 빈
+곳에는 없다. 가장 작은 $7$ 액자의 한복판 한 칸까지도 비어 있으니 우연이 아니다. 그래서
+판마다 |gridboard|로 통째로 깐 뒤 가운데 구멍을 바탕색으로 도로 덮는다. 바깥부터
+$55\cdot31\cdot7$ 차례로 하면, 앞선 판의 구멍 안에 다음 판이 들어앉아 서로를 지우지
+않는다.
+@<벽에 걸린 꼴을 그린다@>=
+fmt.Fprintln(w, "beginfig(2);")
+fmt.Fprintln(w, "walllook; uu := 2u; rim := .05uu; hairw := 2hw*uu; brim := 4;")
+fmt.Fprintln(w, "midboard(55); backdrop(brim);")
+for i := len(tours) - 1; i >= 0; i-- {
+	n := 1 - tours[i].start[0]
+	fmt.Fprintf(w, "midboard(%d); gridboard; hole(%d);\n", n, n-6)
+}
+@<액자 바깥 벽에 타일을 흩뿌린다@>
+@<세 투어를 흰 실로 그린다@>
+fmt.Fprintln(w, "drawoptions();")
+fmt.Fprintln(w, "endfig;")
+
+@ 판의 크기는 출발 칸에서 곧바로 나온다. 두 배 좌표라 $7$ 액자는 $(-6,-6)$에서,
+$31$은 $(-30,-30)$에서, $55$는 $(-54,-54)$에서 떠난다. 곧 $N=1-r_0$이다. 구멍은
+테두리 폭이 늘 3칸이니 $N-6$이고, $7$ 액자에서는 한 칸짜리가 된다.
+
+체스판 무늬의 위상은 세 판이 저절로 맞는다. |gridboard|는 칸의 명암을 왼쪽 위에서부터
+센 자리로 가리는데, 판 한가운데를 원점으로 놓고 풀어 보면 그 값이 $(X-Y+N-1)$의 홀짝이
+되고, $N$이 셋 다 홀수라 $N-1$이 짝수여서 떨어져 나간다. 남는 것은 $(X-Y)$뿐이니 판
+크기와 무관하다. 그러니 셋을 겹쳐도 타일이 어긋나지 않는다.
+
+실은 흰색이고 굵기는 |walllook|이 잰 끈 두께를 그대로 쓴다. |hw|가 반폭(칸의 $0.054$
+배)이니 |2hw*uu|가 곧 한 칸의 $0.108$배다. \.{KTf.jpg}에서 실을 재어도 칸의 $0.13$배
+남짓이라 얼추 맞는다. 겹을 색으로 가르지 않으니 그리는 차례는 아무래도 좋다.
+@<세 투어를 흰 실로 그린다@>=
+fmt.Fprintln(w, "drawoptions(withpen pencircle scaled hairw withcolor hair);")
+for i := len(tours) - 1; i >= 0; i-- {
+	for _, e := range tours[i].edges() {
+		fmt.Fprintf(w, "draw (%.1f,%.1f)--(%.1f,%.1f);\n",
+			float64(e[0][1])*u, -float64(e[0][0])*u,
+			float64(e[1][1])*u, -float64(e[1][0])*u)
+	}
+}
+
+@ 머리말에 매크로 둘을 얹는다. |setboard|는 왼쪽 위 칸을 원점에 두니 한가운데로
+옮기는 |midboard|가 필요하고, 구멍을 덮는 |hole|이 필요하다. 단위 |u|도 여기서 한 번만
+적어 두 그림이 같은 자를 쓰게 한다.
+@<머리말과 잔손질 매크로를 쓴다@>=
+fmt.Fprintln(w, `% frames.mp — 크누스의 겹친 나이트 투어 액자 (frames.go가 씀).`)
+fmt.Fprintln(w, "input ../celtic-tours/ktknot;")
+fmt.Fprintf(w, "numeric u; u := %g;\n", u)
+fmt.Fprintln(w, `def midboard(expr n) =`)
+fmt.Fprintln(w, `  setboard(n, n);`)
+fmt.Fprintln(w, `  blo := blo + ((.5-.5n)*uu, (.5n-.5)*uu);`)
+fmt.Fprintln(w, `  bhi := bhi + ((.5-.5n)*uu, (.5n-.5)*uu);`)
+fmt.Fprintln(w, `enddef;`)
+fmt.Fprintln(w, `def hole(expr n) =`)
+fmt.Fprintln(w, `  fill unitsquare shifted (-.5,-.5) scaled (n*uu) withcolor slab;`)
+fmt.Fprintln(w, `enddef;`)
+
+@ 마지막으로 액자 바깥 벽이 남았다. 사진의 그곳에는 밝기가 제멋대로인 타일이 흩뿌려져
+있다. 걸개그림이 아니라 그 방 벽의 모자이크이니 무엇을 따라 그런 무늬가 되었는지 알
+길이 없다. 그래서 무늬 대신 {\it 분포\/}를 옮기기로 했다. 사진에서 액자를 밟지 않는
+타일 $2897$개의 밝기를 재어 도수분포를 얻고, 그 분포에서 난수로 뽑아 칠한다.
+
+재면서 알게 된 것이 둘이다. 첫째, 벽 타일은 판 위의 타일과 {\it 같은 격자\/}에
+놓인다---가로 세로 어느 쪽으로 훑어도 한 칸이 $47.5$화소로 같고 위상도 어긋나지 않는다.
+둘째, 벽 타일에는 밝은 테두리가 없다. 테두리는 액자가 밟는 칸에만 있다. 그래서
+|gridboard|를 쓰지 않고 타일 하나만 칠하는 |spot|을 따로 두었다.
+
+그런데 밝기를 통째로 한 자루에 담아 뽑았더니 액자 속이 사진보다 붐볐다. 다시 보니
+{\it 액자에 가까울수록 밝다\/}. 액자를 비추는 빛이 둘레 벽에 번진 것이다. 액자에서 몇
+칸 떨어졌는지로 나누어 재니 중앙값이 $40\cdot30\cdot26\cdot24\cdot23\cdot22$으로
+또렷이 잦아든다. 그래서 거리마다 따로 재어 두고 그 거리의 분포에서 뽑는다.
+
+난수는 {\logo METAPOST}가 아니라 여기서 씨앗을 박아 뽑는다. 그래야 다시 지어도 같은
+그림이 나온다.
+@<액자 바깥 벽에 타일을 흩뿌린다@>=
+rng := rand.New(rand.NewSource(20260804))
+@<액자에서 몇 칸인지 미리 재 둔다@>
+for j := -half; j <= half; j++ {
+	for i := -half; i <= half; i++ {
+		if inBand(i, j) {
+			continue
+		}
+		fmt.Fprintf(w, "spot(%d,%d,%d);\n", i, j, wallShade(rng, dist[[2]int{i, j}]))
+	}
+}
+
+@ 거리는 액자가 밟는 칸에서 시작하는 너비 우선 탐색으로 잰다. 액자 사이가 넓어야 아홉
+칸이라 대개 $1$에서 $5$ 사이가 나온다.
+@<액자에서 몇 칸인지 미리 재 둔다@>=
+const half = 31
+dist := map[[2]int]int{}
+var queue [][2]int
+for j := -half; j <= half; j++ {
+	for i := -half; i <= half; i++ {
+		if inBand(i, j) {
+			dist[[2]int{i, j}] = 0
+			queue = append(queue, [2]int{i, j})
+		}
+	}
+}
+for k := 0; k < len(queue); k++ {
+	p := queue[k]
+	for _, d := range [4][2]int{{1, 0}, {-1, 0}, {0, 1}, {0, -1}} {
+		q := [2]int{p[0] + d[0], p[1] + d[1]}
+		if q[0] < -half || q[0] > half || q[1] < -half || q[1] > half {
+			continue
+		}
+		if _, ok := dist[q]; !ok {
+			dist[q] = dist[p] + 1
+			queue = append(queue, q)
+		}
+	}
+}
+
+@ 거리마다의 밝기다. 사진에서 그 거리에 놓인 타일을 다 모아 백분위 $0\cdot20\cdot40
+\cdot60\cdot80\cdot100$을 적었다. 표본 수는 차례로 $661\cdot656\cdot652\cdot593\cdot
+270\cdot66$개다. 뽑을 때는 이 여섯 점을 이은 꺾은선을 역누적분포로 삼아 그 사이를
+고르게 메운다. 그러면 계단이 드러나지 않는다.
+@<타입...@>=
+var wallShades = [7][6]int{
+	1: {13, 22, 35, 43, 48, 62},
+	2: {12, 21, 27, 33, 36, 48},
+	3: {12, 20, 24, 28, 32, 46},
+	4: {12, 20, 22, 25, 29, 43},
+	5: {11, 20, 22, 24, 27, 37},
+	6: {12, 18, 21, 23, 26, 35},
+}
+
+@ @<보조...@>=
+func wallShade(r *rand.Rand, d int) int {
+	if d < 1 {
+		d = 1
+	} else if d > 6 {
+		d = 6
+	}
+	p := wallShades[d]
+	u := r.Float64() * 5
+	k := int(u)
+	if k > 4 {
+		k = 4
+	}
+	f := u - float64(k)
+	return int(float64(p[k])*(1-f) + float64(p[k+1])*f + 0.5)
+}
+
+@ 액자 셋이 밟는 칸인지 가린다. 판 한가운데를 원점으로 센 좌표라, 크기 $n$인 액자는
+$|i|\le n/2$이면서 구멍 $|i|\le n/2-3$ 밖인 칸을 밟는다. $n=7$이면 구멍이 한가운데 한
+칸으로 줄어든다.
+@<보조...@>=
+func inBand(i, j int) bool {
+	for _, n := range []int{55, 31, 7} {
+		h, in := n/2, n/2-3
+		if -h <= i && i <= h && -h <= j && j <= h {
+			if !(-in <= i && i <= in && -in <= j && j <= in) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+@ 벽 타일 하나. 자리는 |gridboard|가 판 위에 까는 것과 똑같이 잡아 액자 안팎의 타일이
+한 격자에 놓이게 한다. 여백 |brim|도 4칸으로 넓혔다. 사진이 $63$칸 폭이고 판이 $55$칸이니
+둘레로 4칸씩 벽이 보이는 셈이다.
+@<머리말과 잔손질 매크로를 쓴다@>=
+fmt.Fprintln(w, `def spot(expr i, j, v) =`)
+fmt.Fprintln(w, `  fill tilepath((1-seam)*uu, bevel*uu)`)
+fmt.Fprintln(w, `    shifted ((i-.5+.5seam)*uu, (j-.5+.5seam)*uu)`)
+fmt.Fprintln(w, `    withcolor (v/255)*white;`)
+fmt.Fprintln(w, `enddef;`)
+
+@ 그러면 이렇게 나온다. 크누스의 사진과 견주어 보시라.
+$$
+\pic height 9cm{frames-2.pdf}
+$$
 
 @* 색인.

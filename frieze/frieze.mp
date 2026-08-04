@@ -14,9 +14,13 @@
 %         90도 돌린다. KTb.jpg의 띠 셋은 벽에 세로로 걸려 있으니 참이 벽 모습이다.
 %   grid  참이면 격자와 칸 점을 함께 깐다.
 %
+% 바탕과 선 빛깔은 옆 방의 ../celtic-tours/ktknot.mp에서 차림새 둘을 빌려다 쓴다.
+% paperlook이면 흰 바탕에 검은 가는 선, walllook이면 크누스의 사진 속 벽처럼 어두운
+% 타일 위에 흰 굵은 선이다. 그림마다 beginfig 안에서 고른다.
+%
 % 만드는 법:  mptopdf frieze.mp    -> frieze-1.pdf ... (PDF)
 %             mpost   frieze.mp    -> frieze.1 ...     (EPS)
-% 이 파일은 홀로 선다---바깥에서 input하는 것도, TeX 라벨도 없다.
+% TeX 라벨은 없다.
 %
 % ============================================================================
 % 8층 문 위의 프리즈 (lvl_eight_frz)
@@ -70,29 +74,31 @@
 % 셋은 서로 다른 투어다. 왼쪽과 오른쪽은 크기가 같은데도 뒤집거나 돌려서 포갤 수
 % 없다. 가운데가 3x26인 것이 반갑다---크누스가 적어 둔 3x(12n+14)의 n=1이 26이다.
 
-numeric uu; uu := 8;   % 한 칸의 크기
+% 바탕은 켈트 매듭 꾸러미의 것을 그대로 빌려 쓴다. paperlook과 walllook이 정해 주는
+% 대로 칸이 깔리고 선 빛깔이 정해지니, 이 띠들이 옆 방의 걸개그림과 한 살림이 된다.
+% 빌려 쓰는 것은 다섯뿐이다---차림새 둘, 판을 정하는 setboard, 바탕을 까는 backdrop과
+% gridboard. 매듭을 짜는 부분은 손대지 않는다. 이 띠들은 리본이 아니라 가는 선
+% 하나로 그리는 그림이라서다.
+input ../celtic-tours/ktknot;
+
+paperlook;             % 밑값. 그림마다 beginfig 안에서 다시 고른다.
+uu := 8;               % 한 칸의 크기
 
 % 이음 하나. 첫 지표가 폭(0..2), 둘째가 길이 방향이다. 행이 아래로 자라야 하니
-% y를 뒤집는다. 그래서 그냥 그리면 가로로 눕는다.
+% y를 뒤집는다. 그래서 그냥 그리면 가로로 눕는다. 켈트 쪽 K와 같은 셈법이라
+% 판의 자리도 setboard가 잡아 주는 것과 그대로 맞물린다.
 def e(expr ra, ca, rb, cb) =
   draw (ca*uu, -ra*uu)--(cb*uu, -rb*uu);
 enddef;
 
-def blackpen = drawoptions(withpen pencircle scaled .5pt); enddef;
+% 무늬를 긋는 펜. 차림새가 정해 준다---종이에서는 검은 가는 선, 벽에서는 흰 굵은 선.
+def cordpen = drawoptions(withpen pencircle scaled hairw withcolor hair); enddef;
 
-% 폭 3칸에 길이 len칸인 격자를 그림으로 뜨고 칸마다 점을 찍는다. 무늬와 같은
-% 가로 꼴이라, 함께 합친 뒤 돌리면 격자도 따라 돈다.
-vardef gridpic(expr len) =
-  image(
-    drawoptions(withpen pencircle scaled .3pt withcolor .75white);
-    for c = 0 upto len-1: for r = 0 upto 2:
-      draw unitsquare scaled uu shifted ((c-.5)*uu, (-r-.5)*uu);
-    endfor endfor
-    drawoptions();
-    for c = 0 upto len-1: for r = 0 upto 2:
-      fill fullcircle scaled 1.2 shifted (c*uu, -r*uu);
-    endfor endfor
-  )
+% 칸마다 찍는 점. 격자 위에 놓이니 선과 같은 빛깔로 찍는다.
+def celldots(expr len) =
+  for c = 0 upto len-1: for r = 0 upto 2:
+    fill fullcircle scaled .15uu shifted (c*uu, -r*uu) withcolor hair;
+  endfor endfor
 enddef;
 
 % 띠 그림 하나를 매개변수대로 놓는다. 넷이 이것을 함께 쓴다.
@@ -102,11 +108,20 @@ enddef;
 %   grid  참이면 격자를 함께 깐다.
 % 격자를 무늬와 한 그림으로 합친 뒤에 돌리는 것이 요령이다. 따로 그리고 돌리면
 % 격자만 제자리에 남는다.
+%
+% 바탕 띠(backdrop)는 격자를 안 깔 때에도 늘 깐다. 벽 차림새에서는 무늬가 흰 선이라
+% 바탕이 없으면 흰 종이에 흰 선이 되어 아무것도 안 보이기 때문이다. 종이 차림새에서는
+% 바탕이 흰색이라 깔아도 티가 안 난다.
 def showband(expr pp, len, vert, grid) =
   begingroup
-    save qq; picture qq; qq := pp;
-    drawoptions();   % 무늬를 뜨며 켜 둔 펜을 끈다. 안 그러면 격자를 덧칠한다.
-    if grid: qq := image(draw gridpic(len); draw qq;); fi
+    save qq; picture qq;
+    drawoptions();   % 무늬를 뜨며 켜 둔 펜을 끈다. 안 그러면 바탕을 덧칠한다.
+    qq := image(
+      setboard(len, 3);
+      backdrop(brim);
+      if grid: gridboard; celldots(len); fi
+      draw pp;
+    );
     draw if vert: qq rotated 90 else: qq fi;
     drawoptions();
   endgroup
@@ -163,7 +178,7 @@ enddef;
 % 주기 n벌짜리 프리즈. 판은 3x(10n+20)이고 이음은 30n+60 = 3(10n+20)개다.
 vardef lvl_eight_frzpic(expr n) =
   save fz; picture fz;
-  blackpen;
+  cordpen;
   fz := image(period);
   image(
     capleft;
@@ -214,7 +229,7 @@ enddef;
 
 vardef leftpic(expr n) =
   save pp; picture pp;
-  blackpen; pp := image(leftper);
+  cordpen; pp := image(leftper);
   image(
     leftcap;
     for t = 0 upto n-1: draw pp shifted ((8 + 4t)*uu, 0); endfor
@@ -256,7 +271,7 @@ enddef;
 
 vardef midpic(expr n) =
   save pp; picture pp;
-  blackpen; pp := image(midper);
+  cordpen; pp := image(midper);
   image(
     midcap;
     for t = 0 upto n-1: draw pp shifted ((6 + 4t)*uu, 0); endfor
@@ -304,7 +319,7 @@ enddef;
 
 vardef rightpic(expr n) =
   save pp; picture pp;
-  blackpen; pp := image(rightper);
+  cordpen; pp := image(rightper);
   image(
     rightcap;
     for t = 0 upto n-1: draw pp shifted ((9 + 8t)*uu, 0); endfor
@@ -323,17 +338,37 @@ def allthree =
   endgroup
 enddef;
 
+% 아홉 그림을 두 차림새로 뽑는다. 1~9가 종이, 11~19가 벽이고 번호의 일의 자리가 서로
+% 같다---1과 11이 같은 그림, 9와 19가 같은 그림이다. 벽 쪽은 uu를 조금 키웠다. 한 칸이
+% 8bp면 타일 사이 틈이 1.4bp밖에 안 되어 칸이 뭉개져 보인다.
+%
+% 차림새를 먼저 부르고 uu를 나중에 정해야 한다. 차림새는 uu를 건드리지 않지만 brim은
+% 다시 정하니, 여백 띠를 손보려면 그것도 차림새 뒤에 두어야 한다.
+
+% ----- 종이 -----
 % 8층 프리즈 --- 네 조합.
-beginfig(1); lvl_eight_frz(2, false, false); endfig;
-beginfig(2); lvl_eight_frz(2, true,  false); endfig;
-beginfig(3); lvl_eight_frz(2, false, true ); endfig;
-beginfig(4); lvl_eight_frz(2, true,  true ); endfig;
+beginfig(1); paperlook; uu := 8; lvl_eight_frz(2, false, false); endfig;
+beginfig(2); paperlook; uu := 8; lvl_eight_frz(2, true,  false); endfig;
+beginfig(3); paperlook; uu := 8; lvl_eight_frz(2, false, true ); endfig;
+beginfig(4); paperlook; uu := 8; lvl_eight_frz(2, true,  true ); endfig;
 
 % 3층의 띠 셋 --- 벽에 걸린 크기.
-beginfig(5); allthree; endfig;
-beginfig(6); lvl_three_lft(3, true, false); endfig;
-beginfig(7); lvl_three_mid(4, true, false); endfig;
-beginfig(8); lvl_three_rgt(2, true, false); endfig;
-beginfig(9); lvl_three_lft(3, false, true); endfig;
+beginfig(5); paperlook; uu := 8; allthree; endfig;
+beginfig(6); paperlook; uu := 8; lvl_three_lft(3, true, false); endfig;
+beginfig(7); paperlook; uu := 8; lvl_three_mid(4, true, false); endfig;
+beginfig(8); paperlook; uu := 8; lvl_three_rgt(2, true, false); endfig;
+beginfig(9); paperlook; uu := 8; lvl_three_lft(3, false, true); endfig;
+
+% ----- 벽 -----
+beginfig(11); walllook; uu := 12; lvl_eight_frz(2, false, false); endfig;
+beginfig(12); walllook; uu := 12; lvl_eight_frz(2, true,  false); endfig;
+beginfig(13); walllook; uu := 12; lvl_eight_frz(2, false, true ); endfig;
+beginfig(14); walllook; uu := 12; lvl_eight_frz(2, true,  true ); endfig;
+
+beginfig(15); walllook; uu := 12; allthree; endfig;
+beginfig(16); walllook; uu := 12; lvl_three_lft(3, true, false); endfig;
+beginfig(17); walllook; uu := 12; lvl_three_mid(4, true, false); endfig;
+beginfig(18); walllook; uu := 12; lvl_three_rgt(2, true, false); endfig;
+beginfig(19); walllook; uu := 12; lvl_three_lft(3, false, true); endfig;
 
 end.
