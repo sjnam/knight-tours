@@ -1,6 +1,6 @@
 .PHONY: frieze-1.pdf png clean
 
-frieze-1.pdf: frieze.mp ../celtic-tours/ktknot.mp
+frieze-1.pdf: frieze.mp ../celtic/ktknot.mp
 	mptopdf frieze.mp
 
 # 사진 KTb.jpg를 통째로 흉내 낸 20번을 웹에 올릴 PNG로 굽는다. 회색만 쓰는 그림이라

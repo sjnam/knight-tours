@@ -82,7 +82,7 @@
 % 빌려 쓰는 것은 다섯뿐이다---차림새 둘, 판을 정하는 setboard, 바탕을 까는 backdrop과
 % gridboard. 매듭을 짜는 부분은 손대지 않는다. 이 띠들은 리본이 아니라 가는 선
 % 하나로 그리는 그림이라서다.
-input ../celtic-tours/ktknot;
+input ../celtic/ktknot;
 
 paperlook;             % 밑값. 그림마다 beginfig 안에서 다시 고른다.
 uu := 8;               % 한 칸의 크기

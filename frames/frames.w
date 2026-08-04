@@ -881,7 +881,7 @@ for i := len(tours) - 1; i >= 0; i-- {
 적어 두 그림이 같은 자를 쓰게 한다.
 @<머리말과 잔손질 매크로를 쓴다@>=
 fmt.Fprintln(w, `% frames.mp — 크누스의 겹친 나이트 투어 액자 (frames.go가 씀).`)
-fmt.Fprintln(w, "input ../celtic-tours/ktknot;")
+fmt.Fprintln(w, "input ../celtic/ktknot;")
 fmt.Fprintf(w, "numeric u; u := %g;\n", u)
 fmt.Fprintln(w, `def midboard(expr n) =`)
 fmt.Fprintln(w, `  setboard(n, n);`)
