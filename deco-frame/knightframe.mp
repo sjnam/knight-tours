@@ -7,7 +7,9 @@
 %   input knightframe;
 %   beginfig(1); frame(103, 73, black, white, .3pt); endfig;
 %
-% h와 w는 저마다 13 이상이면서 6으로 나눈 나머지가 1이어야 한다.
+% h와 w는 저마다 6으로 나눈 나머지가 1이어야 한다. 다만 7은 7x7일 때만 되고 그 밖에는
+% 13 이상이라야 한다 -- 매듭이 모서리에서 여덟 줄을 차지하니 일곱 줄짜리 변에는 넷이
+% 들어설 자리가 없어서다. 7x7은 구성법 밖에 있는 바탕꼴이라 아래에 따로 적어 두었다.
 %
 % frame.go가 거르기와 탐색으로 알아내는 것을 여기서는 표에서 꺼내 쓴다. 그래서 이
 % 매크로는 거르기도 중복 제거도 탐색도 없는 곧은 그리기다. 조건에 맞는 어떤 h, w에서도
@@ -112,6 +114,21 @@ enddef;
   k(4,1,6,0); k(4,1,6,2); k(4,2,5,0);
   k(5,0,6,2); k(5,1,7,0); k(5,2,7,1);
 
+% 7x7 -- 이 구성법이 자라 나온 바탕꼴. 매듭 하나가 모서리에서 여덟 줄을 차지하니 일곱
+% 줄짜리 판에는 넷이 서로 포개져 들어가지 못한다. 재료가 모자라서가 아니다 -- 매듭 넷을
+% 그대로 얹으면 이음이 70개나 쌓이는데 필요한 것은 48개뿐이고, 크누스의 48개는 그 70개
+% 안에 다 들어 있다. 다만 그중 어느 48개인지를 구성법이 짚어 주지 못한다(차수가 2인
+% 부분집합이 19가지, 그중 닫힌 투어가 일곱 가지다). 자세한 셈은 frames/frames.w에 있다.
+%
+% 그래서 이것만은 표를 짜 맞추지 않고 크누스가 적어 둔 발자국을 그대로 옮긴다. 판을 도는
+% 나이트의 이동 방향을 0..7로 적은 마흔여덟 글자이고, 48은 폭 3칸 테두리의 칸 수
+% 12*7-36과 맞는다. frames.w의 문자열과 같은 것인데 거기서는 좌표를 두 배로 써서 걸음마다
+% 두 배씩 나아간다. 여기서는 칸 좌표라 방향을 그대로 더하면 되고, 출발 칸은 (0,0)이다.
+pair jump[];
+  jump[0] := (1,2);  jump[1] := (2,1);  jump[2] := (-1,2); jump[3] := (-2,1);
+  jump[4] := (1,-2); jump[5] := (2,-1); jump[6] := (-1,-2); jump[7] := (-2,-1);
+string walk; walk := "040573030550737575700346415212657520262750564737";
+
 % 어느 매듭을 어느 모서리에 놓을지. 네 자리를 4진수 한 수에 담았다(0123 -> 228).
 % 크누스의 0123은 p mod 4가 0이나 1일 때만 통한다 -- q와는 무관하다. 배치가 네 모서리를
 % 구별하는데 위아래 변은 Nw, 좌우 변은 Nh를 쓰기 때문이다. 나머지 여덟 경우가 아래 표다.
@@ -146,29 +163,40 @@ enddef;
 % line 선 색, bg 배경색, pw 선 굵기. expr이라 이름 색, RGB 셋, CMYK 넷을 다 받는다.
 def frame(expr h, w, line, bg, pw) =
 begingroup
-  save p, q, cd, sl, aa, i, j, off, xr, yr;
+  save p, q, cd, sl, aa, i, j, off, xr, yr, zc, zn;
   numeric p, q, cd, sl[], aa[], i, j, off, xr, yr;
-  p := (h-1)/6; q := (w-1)/6;
-  cd := asgcode(p,q);
-  for i = 0 upto 3: aa[i] := md(floor(cd/(4**i)), 4); endfor
-  sl[0] := w; sl[1] := h; sl[2] := w; sl[3] := h;
+  pair zc, zn;
   xr := (w-1)/2*uu; yr := (h-1)/2*uu;
   fill (-xr,-yr)--(xr,-yr)--(xr,yr)--(-xr,yr)--cycle withcolor bg;
   drawoptions(withpen pencircle scaled pw withcolor line);
-  for i = 0 upto 3:
-    % 변마다 마디를 여섯 칸씩 이어 깔고, 그 끝에 매듭을 얹는다. 변이 짧아
-    % sl[i]-13이 5에 못 미치면 마디는 하나도 깔리지 않는다 -- 13x13이 그렇다.
-    for off = 5 step 6 until sl[i]-13:
-      for j = 1 upto nmod:
-        draw pos(h,w,xf(i,h,w,moda[j]+(0,off)))
-          -- pos(h,w,xf(i,h,w,modb[j]+(0,off)));
+  if (h=7) and (w=7):
+    % 바탕꼴은 발자국을 따라 걷기만 하면 된다. 마지막 걸음이 첫 칸으로 돌아온다.
+    zc := (0,0);
+    for i = 0 upto length(walk)-1:
+      zn := zc + jump[scantokens substring (i,i+1) of walk];
+      draw pos(h,w,zc) -- pos(h,w,zn);
+      zc := zn;
+    endfor
+  else:
+    p := (h-1)/6; q := (w-1)/6;
+    cd := asgcode(p,q);
+    for i = 0 upto 3: aa[i] := md(floor(cd/(4**i)), 4); endfor
+    sl[0] := w; sl[1] := h; sl[2] := w; sl[3] := h;
+    for i = 0 upto 3:
+      % 변마다 마디를 여섯 칸씩 이어 깔고, 그 끝에 매듭을 얹는다. 변이 짧아
+      % sl[i]-13이 5에 못 미치면 마디는 하나도 깔리지 않는다 -- 13x13이 그렇다.
+      for off = 5 step 6 until sl[i]-13:
+        for j = 1 upto nmod:
+          draw pos(h,w,xf(i,h,w,moda[j]+(0,off)))
+            -- pos(h,w,xf(i,h,w,modb[j]+(0,off)));
+        endfor
+      endfor
+      for j = 1 upto nkn[aa[i]]:
+        draw pos(h,w,xf(i,h,w,kna[aa[i]][j]))
+          -- pos(h,w,xf(i,h,w,knb[aa[i]][j]));
       endfor
     endfor
-    for j = 1 upto nkn[aa[i]]:
-      draw pos(h,w,xf(i,h,w,kna[aa[i]][j]))
-        -- pos(h,w,xf(i,h,w,knb[aa[i]][j]));
-    endfor
-  endfor
+  fi
   drawoptions();
 endgroup
 enddef;
