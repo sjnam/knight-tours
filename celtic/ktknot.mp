@@ -300,9 +300,10 @@ begingroup
   findcrossings;
   weave;
   cutunders;
+  if not cyc: capends; fi
   drawribbons;
   if roundjoin: roundjoins; fi
-  if not cyc: capends; fi
+  if not cyc: captips; fi
 endgroup
 enddef;
 
@@ -532,25 +533,47 @@ def shadowends(expr k, saL, saR, sbL, sbR, la, ra, lb, rb, cl) =
   fi
 enddef;
 
-% 열린 투어의 두 끝에 구슬을 단다. 리본이 끝나는 자리 LL--RR가 구슬의 현이 되도록
-% 중심을 앞으로 밀어 두면, 구슬의 큰 호가 리본에 매끄럽게 이어진다.
+% 열린 투어의 두 끝에 구슬을 단다. 구슬은 끝 칸을 중심으로 한 온전한 원이고, 반지름이
+% 리본 반폭의 bulb배라 리본보다 넓다. 그리는 차례가 요령이다---drawknot이 리본보다
+% 먼저 부르니 리본이 구슬을 덮는다. 그래서 구슬의 둘레는 리본 양옆으로 삐져나온
+% 초승달 둘과 끝 너머의 반원으로만 보이고, 실이 구슬 위를 지나 그 끝에 매인 꼴이 된다.
+% 구슬이 실을 덮는 반대 차례로도 그려 보았는데, 그러면 구슬 속과 리본 속이 한 덩이가
+% 되어 어디까지가 실인지 가려지지 않는다.
+%
+% 원을 통째로 그리니 어느 각에서 시작하든 같다. 리본 귀퉁이 pl에서 시작해 한 바퀴
+% 돌면 되고---arcpath는 시작각과 끝각이 같으면 360도를 돈다---두 끝을 가리던 head도
+% 필요 없어졌다.
 def capends =
-  bead(tv[0], LA[0], RA[0], -dr[0], true);
-  bead(tv[tn-1], LB[ne-1], RB[ne-1], dr[ne-1], false);
+  bead(tv[0], LA[0]);
+  bead(tv[tn-1], LB[ne-1]);
 enddef;
 
-def bead(expr v, pl, pr, out, head) =
+def bead(expr v, pl) =
   begingroup
-    save r, m, ctr, aa, bb, p;
-    numeric r, m, aa, bb; pair ctr; path p;
+    save r, aa; numeric r, aa;
     r := bulb*hw*uu;
-    m := r +-+ (hw*uu);                    % sqrt(r^2 - (hw*uu)^2)
-    ctr := v + m*out;
-    aa := angle(pl - ctr); bb := angle(pr - ctr);
-    p := if head: arcpath(ctr, r, aa, bb) else: arcpath(ctr, r, bb, aa) fi;
-    fill p -- cycle withcolor pulp;
-    if wire > 0:
-      if head: drawarc(ctr, r, aa, bb) else: drawarc(ctr, r, bb, aa) fi;
-    fi
+    aa := angle(pl - v);
+    fill arcpath(v, r, aa, aa) -- cycle withcolor pulp;
+    if wire > 0: drawarc(v, r, aa, aa); fi
   endgroup
+enddef;
+
+% 실이 끝나는 자리를 둥글게 막는다. 리본까지 다 그린 뒤에 긋는다. 이것이 없으면 리본
+% 양옆 테두리가 구슬 속 흰 자리에서 뚝 끊겨, 실이 고리 안에서 풀린 것처럼 보인다.
+%
+% 중심이 끝 칸이고 반지름이 리본 반폭이라, 호가 리본의 두 귀퉁이에서 시작해 테두리와
+% 접선으로 이어진다. 밖으로 부푸는 깊이가 반폭 하나뿐이니 반지름이 그 bulb배인 구슬
+% 안에 그대로 들어앉는다. 그래서 호 안쪽을 따로 메울 것이 없다---구슬을 깔 때 이미
+% pulp로 칠해진 자리다.
+%
+% arcpath가 시계 반대 방향으로 도니 어느 귀퉁이에서 출발하느냐가 안팎을 가른다.
+% 시작 쪽은 LA에서 떠나야 바깥(-dr) 쪽으로 돌고, 끝 쪽은 RB에서 떠나야 바깥(dr)
+% 쪽으로 돈다. 거꾸로 잡으면 반원이 리본 속으로 파고든다.
+def captips =
+  if wire > 0:
+    drawarc(tv[0], hw*uu,
+      angle(LA[0] - tv[0]), angle(RA[0] - tv[0]));
+    drawarc(tv[tn-1], hw*uu,
+      angle(RB[ne-1] - tv[tn-1]), angle(LB[ne-1] - tv[tn-1]));
+  fi
 enddef;
