@@ -325,15 +325,6 @@ enddef;
 
 def lvl_three_rgt(expr n, vert, grid) = showband(rightpic(n), 8n+12, vert, grid); enddef;
 
-% 사진처럼 셋을 나란히 세운다. 벽에 걸린 크기 그대로다.
-def allthree =
-  begingroup save qq; picture qq;
-    lvl_three_lft(3, true, false);
-    qq := image(lvl_three_mid(4, true, false));   draw qq shifted (6uu, -uu);
-    qq := image(lvl_three_rgt(2, true, false)); draw qq shifted (12uu, 0);
-  endgroup
-enddef;
-
 % 아홉 그림을 두 차림새로 뽑는다. 1~9가 종이, 11~19가 벽이고 번호의 일의 자리가 서로
 % 같다---1과 11이 같은 그림, 9와 19가 같은 그림이다. 벽 쪽은 uu를 조금 키웠다. 한 칸이
 % 8bp면 타일 사이 틈이 1.4bp밖에 안 되어 칸이 뭉개져 보인다. 사진 KTb.jpg를 통째로
@@ -350,7 +341,6 @@ beginfig(3); paperlook; uu := 8; lvl_eight_frz(2, false, true ); endfig;
 beginfig(4); paperlook; uu := 8; lvl_eight_frz(2, true,  true ); endfig;
 
 % 3층의 띠 셋 --- 벽에 걸린 크기.
-beginfig(5); paperlook; uu := 8; allthree; endfig;
 beginfig(6); paperlook; uu := 8; lvl_three_lft(3, true, false); endfig;
 beginfig(7); paperlook; uu := 8; lvl_three_mid(4, true, false); endfig;
 beginfig(8); paperlook; uu := 8; lvl_three_rgt(2, true, false); endfig;
@@ -362,7 +352,6 @@ beginfig(12); walllook; uu := 12; lvl_eight_frz(2, true,  false); endfig;
 beginfig(13); walllook; uu := 12; lvl_eight_frz(2, false, true ); endfig;
 beginfig(14); walllook; uu := 12; lvl_eight_frz(2, true,  true ); endfig;
 
-beginfig(15); walllook; uu := 12; allthree; endfig;
 beginfig(16); walllook; uu := 12; lvl_three_lft(3, true, false); endfig;
 beginfig(17); walllook; uu := 12; lvl_three_mid(4, true, false); endfig;
 beginfig(18); walllook; uu := 12; lvl_three_rgt(2, true, false); endfig;
