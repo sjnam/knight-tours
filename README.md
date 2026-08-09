@@ -8,4 +8,5 @@
 - [장식용 기사 행마 액자](deco-frame)
 - [크누스의 겹친 기사 행마 액자](frames)
 - [가늘고 긴 기사 행마](long-and-skinny)
+- [제 길을 가로지르지 않는 기사 행마](noncross)
 
