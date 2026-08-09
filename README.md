@@ -3,10 +3,12 @@
 <p align="center">
   <img src="frames.png" width="600">
 </p>
+<p align="center">
+  <img src="noncross.png" width="600">
+</p>
 
 - [켈트 기사 행마](celtic)
 - [장식용 기사 행마 액자](deco-frame)
 - [크누스의 겹친 기사 행마 액자](frames)
 - [가늘고 긴 기사 행마](long-and-skinny)
 - [제 길을 가로지르지 않는 기사 행마](noncross)
-
