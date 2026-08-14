@@ -15,8 +15,23 @@
 %
 % 그림 3~6의 좌표는 frame.w의 knuthMod·knuthCorners 표를 (행,열) 그대로 옮긴 것이다.
 % 좌표가 두 벌인 셈이니 표를 고치는 날에는 이 파일도 함께 고쳐야 한다.
+%
+% 만드는 법:  mpost --tex=etex frame.mp   -> frame.1 ...     (EPS)
+%             mptopdf frame.[0-9]*        -> frame-1.pdf ... (PDF)
+% (먼저 go run frame.go로 framedef.mp을 지어 두어야 한다. Makefile이 다 해 준다.)
 
-verbatimtex \documentclass{article} \usepackage{kotex} \begin{document} etex
+% 라벨의 한글은 plain TeX 쪽 kotex(kotex-plain)이 맡는다. e-TeX 원시명령을 쓰므로
+% tex이 아니라 etex으로 돌려야 한다. plain TeX에는 \small이 없으니 그림 7이 쓰는
+% 9pt 한 벌만 손수 짠다 --- 로마자와 수식은 cm의 9pt로, 한글은 \hfontsize로.
+verbatimtex
+\input kotex.sty
+\font\ninerm=cmr9 \font\ninei=cmmi9 \font\ninesy=cmsy9
+\font\sixrm=cmr6 \font\sixi=cmmi6 \font\sixsy=cmsy6
+\def\small{\textfont0=\ninerm \scriptfont0=\sixrm \scriptscriptfont0=\fiverm
+  \textfont1=\ninei \scriptfont1=\sixi \scriptscriptfont1=\fivei
+  \textfont2=\ninesy \scriptfont2=\sixsy \scriptscriptfont2=\fivesy
+  \hfontsize{at 9pt}\ninerm}
+etex
 
 input framedef;
 

@@ -30,7 +30,7 @@ make png      # 1번을 웹에 올릴 PNG로 굽는다 (ImageMagick 필요)
 make clean
 ```
 
-TeX Live의 `mptopdf`만 있으면 됩니다. 이웃한 [celtic](../celtic/)의 `ktknot.mp`에서
+TeX Live의 `mpost`와 `mptopdf`만 있으면 됩니다. 이웃한 [celtic](../celtic/)의 `ktknot.mp`에서
 차림새 둘과 바탕·격자 매크로를 빌려 쓰므로 그 파일이 제자리에 있어야 합니다.
 
 ## 사용법

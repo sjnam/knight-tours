@@ -15,8 +15,10 @@
 % n은 8로 나눈 나머지가 2여야 하고 18 이상이어야 한다. 곧 18, 26, 34, 42, 50, 58,
 % 66, ... 이다. 덮는 칸은 n^2-7n+24개다. n=58이면 2982로 크누스가 적어 둔 수와 맞는다.
 %
-% 만드는 법:  mptopdf noncross.mp   -> noncross-1.pdf ...  (PDF)
-%             mpost   noncross.mp   -> noncross.1 ...      (EPS)
+% 만드는 법:  mpost --tex=etex noncross.mp   -> noncross.1 ...      (EPS)
+%             mptopdf noncross.[0-9]*        -> noncross-1.pdf ...  (PDF)
+% TeX 라벨은 없다. 그래도 다른 그림 파일과 같은 걸음으로 짓는다 --- 라벨을 넣는 날에는
+% plain TeX이 조판해야 하고, mptopdf를 한 번에 부르면 mpost가 --tex=latex로 돌아간다.
 %
 % ============================================================================
 % 안쪽은 한 줄로 끝난다

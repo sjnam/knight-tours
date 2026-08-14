@@ -26,7 +26,7 @@
 | --- | --- |
 | Go 1.26 이상 | `frames.go` 실행 |
 | GWEB (`gtangle`, `gweave`) | `.w`에서 Go 소스와 TeX 문서를 뽑아냄 |
-| TeX Live (`mptopdf`, `luatex`) | MetaPost 그림과 문서 조판 |
+| TeX Live (`mpost`, `mptopdf`, `luatex`) | MetaPost 그림과 문서 조판 |
 | `kotexgweb`, `pic.tex` | 한글 GWEB 매크로와 그림 삽입 매크로 |
 | Noto CJK 폰트 | 한글 조판 |
 
@@ -36,7 +36,7 @@
 ## 빌드
 
 ```sh
-make         # gtangle → go run → mptopdf → gweave → luatex
+make         # gtangle → go run → mpost → mptopdf → gweave → luatex
 make clean   # 생성물 제거
 ```
 
