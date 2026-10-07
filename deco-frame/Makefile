@@ -34,13 +34,21 @@ frame.tex: frame.w
 frame.pdf: frame.tex frame-1.pdf
 	luatex frame.tex
 
-# 액자(1번)를 README가 싣는 대표 그림으로 굽는다. 흰 종이에 검은 선인 그림이라 바탕을
-# 흰색으로 메운다---뚫린 채로 두면 어두운 화면에서 선이 바탕에 묻힌다.
+# README가 싣는 대표 그림은 가로 액자(73x103)로 굽는다. 문서는 세로 액자를 페이지
+# 바탕으로 쓰니, framedef.mp를 덮어쓰지 않도록 png.tmp에서 따로 짓고 다 쓰면 지운다.
+# 흰 종이에 검은 선인 그림이라 바탕을 흰색으로 메운다---뚫린 채로 두면 어두운 화면에서
+# 선이 바탕에 묻힌다.
 png: deco-frame.png
-deco-frame.png: frame-1.pdf
-	magick -density 300 frame-1.pdf -background white -alpha remove \
+deco-frame.png: frame.go
+	rm -rf png.tmp && mkdir png.tmp
+	cd png.tmp && go run ../frame.go 73 103 && \
+	  $(MPOST) --tex=etex -jobname=wide \
+	    '\relax input framedef; beginfig(1); frame(black, white, 0.2pt); endfig; end.' && \
+	  mptopdf wide.1
+	magick -density 300 png.tmp/wide-1.pdf -background white -alpha remove \
 	  -colorspace Gray -depth 8 -strip $@
+	rm -rf png.tmp
 
 clean:
-	rm -f frame-[0-9].pdf frame.[0-9] frame.go frame.log frame.mpx \
-	      framedef.mp frame.pdf frame.tex frame.toc
+	rm -rf frame-[0-9].pdf frame.[0-9] frame.go frame.log frame.mpx \
+	      framedef.mp frame.pdf frame.tex frame.toc png.tmp
