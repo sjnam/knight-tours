@@ -3,9 +3,6 @@
 <p align="center">
   <img src="frames/frames.png" width="600">
 </p>
-<p align="center">
-  <img src="noncross/noncross.png" width="600">
-</p>
 
 - [켈트 기사 행마](celtic)
 - [장식용 기사 행마 액자](deco-frame)
