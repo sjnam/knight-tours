@@ -1,5 +1,9 @@
 # 크누스의 겹친 기사 행마 액자
 
+<p align="center">
+  <img src="frames.png" width="600">
+</p>
+
 크누스(Donald E. Knuth)의 [나이트 투어 전시장](https://cs.stanford.edu/~knuth/knights.html)
 맨 마지막 그림([KTf](https://cs.stanford.edu/~knuth/KTf.jpg))에 있는 **겹친 액자**를
 그림에서 간선 단위로 읽어 되살린 것입니다. 크누스는 이렇게 적었습니다.
@@ -37,6 +41,7 @@
 
 ```sh
 make         # gtangle → go run → mpost → mptopdf → gweave → luatex
+make png     # 벽에 걸린 꼴(frames-2.pdf)을 대표 그림 frames.png로 굽는다 (ImageMagick 필요)
 make clean   # 생성물 제거
 ```
 
@@ -175,5 +180,6 @@ frame은 여전히 "하나의 닫힌 투어 ✓"를 통과하기 때문입니다
 | --- | --- |
 | [frames.w](frames.w) | GWEB 원본. Go 소스와 해설 문서를 겸함 |
 | [Makefile](Makefile) | 빌드 |
+| [frames.png](frames.png) | 맨 위의 대표 그림. `make png`가 `frames-2.pdf`에서 굽는다 |
 | `decoframe.pdf` | 문서의 페이지 배경으로 쓰는 세로 액자. `frame` 프로젝트가 지은 것 |
 | `frames.go`, `frames.mp`, `frames-1.pdf`, `frames.tex`, `frames.pdf` | 생성물 (`make clean` 대상) |

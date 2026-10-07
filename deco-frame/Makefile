@@ -2,7 +2,7 @@ GTANGLE ?= gtangle
 GWEAVE  ?= gweave
 MPOST   ?= mpost
 
-.PHONY: doc clean
+.PHONY: doc png clean
 
 doc: frame.pdf
 
@@ -33,6 +33,13 @@ frame.tex: frame.w
 # 문서는 모든 페이지에 frame-1.pdf를, 본문에 frame-2..7.pdf를 쓴다.
 frame.pdf: frame.tex frame-1.pdf
 	luatex frame.tex
+
+# 액자(1번)를 README가 싣는 대표 그림으로 굽는다. 흰 종이에 검은 선인 그림이라 바탕을
+# 흰색으로 메운다---뚫린 채로 두면 어두운 화면에서 선이 바탕에 묻힌다.
+png: deco-frame.png
+deco-frame.png: frame-1.pdf
+	magick -density 300 frame-1.pdf -background white -alpha remove \
+	  -colorspace Gray -depth 8 -strip $@
 
 clean:
 	rm -f frame-[0-9].pdf frame.[0-9] frame.go frame.log frame.mpx \

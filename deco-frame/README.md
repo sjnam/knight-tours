@@ -1,5 +1,9 @@
 # 장식용 기사 행마 액자
 
+<p align="center">
+  <img src="deco-frame.png" width="420">
+</p>
+
 크누스(Donald E. Knuth)의 [나이트 투어 전시장](https://cs.stanford.edu/~knuth/knights.html)
 맨 마지막 그림([KTf](https://cs.stanford.edu/~knuth/KTf.jpg))에 나오는 액자 무늬를
 **임의 크기의 직사각형으로 다시 지어 주는** 프로그램입니다.
@@ -26,6 +30,7 @@
 
 ```sh
 make doc     # gtangle → go run → mpost → mptopdf → gweave → luatex
+make png     # 액자(frame-1.pdf)를 대표 그림 deco-frame.png로 굽는다 (ImageMagick 필요)
 make clean   # 생성물 제거
 ```
 
@@ -154,6 +159,7 @@ gwebmac의 `\coloutput`도 함께 손봐야 색인 페이지까지 둘립니다.
 | --- | --- |
 | [frame.w](frame.w) | GWEB 원본. Go 소스와 해설 문서를 겸함 |
 | [Makefile](Makefile) | 빌드 |
+| [deco-frame.png](deco-frame.png) | 맨 위의 대표 그림. `make png`가 `frame-1.pdf`에서 굽는다 |
 | [frame.mp](frame.mp) | 문서가 싣는 그림 일곱을 모두 그리는 MetaPost 소스. 손으로 쓴 것 |
 | `framedef.mp` | 생성물. 액자 매크로 정의. 다른 문서가 들여오는 파일 |
 | `frame.go`, `frame-[1-7].pdf`, `frame.tex`, `frame.pdf` | 생성물 (`make clean` 대상) |

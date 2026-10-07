@@ -11,9 +11,10 @@ noncross-1.pdf: noncross.mp ../celtic/ktknot.mp
 	$(MPOST) --tex=etex noncross.mp && mptopdf noncross.[0-9]*
 
 # 사진 KTc.jpg를 흉내 낸 1번을 웹에 올릴 PNG로 굽는다. 회색만 쓰는 그림이라 흑백
-# 8비트면 넉넉하고, -alpha remove가 없으면 배경이 뚫린 채로 나온다.
-png: noncross-1.png
-noncross-1.png: noncross-1.pdf
+# 8비트면 넉넉하고, -alpha remove가 없으면 배경이 뚫린 채로 나온다. README가 싣는 대표
+# 그림이라 저장소에 넣어 두니, clean이 지우는 noncross-[0-9]*와 겹치지 않는 이름을 쓴다.
+png: noncross.png
+noncross.png: noncross-1.pdf
 	magick -density 300 noncross-1.pdf -background black -alpha remove \
 	  -colorspace Gray -depth 8 -strip $@
 

@@ -2,7 +2,7 @@ GTANGLE ?= gtangle
 GWEAVE  ?= gweave
 MPOST   ?= mpost
 
-.PHONY: doc clean
+.PHONY: doc png clean
 
 doc: frames.pdf
 
@@ -33,6 +33,13 @@ frames.tex: frames.w
 # 문서는 모든 페이지에 decoframe.pdf를, 뒤쪽 두 절에 액자 그림 둘을 쓴다.
 frames.pdf: frames.tex frames-1.pdf frames-2.pdf decoframe.pdf
 	luatex frames.tex
+
+# 벽에 걸린 꼴(2번)을 README가 싣는 대표 그림으로 굽는다. 회색만 쓰는 그림이라 흑백
+# 8비트면 넉넉하고, -alpha remove가 없으면 배경이 뚫린 채로 나온다.
+png: frames.png
+frames.png: frames-2.pdf
+	magick -density 300 frames-2.pdf -background black -alpha remove \
+	  -colorspace Gray -depth 8 -strip $@
 
 clean:
 	rm -f frames-[0-9].pdf frames.[0-9] frames.go frames.log frames.mp frames.mpx \

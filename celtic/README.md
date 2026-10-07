@@ -1,5 +1,9 @@
 # 켈트 기사 행마
 
+<p align="center">
+  <img src="celtic.png" width="280">
+</p>
+
 크누스(Donald E. Knuth)의 [나이트 투어 전시장](https://cs.stanford.edu/~knuth/knights.html)
 사진 [KTg](https://cs.stanford.edu/~knuth/KTg.jpg)에 걸린 걸개그림 열 점과, 그의 책
 *Selected Papers on Fun and Games* 41장 "Celtic Knight's Tours"에 실린 그림들을 다시
@@ -15,12 +19,13 @@
 | [ktknot.mp](ktknot.mp) | 투어를 켈트 매듭으로 짜서 그리는 매크로 꾸러미. 홀로 서고 TeX 라벨도 없음 |
 | [ktg.mp](ktg.mp) | 투어 열 가지를 적고 그림 22장을 뽑음 |
 | [Makefile](Makefile) | 빌드 |
+| [celtic.png](celtic.png) | 맨 위의 대표 그림. `make png`가 22번에서 굽는다 |
 
 ## 만드는 법
 
 ```sh
 make          # ktg-1.pdf ... ktg-22.pdf
-make png      # 22번(벽 통째)을 웹에 올릴 PNG로 굽는다 (ImageMagick 필요)
+make png      # 22번(벽 통째)을 대표 그림 celtic.png로 굽는다 (ImageMagick 필요)
 make clean
 ```
 

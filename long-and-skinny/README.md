@@ -1,5 +1,9 @@
 # 가늘고 긴 기사 행마
 
+<p align="center">
+  <img src="long-and-skinny.png" width="300">
+</p>
+
 크누스(Donald E. Knuth)의 [나이트 투어 전시장](https://cs.stanford.edu/~knuth/knights.html)에
 걸린 **폭 3칸짜리 띠**들을 다시 그리는 MetaPost 매크로입니다. 띠마다 하나의 닫힌 나이트
 투어이고, 길이를 매개변수로 받습니다.
@@ -18,7 +22,7 @@ Tours"입니다.
 
 ```sh
 make          # frieze-1.pdf ... frieze-20.pdf
-make png      # 20번(KTb 통째)을 웹에 올릴 PNG로 굽는다 (ImageMagick 필요)
+make png      # 20번(KTb 통째)을 대표 그림 long-and-skinny.png로 굽는다 (ImageMagick 필요)
 make clean
 ```
 
@@ -151,4 +155,5 @@ beginfig(22); walllook;  uu := 12; lvl_three_mid(1, true,  true);  endfig;
 | --- | --- |
 | [frieze.mp](frieze.mp) | 띠 넷의 매크로와 그림 17장 |
 | [Makefile](Makefile) | 빌드 |
+| [long-and-skinny.png](long-and-skinny.png) | 맨 위의 대표 그림. `make png`가 20번에서 굽는다 |
 | `frieze-*.pdf`, `frieze.[0-9]*`, `frieze.log` | 생성물 (`make clean` 대상) |

@@ -1,5 +1,9 @@
 # 제 길을 가로지르지 않는 기사 행마
 
+<p align="center">
+  <img src="noncross.png" width="600">
+</p>
+
 크누스(Donald E. Knuth)의 [나이트 투어 전시장](https://cs.stanford.edu/~knuth/knights.html)
 4층에 걸린 세 그림을 다시 그리는 MetaPost 매크로입니다.
 
@@ -26,7 +30,7 @@
 
 ```sh
 make          # noncross-1.pdf ... noncross-17.pdf
-make png      # 1번을 웹에 올릴 PNG로 굽는다 (ImageMagick 필요)
+make png      # 1번을 대표 그림 noncross.png로 굽는다 (ImageMagick 필요)
 make clean
 ```
 
@@ -192,6 +196,7 @@ $$n^2 - 7n + 24$$
 | --- | --- |
 | [noncross.mp](noncross.mp) | MetaPost 원본. 안쪽 규칙은 반복문, 테두리는 항목 633개짜리 표 |
 | [Makefile](Makefile) | 빌드 |
+| [noncross.png](noncross.png) | 맨 위의 대표 그림. `make png`가 1번에서 굽는다 |
 | `noncross-[1-9].pdf`, `noncross-1[0-7].pdf` | 생성물 (`make clean` 대상) |
 
 그림은 열일곱입니다.

@@ -1,10 +1,10 @@
 <h1 align="center">모든 것은 이 그림에서 시작하였다</h1>
 
 <p align="center">
-  <img src="frames.png" width="600">
+  <img src="frames/frames.png" width="600">
 </p>
 <p align="center">
-  <img src="noncross.png" width="600">
+  <img src="noncross/noncross.png" width="600">
 </p>
 
 - [켈트 기사 행마](celtic)
