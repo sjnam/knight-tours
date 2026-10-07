@@ -1,7 +1,7 @@
 # 크누스의 겹친 기사 행마 액자
 
 <p align="center">
-  <img src="frames.png" width="600">
+  <img src="frames.png" width="600" alt="크누스의 겹친 기사 행마 액자">
 </p>
 
 크누스(Donald E. Knuth)의 [나이트 투어 전시장](https://cs.stanford.edu/~knuth/knights.html)

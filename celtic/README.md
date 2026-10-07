@@ -1,7 +1,7 @@
 # 켈트 기사 행마
 
 <p align="center">
-  <img src="celtic.png" width="280">
+  <img src="celtic.png" width="280" alt="켈트 기사 행마">
 </p>
 
 크누스(Donald E. Knuth)의 [나이트 투어 전시장](https://cs.stanford.edu/~knuth/knights.html)

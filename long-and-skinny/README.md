@@ -1,7 +1,7 @@
 # 가늘고 긴 기사 행마
 
 <p align="center">
-  <img src="long-and-skinny.png" width="300">
+  <img src="long-and-skinny.png" width="300" alt="가늘고 긴 기사 행마">
 </p>
 
 크누스(Donald E. Knuth)의 [나이트 투어 전시장](https://cs.stanford.edu/~knuth/knights.html)에

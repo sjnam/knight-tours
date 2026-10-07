@@ -1,7 +1,7 @@
 # 제 길을 가로지르지 않는 기사 행마
 
 <p align="center">
-  <img src="noncross.png" width="600">
+  <img src="noncross.png" width="600" alt="제 길을 가로지르지 않는 기사 행마">
 </p>
 
 크누스(Donald E. Knuth)의 [나이트 투어 전시장](https://cs.stanford.edu/~knuth/knights.html)
