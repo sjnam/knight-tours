@@ -1,4 +1,4 @@
-<h1 align="center">메타포스트로 작성한 기사 행마 그림들</h1>
+<h1 align="center">MetaPost로 작성한 기사 행마 그림들</h1>
 
 <p align="center">
   <img src="celtic/celtic.png" height="450" alt="켈트 기사 행마">
