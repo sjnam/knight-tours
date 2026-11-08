@@ -14,7 +14,7 @@ frames.go: frames.w
 frames.mp: frames.go
 	go run frames.go
 
-# 겹친 액자 그림. 한 번에 둘이 함께 나온다---색으로 겹을 가른 것과 크누스의
+# 겹친 액자 그림. 한 번에 둘이 함께 나온다---색으로 겹을 가른 것과 커누스의
 # KTf.jpg처럼 벽에 걸린 꼴.
 #
 # 그림 파일에 TeX 라벨이 없으니 mptopdf에 통째로 맡긴다. mptopdf가 mpost를 부르고,

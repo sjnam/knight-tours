@@ -4,7 +4,7 @@
   <img src="celtic.png" width="280" alt="켈트 기사 행마">
 </p>
 
-크누스(Donald E. Knuth)의 [나이트 투어 전시장](https://cs.stanford.edu/~knuth/knights.html)
+커누스(Donald E. Knuth)의 [나이트 투어 전시장](https://cs.stanford.edu/~knuth/knights.html)
 사진 [KTg](https://cs.stanford.edu/~knuth/KTg.jpg)에 걸린 걸개그림 열 점과, 그의 책
 *Selected Papers on Fun and Games* 41장 "Celtic Knight's Tours"에 실린 그림들을 다시
 그리는 MetaPost 꾸러미입니다.
@@ -105,7 +105,7 @@ paperlook; uu := 26bp;  relief := 1.1;  cast := .05;  % 끈을 도드라져 보�
 없습니다. 위에서 아래로 덮어 그리는 흔한 수법과 달리 배경이 무엇이든 상관없어, 흰 종이든
 검은 벽걸이든 같은 코드로 그려집니다.
 
-도려내는 선은 걸음에 직각이 아니라 **위 가닥과 나란합니다.** 크누스의 그림에서 아래
+도려내는 선은 걸음에 직각이 아니라 **위 가닥과 나란합니다.** 커누스의 그림에서 아래
 가닥의 두 테두리가 저마다 위 가닥의 테두리에 가서 닿기 때문입니다. 그래서 아래 가닥의
 왼쪽과 오른쪽이 서로 다른 거리에서 끊기고, 잘린 자국이 비스듬해집니다.
 
