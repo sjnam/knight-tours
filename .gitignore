@@ -12,7 +12,6 @@ frame.mpx
 # frieze/ 생성물 (mptopdf)
 frieze.[0-9]*
 frieze-[0-9]*.pdf
-frieze.mpx
 frieze.log
 frieze.pdf
 
@@ -35,13 +34,11 @@ frames.pdf
 # celtic/ 생성물 (mptopdf)
 ktg.[0-9]*
 ktg-[0-9]*.pdf
-ktg.mpx
 ktg.log
 
 # noncross/ 생성물 (mptopdf)
 noncross.[0-9]*
 noncross-[0-9]*.pdf
-noncorss.mpx
 noncross.log
 
 # macOS

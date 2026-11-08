@@ -3,10 +3,8 @@
 % 또 하나는 Selected Papers on Fun and Games 41장에 실린 그림들이다. 매듭을 짜는
 % 일은 ktknot.mp가 한다.
 %
-% 만드는 법:  mpost --tex=etex ktg.mp   -> ktg.1 ...      (EPS)
-%             mptopdf ktg.[0-9]*        -> ktg-1.pdf ...  (PDF)
-% btex 라벨은 plain TeX으로 조판한다. mptopdf를 한 번에 부르면 안 되는 까닭이 그것이다
-% --- 그러면 mpost가 --tex=latex로 돈다.
+% 만드는 법:  mptopdf ktg.mp   -> ktg.1 ... (EPS),  ktg-1.pdf ... (PDF)
+% TeX 라벨은 없다. 그래서 mptopdf가 mpost를 어떤 TeX으로 부르든 상관없다.
 
 input ktknot;
 

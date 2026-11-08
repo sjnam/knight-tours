@@ -29,9 +29,8 @@ make png      # 22번(벽 통째)을 대표 그림 celtic.png로 굽는다 (Imag
 make clean
 ```
 
-TeX Live의 `mpost`와 `mptopdf`만 있으면 됩니다. 라벨은 plain TeX으로 조판하려고
-`mpost --tex=etex`을 직접 부르고, 나온 그림 파일만 `mptopdf`로 PDF로 바꿉니다.
-`mptopdf`에 한꺼번에 맡기면 `mpost`가 `--tex=latex`로 돌기 때문입니다.
+TeX Live의 `mpost`와 `mptopdf`만 있으면 됩니다. 그림에 TeX 라벨이 없으므로
+`mptopdf ktg.mp` 한 번으로 `mpost`를 돌려 PDF까지 만듭니다.
 
 ## 사용법
 
