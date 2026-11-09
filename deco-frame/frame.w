@@ -1,14 +1,17 @@
 % 이 데모는 Knuth의 나이트 투어 전시장 맨 마지막 그림(KTf)의 액자 무늬를 좇아,
 % 폭 3칸 사각 테두리를 도는 진짜 닫힌 나이트 투어로 이 문서의 모든 페이지를 두른다.
 \input kotexgweb
-\input pic
 
-% 모든 페이지를 액자로 두른다. \FrameBG는 세로 자리를 차지하지 않는(=\vbox to 0pt)
-% 액자 덧그림으로, 본문 상자 위에 겹쳐 찍힌다. 액자를 텍스트 영역보다 크게 그려
+% 모든 페이지를 액자로 두른다. 액자 그림은 LuaTeX의 기본 명령으로 한 번만 읽어
+% 두고 쪽마다 그것을 가리킨다---쪽마다 새로 읽으면 PDF에 같은 그림이 쪽 수만큼
+% 실린다. \FrameBG는 세로 자리를 차지하지 않는(=\vbox to 0pt) 액자
+% 덧그림으로, 본문 상자 위에 겹쳐 찍힌다. 액자를 텍스트 영역보다 크게 그려
 % 테두리가 종이 여백에 걸치게 한다. 본문 페이지는 \plainoutput이 내보내므로 그것을
-% 다시 정의해 \FrameBG를 얹고, 마지막 색인 페이지는 \topofcontents에서 얹는다.
+% 다시 정의해 \FrameBG를 얹는다.
+\saveimageresource width 7.55in height 11.05in {frame-1.pdf}
+\edef\decoframe{\the\lastsavedimageresourceindex}
 \def\FrameBG{\vbox to 0pt{\vskip-.72in
-  \moveleft.63in\hbox{\pic width 7.55in height 11.05in{frame-1.pdf}}\vss}%
+  \moveleft.63in\hbox{\useimageresource\decoframe}\vss}%
   \nointerlineskip}
 \def\plainoutput{\shipout\vbox{\FrameBG\makeheadline\pagebody\makefootline}%
   \advancepageno \ifnum\outputpenalty>-20000 \else\dosupereject\fi}
@@ -31,7 +34,7 @@
 % 문서 전체가 아닌 타이틀 페이지만 액자로 두루고 싶으면 어것을 사용한다.
 %\def\topofcontents{
 %  \vbox to 0pt{\vskip-.72in
-%    \moveleft.63in\hbox{\pic width 7.55in height 11.05in{frame-1.pdf}}\vss}%
+%    \moveleft.63in\hbox{\useimageresource\decoframe}\vss}%
 %  \vskip.6in \centerline{\titlefont\Gtitle}\vskip.7in\vfill}
 
 % 코드 안의 한 조각만 빨갛게 물들이는 짝. gweave만 보고 gtangle은 지나치는
@@ -140,7 +143,7 @@ type edge = [2]cell
 격자와 점은 이 재료가 폭 3칸 테두리의 어디에 앉는지를 보이려는 것이고, 이음이 닿지 않은
 칸에도 점이 있는데 그 칸의 이음은 이웃 마디에서 온다.
 $$
-\pic width 12cm{frame-3.pdf}
+\saveimageresource width 12cm {frame-3.pdf}\useimageresource\lastsavedimageresourceindex
 $$
 
 @<타입...@>=
@@ -205,7 +208,7 @@ var knuthCorners = [4][]edge{
 함께 지니는 스물다섯을 한 번만 적고 갈리는 자리만 따로 둔다. 두 팔이 기역({\it ㄱ})자로 꺾여
 두 변의 마디를 이어 주는 모양이 보인다. 기본꼴은 이렇게 생겼다.
 $$
-\pic height 5cm{frame-4.pdf}
+\saveimageresource height 5cm {frame-4.pdf}\useimageresource\lastsavedimageresourceindex
 $$
 @<0번 모서리 매듭@>=
 {
@@ -222,7 +225,7 @@ $$
 @ 1, 2번 모서리 매듭은 0번 기본꼴에서 이음 다섯이 다르다. 빨간 다섯이 그것이고, 나머지 스물다섯은
 기본꼴 그대로다.
 $$
-\pic height 5cm{frame-5.pdf}
+\saveimageresource height 5cm {frame-5.pdf}\useimageresource\lastsavedimageresourceindex
 $$
 @<1,2번 모서리 매듭@>=
 {
@@ -240,7 +243,7 @@ $$
 둘이니, 세 매듭이 손대는 자리는 모두 같은 구석이다. 앞 그림의 빨간 자리와 견주어 보면
 빨강이 두 곳으로 줄었을 뿐 같은 언저리임이 보인다.
 $$
-\pic height 5cm{frame-6.pdf}
+\saveimageresource height 5cm {frame-6.pdf}\useimageresource\lastsavedimageresourceindex
 $$
 @<3번 모서리 매듭@>=
 {
@@ -380,7 +383,7 @@ $0\ldots5$이고, $6\cdot7$열로 삐져나온 이음은 다음 마디 자리에
 그래서 길이 $L$인 한 변은 {\it 두 칸씩 맞물린 사슬\/}이 된다. $L=31$이면 이렇다---위층은
 재료가 저마다 덮는 열을 막대로 늘어놓은 것이고, 아래층은 바로 그 자리에 놓이는 실제
 이음이다. 두 층은 축척이 같으니 막대와 이음이 열 단위로 그대로 포개진다.
-$$\pic{frame-7.pdf}$$
+$$\saveimageresource {frame-7.pdf}\useimageresource\lastsavedimageresourceindex$$
 겹치는 폭이 어디서나 꼭 두 열이다. |off|가 $5$에서 시작하는 것은 매듭 가로팔
 ($0\ldots6$)의 끝 두 칸에 물리기 때문이고, $6$씩 나아가는 것은 무늬의 주기이며,
 |off <= length[i]-13|은 반대쪽 매듭에게 제 자리를 남겨 두라는 뜻이다. 그러니
@@ -556,7 +559,7 @@ $$\hbox{\.{0133}\qquad\.{3013}\qquad\.{3301}\qquad\.{1330}}$$
 수법으로(Croes, 1958), 이름 그대로 이음 {\it 둘\/}을 바꿔치우는 동작이다. 이음
 $a\adj b$와 $c\adj d$를 골라 지우고, 끝점을 엇갈리게 $a\adj c$와 $b\adj d$로
 다시 잇는다.
-$$\pic{frame-2.pdf}$$
+$$\saveimageresource {frame-2.pdf}\useimageresource\lastsavedimageresourceindex$$
 같은 고리에서 두 이음을 고르면 고리는 끊어지지 않고 가운데 구간이 뒤집힐
 뿐이다---외판원의 길을 줄일 때 쓰는 용법이 그것이다. 그런데 {\it 서로 다른\/} 두 고리에서
 고르면 그림처럼 둘이 하나로 합쳐진다. 옛 코드가 쓴 것이 이쪽이고, 합칠 때마다 고리가
@@ -719,6 +722,6 @@ $0123$이라는 것은 기본값 $103\times73$에서 커누스 자신의 배치�
 그려 놓고 보면 커누스의 \.{KTf}와 똑같은---별이 촘촘히 맞물린---폭 3칸 직사각
 액자가 나온다. 한 붓에 그린 진짜 닫힌 나이트 투어다. 바로 이것으로 이 문서의
 {\it 모든 페이지\/}가 둘려 있다.
-$$\pic width 7cm{frame-1.pdf}$$
+$$\useimageresource width 7cm \decoframe$$
 
 @* 색인.
