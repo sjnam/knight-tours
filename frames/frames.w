@@ -1,7 +1,6 @@
 % 이 데모는 Knuth의 나이트 투어 전시장 맨 마지막 그림(KTf)의 겹친 액자를,
 % 7×7·31×31·55×55 세 크기의 진짜 닫힌 나이트 투어로 되살려 겹쳐 그린다.
 \input kotexgweb
-\input pic
 \def\verbatim{\begingroup
   \def\do##1{\catcode`##1=12 } \dospecials
   \parskip 0pt \parindent 2em \let\!=!
@@ -10,12 +9,16 @@
 {\catcode`\^^M=13{\catcode`\ =13\gdef\verbatimdefs{\def^^M{\ \par}\let =\ }} %
   \gdef\verbatimgobble#1^^M{}}
 
-% 모든 페이지를 액자로 두른다. \FrameBG는 세로 자리를 차지하지 않는(=\vbox to 0pt)
-% 액자 덧그림으로, 본문 상자 위에 겹쳐 찍힌다. 액자를 텍스트 영역보다 크게 그려
+% 모든 페이지를 액자로 두른다. 액자 그림은 LuaTeX의 기본 명령으로 한 번만 읽어
+% 두고 쪽마다 그것을 가리킨다---쪽마다 새로 읽으면 PDF에 같은 그림이 쪽 수만큼
+% 실린다. \FrameBG는 세로 자리를 차지하지 않는(=\vbox to 0pt) 액자
+% 덧그림으로, 본문 상자 위에 겹쳐 찍힌다. 액자를 텍스트 영역보다 크게 그려
 % 테두리가 종이 여백에 걸치게 한다. 본문 페이지는 \plainoutput이 내보내므로 그것을
-% 다시 정의해 \FrameBG를 얹고, 마지막 색인 페이지는 \topofcontents에서 얹는다.
+% 다시 정의해 \FrameBG를 얹는다.
+\saveimageresource width 7.55in height 11.05in {decoframe.pdf}
+\edef\decoframe{\the\lastsavedimageresourceindex}
 \def\FrameBG{\vbox to 0pt{\vskip-.72in
-  \moveleft.63in\hbox{\pic width 7.55in height 11.05in{decoframe.pdf}}\vss}%
+  \moveleft.63in\hbox{\useimageresource\decoframe}\vss}%
   \nointerlineskip}
 \def\plainoutput{\shipout\vbox{\FrameBG\makeheadline\pagebody\makefootline}%
   \advancepageno \ifnum\outputpenalty>-20000 \else\dosupereject\fi}
@@ -35,7 +38,7 @@
   \fi}
 %\def\topofcontents{
 %  \vbox to 0pt{\vskip-.72in
-%    \moveleft.55in\hbox{\pic width 7.55in height 10.65in{decoframe.pdf}}\vss}%
+%    \moveleft.55in\hbox{\useimageresource width 7.55in height 10.65in \decoframe}\vss}%
 %  \vskip.6in \centerline{\titlefont\Gtitle}\vskip.7in\vfill}
 
 \font\logo=logo10
@@ -798,7 +801,7 @@ for _, e := range tours[i].edges() {
 @ 그려 놓고 보면 커누스의 \.{KTf.jpg}와 똑같이, 폭 3칸 액자 셋이 이 빠진 곳 없이 서로를
 감싼다---저마다 한 붓에 그린 닫힌 나이트 투어다.
 $$
-\pic height 9cm{frames-1.pdf}
+\saveimageresource height 9cm {frames-1.pdf}\useimageresource\lastsavedimageresourceindex
 $$
 @ 프로그램이 표준 출력에 찍는 것은 이렇다.
 \medskip
@@ -1011,7 +1014,7 @@ fmt.Fprintln(w, `enddef;`)
 
 @ 그러면 이렇게 나온다. 커누스의 사진과 견주어 보시라.
 $$
-\pic height 9cm{frames-2.pdf}
+\saveimageresource height 9cm {frames-2.pdf}\useimageresource\lastsavedimageresourceindex
 $$
 
 @* 색인.
