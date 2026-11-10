@@ -1,10 +1,10 @@
-% knightframe.mp — 커누스의 별무늬 액자를 세로 h, 가로 w를 받아 그리는 자립 매크로.
+% knight-frame.mp — 커누스의 별무늬 액자를 세로 h, 가로 w를 받아 그리는 자립 매크로.
 %
 % frame.go가 내놓는 framedef.mp은 크기 한 벌을 좌표로 펼쳐 담은 생성물이라 크기를
 % 바꾸려면 Go를 다시 돌려야 한다. 이 파일은 같은 액자를 MetaPost만으로 짓는다.
 % 크기가 그리는 시점에 정해지므로 한 문서에서 여러 크기를 함께 쓸 수 있다.
 %
-%   input knightframe;
+%   input knight-frame;
 %   beginfig(1); frame(103, 73, black, white, .3pt); endfig;
 %
 % h와 w는 저마다 6으로 나눈 나머지가 1이어야 한다. 다만 7은 7x7일 때만 되고 그 밖에는

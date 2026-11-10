@@ -117,6 +117,50 @@ end.
 정의해 배경 그림을 얹습니다. 색인은 2단 조판이라 `\plainoutput`을 타지 않으므로,
 gwebmac의 `\coloutput`도 함께 손봐야 색인 페이지까지 둘립니다.
 
+### Go 없이 MetaPost만으로 — `knight-frame.mp`
+
+`framedef.mp`는 크기 한 벌을 좌표로 펼쳐 담은 생성물이라, 크기를 바꾸려면 Go를 다시
+돌려야 합니다. 저장소에 함께 있는 [knight-frame.mp](knight-frame.mp)는 같은 액자를
+**MetaPost만으로** 짓는 자립 매크로입니다. 크기가 매크로의 입력이므로 Go가 필요 없고,
+한 문서 안에서 여러 크기를 함께 그릴 수도 있습니다.
+
+```metapost
+def frame(expr h, w, line, bg, pw)
+```
+
+앞의 두 입력이 세로·가로이고, 나머지 셋은 `framedef.mp`의 것과 같습니다. 파일 끝에
+`end.`가 없으므로 그대로 `input`하면 됩니다.
+
+```metapost
+input knight-frame;
+
+beginfig(1); frame(103, 73, black, white, 0.3pt); endfig;           % 세로 A4
+beginfig(2); frame(73, 103, (0.2,0.35,0.75), white, 0.3pt); endfig; % 가로, RGB
+beginfig(3); frame(7, 7, black, white, 0.3pt); endfig;              % 바탕꼴
+
+end.
+```
+
+크기 조건은 `frame.go`와 같되(각 변이 13 이상이면서 6으로 나눈 나머지가 1), **7×7**을
+하나 더 받습니다. 7×7은 매듭 하나가 모서리에서 여덟 줄을 차지해 넷이 들어설 자리가 없는,
+구성법 밖의 바탕꼴입니다. 그래서 이것만은 커누스가 적어 둔 48걸음 발자국을 그대로 따라
+그립니다.
+
+`frame.go`가 거르기와 탐색으로 알아내는 모서리 배치를 이 파일은 표에서 꺼내 씁니다.
+통하는 배치의 집합이 `Nh = 6p+1`, `Nw = 6q+1`의 (p mod 4, q mod 4)에만 달려 있으므로
+나머지류 열여섯 가지의 답을 적어 두면 충분합니다. 그 결과 거르기도 중복 제거도 탐색도
+없는 곧은 그리기가 되었고, 크기 169개(p, q = 2…14)에서 `framedef.mp`와 선분 집합을
+맞대어 불일치가 없었습니다. 근거 넷은 파일 머리 주석에 적어 두었습니다.
+
+대신 가벼운 만큼 잃는 것이 둘 있습니다.
+
+- `frame.go`가 하는 검산(고리가 하나뿐인지, 재료 지문)이 없습니다. 원리와 검산은
+  `frame.w`에 있고, 이 파일은 거기서 나온 결과를 쓰는 판입니다.
+- MetaPost의 수 한계가 4096이라 한 변이 1365칸쯤을 넘으면 좌표가 넘칩니다.
+  `frame.go`에는 이런 한계가 없습니다.
+
+두 파일 모두 `frame`이라는 이름의 매크로를 정의하므로 한 문서에서 함께 들여오지 않습니다.
+
 ## 짓는 원리
 
 1. 커누스의 그림에서 이음(간선)을 읽어 냈습니다. 곧은 변의 주기 6 마디는 열여덟 개의
@@ -161,5 +205,6 @@ gwebmac의 `\coloutput`도 함께 손봐야 색인 페이지까지 둘립니다.
 | [Makefile](Makefile) | 빌드 |
 | [deco-frame.png](deco-frame.png) | 맨 위의 대표 그림. `make png`가 가로 액자(73×103)를 따로 지어 굽는다 |
 | [frame.mp](frame.mp) | 문서가 싣는 그림 일곱을 모두 그리는 MetaPost 소스. 손으로 쓴 것 |
+| [knight-frame.mp](knight-frame.mp) | 크기를 입력으로 받아 액자를 MetaPost만으로 짓는 자립 매크로. Go 없이 들여와 쓴다 |
 | `framedef.mp` | 생성물. 액자 매크로 정의. 다른 문서가 들여오는 파일 |
 | `frame.go`, `frame-[1-7].pdf`, `frame.tex`, `frame.pdf` | 생성물 (`make clean` 대상) |
