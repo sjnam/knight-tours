@@ -44,7 +44,7 @@ TeX Live의 `mpost`와 `mptopdf`만 있으면 됩니다. 이웃한 [celtic](../c
 
 ## 사용법
 
-파일 `frieze.mp`는 꾸러미이자 그림 목록이라, 그림을 더 뽑으려면 그 끝(`end.` 앞)에
+파일 `frieze.mp`는 패키지이자 그림 목록이라, 그림을 더 뽑으려면 그 끝(`end.` 앞)에
 `beginfig`를 덧붙입니다.
 
 ```metapost

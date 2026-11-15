@@ -1,4 +1,4 @@
-% ktknot.mp — 나이트 투어를 켈트 매듭(Celtic knot)으로 그리는 매크로 꾸러미.
+% ktknot.mp — 나이트 투어를 켈트 매듭(Celtic knot)으로 그리는 매크로 패키지.
 %
 % 커누스의 Selected Papers on Fun and Games 41장 Celtic Knight's Tours가 밑감이다.
 % 거기 실린 그림들과 그의 사진 https://cs.stanford.edu/~knuth/KTg.jpg에 걸린
@@ -69,7 +69,7 @@ color tilea; tilea := white;   % 어두운 칸의 빛깔 (열+행이 짝수)
 color tileb; tileb := white;   % 밝은 칸의 빛깔 (열+행이 홀수)
 color slab;  slab  := white;   % 판 바깥 여백의 빛깔
 color hair;   hair  := black;  % 리본 대신 가는 선 하나로만 그릴 때의 선 빛깔.
-numeric hairw; hairw := .5pt;  % 이 꾸러미는 안 쓰고, frieze.mp처럼 격자만 빌려다
+numeric hairw; hairw := .5pt;  % 이 패키지는 안 쓰고, frieze.mp처럼 격자만 빌려다
                                % 쓰는 그림이 차림새를 따라가게 하려고 둔다.
 numeric brim; brim := .6;      % 판 둘레에 두는 여백 띠의 폭 (칸 단위). 0이면 띠가
                                % 없어 격자가 그림 가장자리까지 꽉 찬다.

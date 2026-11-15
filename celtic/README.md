@@ -7,7 +7,7 @@
 커누스(Donald E. Knuth)의 [나이트 투어 전시장](https://cs.stanford.edu/~knuth/knights.html)
 사진 [KTg](https://cs.stanford.edu/~knuth/KTg.jpg)에 걸린 걸개그림 열 점과, 그의 책
 *Selected Papers on Fun and Games* 41장 "Celtic Knight's Tours"에 실린 그림들을 다시
-그리는 MetaPost 꾸러미입니다.
+그리는 MetaPost 패키지입니다.
 
 켈트 투어는 나이트의 길을 **위아래로 번갈아 짠 끈**으로 그린 것입니다. 평면 위의 닫힌
 곡선이 한 점을 두 번 넘게 지나지 않으면 만날 때마다 위·아래를 번갈아 짤 수 있습니다.
@@ -16,7 +16,7 @@
 
 | 파일 | 하는 일 |
 | --- | --- |
-| [ktknot.mp](ktknot.mp) | 투어를 켈트 매듭으로 짜서 그리는 매크로 꾸러미. 홀로 서고 TeX 라벨도 없음 |
+| [ktknot.mp](ktknot.mp) | 투어를 켈트 매듭으로 짜서 그리는 매크로 패키지. 홀로 서고 TeX 라벨도 없음 |
 | [ktg.mp](ktg.mp) | 투어 열 가지를 적고 그림 22장을 뽑음 |
 | [Makefile](Makefile) | 빌드 |
 | [celtic.png](celtic.png) | 맨 위의 대표 그림. `make png`가 22번에서 굽는다 |
@@ -123,7 +123,7 @@ paperlook; uu := 26bp;  relief := 1.1;  cast := .05;  % 끈을 도드라져 보�
 
 왼쪽 열의 5×10 셋은 책의 Figure 20과 같되 걸린 차례가 위에서부터 (b)-(a)-(c)입니다.
 
-## 이 꾸러미를 빌려 쓰는 곳
+## 이 패키지를 빌려 쓰는 곳
 
 이웃한 두 디렉터리가 [ktknot.mp](ktknot.mp)에서 차림새 둘과 바탕·격자 매크로
 (`setboard`, `backdrop`, `gridboard`)를 빌려 씁니다. 그래서 그 그림들이 이 걸개그림들과
